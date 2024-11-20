@@ -1,0 +1,49 @@
+:root {
+  --video-height: 50vh; /* Default height for wide screens */
+  --video-aspect-ratio: 16 / 9; /* Default aspect ratio for wide screens */
+  --gap: 8px; /* Gap between items */
+}
+
+.top-row {
+  display: flex;
+  align-items: center;
+  height: var(--video-height); /* Dynamic height based on screen orientation */
+  width: 100vw; /* Full viewport width */
+  gap: var(--gap); /* Gap between items */
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.video-container {
+  position: relative; /* Enables stacking video and canvas */
+  flex: 0 0 auto; /* Do not grow or shrink */
+  aspect-ratio: var(--video-aspect-ratio); /* Maintain aspect ratio */
+  height: 100%; /* Match row height */
+}
+
+.video-container video,
+.video-container canvas {
+  position: absolute; /* Stack video and canvas */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure elements cover the container */
+  transform: scaleX(-1); /* Flips the video horizontally */
+
+}
+
+
+.video-container canvas {
+  pointer-events: none; /* Ensure interactions pass through canvas */
+}
+
+
+
+.other-item {
+  height: 100%; /* Match row height */
+  background: white; /* Background for visualization */
+  border: 1px solid #ccc; /* Border for separation */
+  /* Width is dynamically set via inline styles in TopRow.js */
+}

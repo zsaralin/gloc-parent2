@@ -1,0 +1,16 @@
+.bottom-section {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+  
+  .bottom-row {
+    display: grid;
+    width: 100%;
+  }
+  
+  .grid-item {
+    border: 1px solid #ccc;
+    background: white;
+  }
+  
