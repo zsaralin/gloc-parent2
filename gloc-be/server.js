@@ -45,6 +45,7 @@ app.post('/match', async (req, res) => {
             res.json(null);
             return;
         }
+
         const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos, uuid);
         if (!nearestDescriptors) {
             res.json(null);
@@ -53,7 +54,6 @@ app.post('/match', async (req, res) => {
         const responseArray = await processNearestDescriptors(
             nearestDescriptors,localFolderPath
         );
-
         res.json(responseArray);
     } catch (error) {
         console.error('Error processing detection:', error);

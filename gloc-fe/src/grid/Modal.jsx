@@ -5,20 +5,19 @@ const Modal = ({ images, text, onClose }) => {
   const containerRef = useRef(null);
   const [imageStyle, setImageStyle] = useState({});
   const [gridStyle, setGridStyle] = useState({});
-  const [wrapperStyle, setWrapperStyle] = useState({});
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     
-    // Measure container and allocated space
+    // Measure the container and subtract space needed for text and button
     const { clientWidth, clientHeight } = container;
     const textElem = container.querySelector(".modal-text");
     const buttonElem = container.querySelector(".genetic-bank-button");
     
     const textHeight = textElem ? textElem.offsetHeight : 0;
     const buttonHeight = buttonElem ? buttonElem.offsetHeight : 0;
-    const spacing = 20; // some buffer space
+    const spacing = 0; // some buffer space
     
     const availableWidth = clientWidth;
     const availableHeight = clientHeight - (textHeight + buttonHeight + spacing);
@@ -26,23 +25,22 @@ const Modal = ({ images, text, onClose }) => {
     const numImages = images.length;
 
     if (numImages === 1) {
-      // Single image: just center it in the available space
-      setWrapperStyle({
+      // Single image: maximize while fitting in the available area
+      // We'll use objectFit contain to ensure the whole image is visible
+      // We just make the image fill the space above text/button.
+      setGridStyle({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        height: `${availableHeight}px`,
         width: "100%",
+        height: `${availableHeight}px`,
         overflow: "hidden",
       });
-      setGridStyle({});
-      setImageStyle({
-        maxWidth: "100%",
-        maxHeight: "100%",
-        objectFit: "contain"
-      });
+      // The image will just scale to fit
+      setImageStyle({ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" });
     } else {
-      // For multiple images, find the best grid layout
+      // For multiple images, find a suitable grid layout.
+      // We'll try different column counts and pick the arrangement that yields the largest cell size.
       let bestCols = 1;
       let bestRows = numImages;
       let bestSize = 0;
@@ -59,27 +57,20 @@ const Modal = ({ images, text, onClose }) => {
         }
       }
 
-      // We'll set the grid to the needed size and center it inside a wrapper
-      const gridWidth = bestCols * bestSize;
-      const gridHeight = bestRows * bestSize;
-
-      setWrapperStyle({
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: `${availableHeight}px`,
-        width: "100%",
-        overflow: "hidden",
-      });
-
+      // Now that we have bestCols and bestRows, we know each cell is `bestSize` x `bestSize`.
+      // We'll explicitly set pixel values so no overflow occurs.
       setGridStyle({
         display: "grid",
         gridTemplateColumns: `repeat(${bestCols}, ${bestSize}px)`,
         gridTemplateRows: `repeat(${bestRows}, ${bestSize}px)`,
-        width: `${gridWidth}px`,
-        height: `${gridHeight}px`,
-        gap: "10px",
+        width: "100%",
+        // The height will match exactly the needed rows * cell size
+        height: `${bestRows * bestSize}px`,
+        justifyContent: "center",
+        alignItems: "center",
+        // gap: "10px",
         boxSizing: "border-box",
+        overflow: "hidden"
       });
 
       setImageStyle({
@@ -97,17 +88,15 @@ const Modal = ({ images, text, onClose }) => {
         onClick={(e) => e.stopPropagation()}
         ref={containerRef}
       >
-        <div className="modal-images-wrapper" style={wrapperStyle}>
-          <div className="modal-images" style={gridStyle}>
-            {images.map((src, index) => (
-              <img
-                key={index}
-                src={src}
-                alt={`Modal Image ${index + 1}`}
-                style={imageStyle}
-              />
-            ))}
-          </div>
+        <div className="modal-images" style={gridStyle}>
+          {images.map((src, index) => (
+            <img
+              key={index}
+              src={src}
+              alt={`Modal Image ${index + 1}`}
+              style={imageStyle}
+            />
+          ))}
         </div>
         <div
           className="modal-text"

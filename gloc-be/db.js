@@ -1,4 +1,4 @@
-let dbName = '42'; // Default value
+let dbName = 'arg'; // Default value
 
 const getDbName = () => dbName;
 const setDbName = (newName) => { dbName = newName; };
