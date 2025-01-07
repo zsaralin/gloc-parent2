@@ -1,7 +1,8 @@
 // v1.0.1
 
 const express = require('express');
-const fs = require('fs').promises;
+const fs = require('fs');
+
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -141,17 +142,31 @@ app.post('/delete-scores', async (req, res) => {
     }
 });
 
-app.post('/save-settings', (req, res) => {
-    fs.writeFile('settings.json', JSON.stringify(req.body, null, 2), err => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('Failed to save settings');
-        }
-        res.send('Settings updated successfully');
+const settingsFile = 'settings.json';
+
+// Load settings
+app.get('/settings', (req, res) => {
+  if (fs.existsSync(settingsFile)) {
+    fs.readFile(settingsFile, 'utf8', (err, data) => {
+      if (err) {
+        res.status(500).json({ error: "Error reading settings file" });
+      } else {
+        res.json(JSON.parse(data));
+      }
     });
+  } else {
+    res.json({});
+  }
 });
 
-app.get('/get-settings', (req, res) => {
-    res.sendFile(path.join(__dirname, 'settings.json'));
+// Save settings
+app.post('/settings', (req, res) => {
+  fs.writeFile(settingsFile, JSON.stringify(req.body, null, 2), (err) => {
+    if (err) {
+      res.status(500).json({ error: "Error saving settings" });
+    } else {
+      res.json({ message: "Settings saved successfully" });
+    }
+  });
 });
 

@@ -1,44 +1,59 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./LoadingScreen.css";
-import { LOADING_DUR } from "../config";
+import { overlaySettings } from '../OverlayGui';
+
 const LoadingScreen = () => {
+  const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
-    // Set the initial prompt before any animation starts
-    const promptElement = document.getElementById("loading-prompt");
-    if (promptElement) {
-      promptElement.innerText = "Extracting facial landmarks...";
-    }
+    const handleShowLoading = () => {
+      setIsVisible(true);
+      startLoading();
+    };
+
+    window.addEventListener('showLoadingScreen', handleShowLoading);
+
+    return () => {
+      window.removeEventListener('showLoadingScreen', handleShowLoading);
+    };
   }, []);
 
   return (
-    <div id="loading-screen" className="loading-screen">
+    <div id="loading-screen" className="loading-screen" style={{ display: isVisible ? "block" : "none" }}>
       <div className="loading-overlay"></div>
       <div className="loading-bar-container">
         <div className="loading-bar">
           <div id="loading-fill" className="loading-fill"></div>
         </div>
-        <div id="loading-prompt" className="loading-prompt"></div>
+        <div id="loading-prompt" className="loading-prompt">Extracting facial landmarks...</div>
       </div>
     </div>
   );
 };
 
 export default LoadingScreen;
+
 export const startLoading = () => {
-  const duration = LOADING_DUR * 1000;
+  const duration = overlaySettings.loadingDuration * 1000; // Get the latest loading duration
+
   const loadingFill = document.getElementById("loading-fill");
   const loadingScreen = document.getElementById("loading-screen");
   const promptElement = document.getElementById("loading-prompt");
+
+  if (!loadingScreen) return;
+
+  loadingScreen.style.display = "block"; // Show loading screen
+  loadingScreen.style.opacity = "1"; // Reset opacity for re-use
 
   const prompts = [
     "Extracting facial landmarks...",
     "Sending numerical description...",
     "Comparing biometric data...",
     "Searching through database for similarities...",
-    "Retrieving top matches",
+    "Retrieving top matches"
   ];
 
-  // Add a one-second delay before starting
+  // Add a slight delay before starting
   setTimeout(() => {
     // Start the animation
     if (loadingFill) {
@@ -49,10 +64,10 @@ export const startLoading = () => {
     if (promptElement) {
       const promptTimings = [
         0, // First prompt is already set
-        duration * 0.1666, // After the pause (16.66% of duration)
-        duration * 0.375,  // Next prompt
-        duration * 0.5833, // Next prompt
-        duration * 0.7916, // Final prompt
+        duration * 0.1666,
+        duration * 0.375,
+        duration * 0.5833,
+        duration * 0.7916
       ];
 
       for (let i = 1; i < prompts.length; i++) {
@@ -72,5 +87,5 @@ export const startLoading = () => {
         }, 1000); // Match fade-out duration
       }
     }, duration); // Sync with total loading duration
-  }, 100); // Add a 1-second delay before starting
+  }, 100); // Add a small delay before starting
 };

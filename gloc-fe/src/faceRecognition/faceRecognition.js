@@ -1,5 +1,5 @@
 import { matches, startContinuousFaceRecognition, abortController as globalAbortController } from './faceRecognitionFetcher.js';
-import { REFRESH_TIME, LOADING_DUR } from "../config.js";
+import { overlaySettings } from '../OverlayGui';
 import { stopShuffle } from "../updateGrid/shuffleManagerService.js";
 import { loadImages } from "../updateGrid/ImageLoader.jsx";
 import { fillGridItems } from "../updateGrid/updateGrid.jsx";
@@ -11,7 +11,6 @@ let recognitionIntervalId = null;
 let abortController = globalAbortController; // Keep reference to the global abortController
 
 const CHECK_INTERVAL = 1000; 
-const MAX_CHECKS = Math.floor((REFRESH_TIME * 1000) / CHECK_INTERVAL);
 
 async function performRecognitionTask() {
     if (isProcessing) {
@@ -29,9 +28,12 @@ async function performRecognitionTask() {
     try {
         console.log('Starting recognition task cycle.');
 
+        // Calculate max checks based on the current refresh time
+        const maxChecks = Math.floor((overlaySettings.refreshTime * 1000) / CHECK_INTERVAL);
+
         // Wait for matches or timeout
         let attempts = 0;
-        while ((!matches || matches.length === 0) && attempts < MAX_CHECKS) {
+        while ((!matches || matches.length === 0) && attempts < maxChecks) {
             if (abortController.signal.aborted) {
                 console.log('Recognition aborted during match wait.');
                 return;
@@ -51,13 +53,15 @@ async function performRecognitionTask() {
             const images = await loadImages(matches, abortController.signal);
             if (abortController.signal.aborted) return;
 
-            await new Promise(resolve => setTimeout(resolve, (LOADING_DUR) * 1000));
+            // Use the dynamically updated loading duration
+            await new Promise(resolve => setTimeout(resolve, overlaySettings.loadingDuration * 1000));
             stopShuffle();
             fillGridItems(images, false, true, false);
             isFirstUpdate = false;
         } else {
             const images = await loadImages(matches, abortController.signal);
             if (abortController.signal.aborted) return;
+            if(document.hidden) return
             fillGridItems(images, true, false, false);
         }
 
@@ -88,15 +92,17 @@ export async function startRecognitionTask() {
 
     // Run immediately once
     performRecognitionTask();
-    if(isFirstUpdate){
-        await new Promise(resolve => setTimeout(resolve, REFRESH_TIME*1000));
+
+    if (isFirstUpdate) {
+        await new Promise(resolve => setTimeout(resolve, overlaySettings.refreshTime * 1000));
     }
+
     // Schedule subsequent runs at a fixed interval
     recognitionIntervalId = setInterval(() => {
         if (!abortController.signal.aborted) {
             performRecognitionTask();
         }
-    }, REFRESH_TIME * 1000);
+    }, overlaySettings.refreshTime * 1000);
 }
 
 export function stopRecognitionTasks() {
@@ -107,3 +113,9 @@ export function stopRecognitionTasks() {
     abortController.abort();
     console.log('Recognition tasks stopped.');
 }
+
+window.addEventListener('refreshTimeUpdated', () => {
+    console.log("Refresh time updated, restarting recognition task...");
+    stopRecognitionTasks();
+    startRecognitionTask();
+});

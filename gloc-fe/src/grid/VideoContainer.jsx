@@ -14,7 +14,7 @@ function VideoContainer() {
     if (videoElement) {
       const handlePlay = () => {
         setIsPlaying(true);
-        startFaceDetection(videoElement); // Call startFaceDetection on play
+        startFaceDetection(); // Call startFaceDetection on play
       };
 
       const handlePause = () => {
@@ -51,6 +51,7 @@ function VideoContainer() {
     <div className="video-container">
       <video ref={videoRef} className="video" muted></video>
       <canvas ref={canvasRef} className="video-canvas"></canvas>
+      
       <div id="face-detect-text"></div>
       <button className="play-pause-button" onClick={togglePlayPause}>
         <i className={`fa ${isPlaying ? 'fa-pause' : 'fa-play'}`}></i>

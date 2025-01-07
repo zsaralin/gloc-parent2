@@ -1,124 +1,198 @@
-import React, { useRef, useEffect, useState } from "react";
-import "./Modal.css";
+const fs = require('fs').promises
+const faceapi = require('face-api.js');
+const MAX_DISTANCE = 1.2385318850506823
+const MinHeap = require("./minHeap");
+let cachedData = null;
+const { getDbName } = require('./db.js');
+const {createOrUpdateScores, getSortedLabelsByUserID} = require("./scores");
+const path = require('path');
 
-const Modal = ({ images, text, onClose }) => {
-  const containerRef = useRef(null);
-  const [imageStyle, setImageStyle] = useState({});
-  const [gridStyle, setGridStyle] = useState({});
-  const [wrapperStyle, setWrapperStyle] = useState({});
+let dbName = getDbName();
+loadDataIntoMemory();
 
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    
-    // Measure container and allocated space
-    const { clientWidth, clientHeight } = container;
-    const textElem = container.querySelector(".modal-text");
-    const buttonElem = container.querySelector(".genetic-bank-button");
-    
-    const textHeight = textElem ? textElem.offsetHeight : 0;
-    const buttonHeight = buttonElem ? buttonElem.offsetHeight : 0;
-    const spacing = 20; // some buffer space
-    
-    const availableWidth = clientWidth;
-    const availableHeight = clientHeight - (textHeight + buttonHeight + spacing);
+// cache the JSON file in memory
+async function loadDataIntoMemory() {
+    dbName = getDbName();
+    try {
+        const rawData = await fs.readFile(`./descriptors/descriptors_${dbName}.json`, 'utf8');
+        cachedData = JSON.parse(rawData);
 
-    const numImages = images.length;
-
-    if (numImages === 1) {
-      // Single image: just center it in the available space
-      setWrapperStyle({
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: `${availableHeight}px`,
-        width: "100%",
-        overflow: "hidden",
-      });
-      setGridStyle({});
-      setImageStyle({
-        maxWidth: "100%",
-        maxHeight: "100%",
-        objectFit: "contain"
-      });
-    } else {
-      // For multiple images, find the best grid layout
-      let bestCols = 1;
-      let bestRows = numImages;
-      let bestSize = 0;
-
-      for (let cols = 1; cols <= numImages; cols++) {
-        const rows = Math.ceil(numImages / cols);
-        const cellWidth = availableWidth / cols;
-        const cellHeight = availableHeight / rows;
-        const size = Math.min(cellWidth, cellHeight);
-        if (size > bestSize) {
-          bestSize = size;
-          bestCols = cols;
-          bestRows = rows;
-        }
-      }
-
-      // We'll set the grid to the needed size and center it inside a wrapper
-      const gridWidth = bestCols * bestSize;
-      const gridHeight = bestRows * bestSize;
-
-      setWrapperStyle({
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: `${availableHeight}px`,
-        width: "100%",
-        overflow: "hidden",
-      });
-
-      setGridStyle({
-        display: "grid",
-        gridTemplateColumns: `repeat(${bestCols}, ${bestSize}px)`,
-        gridTemplateRows: `repeat(${bestRows}, ${bestSize}px)`,
-        width: `${gridWidth}px`,
-        height: `${gridHeight}px`,
-        gap: "10px",
-        boxSizing: "border-box",
-      });
-
-      setImageStyle({
-        width: "100%",
-        height: "100%",
-        objectFit: "contain"
-      });
+    } catch (error) {
+        console.error('Error loading data into memory:', error);
     }
-  }, [images]);
+}
+async function findNearestDescriptors(targetDescriptor, numMatches, userId) {
+    try {
+        if (!targetDescriptor || !cachedData) return null;
 
-  return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div
-        className="modal-content"
-        onClick={(e) => e.stopPropagation()}
-        ref={containerRef}
-      >
-        <div className="modal-images-wrapper" style={wrapperStyle}>
-          <div className="modal-images" style={gridStyle}>
-            {images.map((src, index) => (
-              <img
-                key={index}
-                src={src}
-                alt={`Modal Image ${index + 1}`}
-                style={imageStyle}
-              />
-            ))}
-          </div>
-        </div>
-        <div
-          className="modal-text"
-          dangerouslySetInnerHTML={{ __html: text }}
-        ></div>
-        <div className="genetic-bank-button">
-          Set Up Appointment At Genetic Bank
-        </div>
-      </div>
-    </div>
-  );
+        const minHeap = new MinHeap();
+
+        // Process each label and its descriptors
+        for (const label of Object.keys(cachedData)) {
+            const descriptors = cachedData[label].descriptors;
+
+            if (descriptors.length === 0) continue; // Skip if no descriptors available
+
+            let distance;
+
+            if (descriptors.length ===1) {
+                // Calculate distance for a single descriptor
+                distance = faceapi.euclideanDistance(
+                    Array.from(targetDescriptor),
+                    descriptors[0]
+                );
+            } else {
+                // continue; 
+                // Calculate the average distance for multiple descriptors
+                const totalDistance = descriptors.reduce(
+                    (acc, desc) =>
+                        acc +
+                        faceapi.euclideanDistance(
+                            Array.from(targetDescriptor),
+                            desc
+                        ),
+                    0
+                );
+                distance = totalDistance / descriptors.length;
+            }
+
+            minHeap.insert({ label, distance });
+
+            if (minHeap.size() > numMatches) {
+                minHeap.extractMin(); // Remove the farthest descriptor if exceeding N
+            }
+        }
+
+        // Extract the top N nearest descriptors from the min-heap
+        const topNDescriptors = [];
+        while (!minHeap.isEmpty()) {
+            const { label, distance } = minHeap.extractMin();
+            topNDescriptors.push({ label, distance });
+        }
+
+        // Normalize distances
+        const normalizedDescriptors = topNDescriptors.map((item) => ({
+            label: item.label,
+            normalizedDistance: 1 - item.distance / MAX_DISTANCE,
+        }));
+
+        // Preserve the original array format with dictionaries inside
+        await createOrUpdateScores(userId, normalizedDescriptors);
+
+        return normalizedDescriptors.reverse(); // Closest first
+    } catch (error) {
+        console.error("Error processing descriptors:", error);
+        throw error;
+    }
+}
+
+
+// max distance between two descriptors, only run with new dataset
+async function calculateMaxPossibleDistance() {
+    const dbName = getDbName();
+
+    const data = await fs.readFile(`./descriptors/descriptors_${dbName}.json`, 'utf8');
+    const descriptorList = JSON.parse(data);
+    let maxDistance = 0;
+
+    for (let i = 0; i < descriptorList.length; i++) {
+
+        const descriptor1 = descriptorList[i].descriptors;
+
+        for (let j = i + 1; j < descriptorList.length; j++) {
+            const descriptor2 = descriptorList[j].descriptors;
+
+            const distance = faceapi.euclideanDistance(descriptor1, descriptor2);
+
+            if (distance > maxDistance) {
+                maxDistance = distance;
+            }
+        }
+    }
+    return maxDistance;
+}
+
+
+async function fileExists(filePath) {
+    try {
+        await fs.access(filePath);
+        return true;
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            return false;
+        }
+        throw error;
+    }
+}
+
+async function getNameFromJsonFile(filePath, defaultLabel) {
+    const exists = await fileExists(filePath);
+    if (exists) {
+        try {
+            const fileData = await fs.readFile(filePath, 'utf8');
+            const jsonData = JSON.parse(fileData);
+            return jsonData.name || defaultLabel;
+        } catch (error) {
+            console.error('Error reading or parsing JSON:', error);
+            return defaultLabel;
+        }
+    } else {
+        return defaultLabel;
+    }
+}
+
+async function processNearestDescriptors(nearestDescriptors, localFolderPath) {
+    const labels = [];
+    const imagePathPromises = nearestDescriptors.map(async nearestDescriptor => {
+        const { label, normalizedDistance } = nearestDescriptor;
+        const imagesFolderPath = path.join(localFolderPath, dbName, label, 'images');
+        const jsonFilePath = path.join(localFolderPath, dbName, label, 'info.json');
+        const name = await getNameFromJsonFile(jsonFilePath, label);
+
+        let jsonData = null;
+        try {
+            const jsonContent = await fs.readFile(jsonFilePath, 'utf8');
+            jsonData = JSON.parse(jsonContent);
+        } catch (error) {
+            console.error(`Error reading JSON file: ${jsonFilePath}`, error);
+            return null;
+        }
+
+        const numRecords = jsonData.numeroDeRegistros || 0;
+        const imageFiles = [];
+        for (let i = 0; i < numRecords; i++) {
+            const imagePath = path.join(imagesFolderPath, `${i}.jpg`);
+            try {
+                await fs.access(imagePath);
+                imageFiles.push(`/static/images/${dbName}/${label}/images/${encodeURIComponent(`${i}.jpg`)}`);
+            } catch (error) {
+                console.log(`Image file ${imagePath} does not exist.`);
+            }
+        }
+
+        if (imageFiles.length > 0) {
+            labels.push(name);
+            return {
+                label,
+                name,
+                distance: normalizedDistance * 100,
+                imagePath: imageFiles, // Array of image paths
+                jsonData // JSON file content
+            };
+        } else {
+            console.log(`No image files found in folder: ${imagesFolderPath}`);
+            return null;
+        }
+    });
+
+    const responseArray = (await Promise.all(imagePathPromises)).filter(Boolean);
+    return responseArray;
+}
+
+
+module.exports = {
+    findNearestDescriptors,
+    calculateMaxPossibleDistance,
+    loadDataIntoMemory, processNearestDescriptors
 };
 
-export default Modal;

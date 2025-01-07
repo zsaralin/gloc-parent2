@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ImageContainer.css";
 import { videoRef } from "./videoRef";
 import { SERVER_URL } from "../config";
 import Modal from "./Modal";
+import { overlaySettings } from "../OverlayGui"; // ✅ Import overlay settings
 
 function formatKeyName(key) {
   return key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
@@ -13,6 +14,28 @@ function ImageContainer() {
   const [modalImages, setModalImages] = useState([]);
   const [wasVideoPaused, setWasVideoPaused] = useState(false);
   const [modalText, setModalText] = useState("");
+
+  // ✅ Track zoom, xOffset, and yOffset
+  const [zoom, setZoom] = useState(overlaySettings.zoom);
+  const [xOffset, setXOffset] = useState(overlaySettings.xOffset);
+  const [yOffset, setYOffset] = useState(overlaySettings.yOffset);
+
+  // ✅ Sync zoom, xOffset, and yOffset when overlaySettings updates
+  useEffect(() => {
+    const updateZoom = () => setZoom(overlaySettings.zoom);
+    const updateXOffset = () => setXOffset(overlaySettings.xOffset);
+    const updateYOffset = () => setYOffset(overlaySettings.yOffset);
+
+    window.addEventListener("zoomUpdated", updateZoom);
+    window.addEventListener("xOffsetUpdated", updateXOffset);
+    window.addEventListener("yOffsetUpdated", updateYOffset);
+
+    return () => {
+      window.removeEventListener("zoomUpdated", updateZoom);
+      window.removeEventListener("xOffsetUpdated", updateXOffset);
+      window.removeEventListener("yOffsetUpdated", updateYOffset);
+    };
+  }, []);
 
   const openModal = (event) => {
     const video = videoRef.current;
@@ -63,8 +86,20 @@ function ImageContainer() {
           <div className="vert-bar-bg"></div>
           <div className="vert-bar-fill"></div>
         </div>
-        <div className="curr-img"></div>
-        <div className="prev-img"></div>
+
+        {/* ✅ Apply zoom, xOffset, and yOffset dynamically */}
+        <div
+          className="curr-img"
+          style={{
+            transform: `scale(${zoom}) translate(${xOffset * 100}%, ${yOffset * 100}%)`,
+          }}
+        ></div>
+        <div
+          className="prev-img"
+          style={{
+            transform: `scale(${zoom}) translate(${xOffset * 100}%, ${yOffset * 100}%)`,
+          }}
+        ></div>
       </div>
 
       {isModalOpen && (

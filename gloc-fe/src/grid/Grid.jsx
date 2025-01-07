@@ -2,14 +2,16 @@ import React, { useEffect, useState } from 'react';
 import TopRow from './TopRow'; // Assuming these are your components
 import BottomSection from './BottomSection';
 import './Grid.css';
+import '../OverlayGUI.css'; // Import overlay GUI styles
+import OverlayGUI from '../OverlayGui'; // Import overlay GUI component
 import { 
   arrangeGrid, 
   numTopRowItems, 
   numBottomGridRows, 
   numBottomGridCols, 
   topRowItemWidth, 
-  bottomGridItemSize // Now returns { width, height }
-} from './gridLayout'; // Import arrangeGrid and variables
+  bottomGridItemSize 
+} from './gridLayout'; 
 import { startFaceDetection } from '../faceDetection/faceDetection';
 import LandingPage from '../landingPages/LandingPage';
 import { setupOverlayTransparency } from '../updateGrid/updateGrid';
@@ -17,6 +19,7 @@ import LoadingScreen from './LoadingScreen';
 
 function Grid() {
   const [isGridReady, setIsGridReady] = useState(false); // Tracks grid readiness
+  const [isOverlayVisible, setIsOverlayVisible] = useState(false); // Tracks overlay visibility
 
   useEffect(() => {
     const handleResize = async () => {
@@ -35,13 +38,27 @@ function Grid() {
   useEffect(() => {
     const initializeGrid = async () => {
       if (isGridReady) {
-        setupOverlayTransparency()
+        setupOverlayTransparency();
         await startFaceDetection(); // Await the async function
       }
     };
 
     initializeGrid();
   }, [isGridReady]);
+
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key === 'g' || event.key === 'G') {
+        setIsOverlayVisible((prev) => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, []);
 
   return (
     <div className="grid-wrapper">
@@ -60,9 +77,9 @@ function Grid() {
           />
         </div>
       )}
+      {isOverlayVisible && <OverlayGUI />} {/* Render overlay GUI when visible */}
     </div>
   );
-  
 }
 
 export default Grid;
