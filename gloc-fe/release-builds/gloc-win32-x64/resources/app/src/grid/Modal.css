@@ -1,0 +1,68 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background-color: white;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 800px;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    /* overflow: hidden; */
+    align-items: flex-start;
+  }
+  
+  .modal-images {
+    flex: 3;
+    overflow-y: auto;
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+}
+  .modal-images img {
+    max-height: 100%;
+    object-fit: contain;
+    max-width: 100%; /* Ensures the image doesn't overflow */
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: none; /* if not necessary */
+  }
+  
+  .modal-text {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 10px;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    font-size: 14px;
+    color: #333;
+    width: 100%;
+  }
+  
+  .genetic-bank-button {
+    display: inline-block;
+    text-align: center;
+    font-size: 10px;
+    margin-top: 10px;
+    background-color: black;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  

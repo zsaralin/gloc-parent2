@@ -1,0 +1,1 @@
+electron-packager . "gloc" --platform=win32 --arch=x64 --icon=assets/icon.ico --out=release-builds --overwrite
