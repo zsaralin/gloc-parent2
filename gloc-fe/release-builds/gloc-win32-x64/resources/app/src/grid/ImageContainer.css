@@ -1,0 +1,83 @@
+.image-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    
+  }
+  
+  .curr-img,
+  .prev-img, .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  
+  .curr-img {
+    z-index: 2;
+  }
+  
+  .prev-img {
+    z-index: 1; /* Above curr-img */
+  }
+  
+  .overlay {
+    z-index : 3;
+   }
+  
+   .text-overlay {
+    position: absolute;
+    color: white;
+    font-size: 9px;
+    text-align: left;
+    padding:2px 2px; /* Add some padding around text */
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background for text */
+    overflow: hidden
+  }
+  .text-overlay:empty {
+    display: none; /* Hide the element when it has no content */
+  }
+  .top-text {
+    left: 5px; /* Center horizontally */
+    top: 5px; /* Adjust distance from the top */
+    width: fit-content;
+    max-width: calc(100% - 10px);
+  }
+  .bottom-text {
+    position: absolute;
+    bottom: 5px; /* Align to the bottom */
+    width: 80%; /* Flexible width for the text container */
+    max-width: 100%; /* Prevent exceeding the parent container width */
+    line-height: 12px; /* Maintain consistent spacing between lines */
+    max-height: 23px; /* 2 lines x line-height */
+    
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust centering */
+    text-align: center;
+  
+  }
+  
+  .vert-bar-bg{
+    position: absolute;
+    height: 100%;
+    width: 3px;
+    background-color: black;
+    right: 0; 
+  }
+  
+  .vert-bar-fill{
+    position: absolute;
+    height: 0%;
+    width: 3px;
+    background-color: white;
+    right: 0; 
+    bottom: 0; 
+    transition: height 1s 2s ease; /* Animate height over 1s */
+  
+  }
+  

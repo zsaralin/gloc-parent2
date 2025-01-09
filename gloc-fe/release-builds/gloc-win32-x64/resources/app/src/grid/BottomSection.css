@@ -1,0 +1,20 @@
+.bottom-section {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+  }
+  
+  .bottom-row {
+    display: grid;
+    width: 100%;
+  }
+  
+  .bottom-grid-item {
+    /* border: 1px solid white; */
+    background: black; /* Background for visualization */
+  }
+  
+
+  
+  

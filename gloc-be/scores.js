@@ -1,5 +1,5 @@
 const {Pool} = require("pg");
-require('dotenv').config(); // Load environment variables from .env file
+require('dotenv').config({ path: __dirname + '/.env' });
 
 const pool = new Pool({
     user: process.env.DB_USER,
@@ -25,6 +25,11 @@ async function createScoresTable() {
     `;
 
     try {
+        console.log("DB User:", process.env.DB_USER);
+        console.log("DB Password:", process.env.DB_PASSWORD ? "****" : "Not Set"); // Masked for security
+        console.log("DB Host:", process.env.DB_HOST);
+        console.log("DB Port:", process.env.DB_PORT);
+        console.log("DB Name:", process.env.DB_NAME);
         // Execute the drop table query
         await pool.query(dropQuery);
         console.log("Existing 'scores' table dropped.");
