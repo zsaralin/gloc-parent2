@@ -37,10 +37,10 @@ export async function setupFaceLandmarker() {
 
   setupPromise = (async () => {
     console.log('Setting up FaceLandmarker...');
-    const vision = await FilesetResolver.forVisionTasks('/internal_cdn/package0/wasm');
+    const vision = await FilesetResolver.forVisionTasks('./internal_cdn/package0/wasm');
     faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
       baseOptions: {
-        modelAssetPath: `/internal_cdn/face_landmarker.task`,
+        modelAssetPath: `./internal_cdn/face_landmarker.task`,
         delegate: "GPU",
       },
       outputFaceBlendshapes: false,
