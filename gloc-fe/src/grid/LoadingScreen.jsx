@@ -19,7 +19,7 @@ const LoadingScreen = () => {
   }, []);
 
   return (
-    <div id="loading-screen" className="loading-screen" style={{ display: isVisible ? "block" : "none" }}>
+    <div id="loading-screen" className="loading-screen" >
       <div className="loading-overlay"></div>
       <div className="loading-bar-container">
         <div className="loading-bar">
@@ -42,7 +42,7 @@ export const startLoading = () => {
 
   if (!loadingScreen) return;
 
-  loadingScreen.style.display = "block"; // Show loading screen
+  // loadingScreen.style.display = "block"; // Show loading screen
   loadingScreen.style.opacity = "1"; // Reset opacity for re-use
 
   const prompts = [

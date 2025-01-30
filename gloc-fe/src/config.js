@@ -1,1 +1,1 @@
-export const SERVER_URL =  "http://localhost:4000";//"https://face-recognition-be.onrender.com"; //
+export const SERVER_URL =  "https://sandbx.levelofconfidence.net";//"https://face-recognition-be.onrender.com"; //
