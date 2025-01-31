@@ -4,7 +4,7 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'; // Use the correct nam
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/', // Use './' for relative paths or set your deployment path
+  base: './', // Use './' for relative paths or set your deployment path
   plugins: [
     react(),
     viteStaticCopy({
@@ -13,4 +13,7 @@ export default defineConfig({
       ],
     }),
   ],
+  define: {
+    _global: ({})
+}
 });
