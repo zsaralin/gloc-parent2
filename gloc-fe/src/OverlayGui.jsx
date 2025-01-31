@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './OverlayGUI.css';
+import './OverlayGui.css';
 import { SERVER_URL } from './config';
 
 // Static storage object (Accessible from other files)
