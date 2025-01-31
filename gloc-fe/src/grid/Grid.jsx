@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import TopRow from './TopRow'; // Assuming these are your components
 import BottomSection from './BottomSection';
 import './Grid.css';
-import '../OverlayGUI.css'; // Import overlay GUI styles
+import '../OverlayGui.css'; // Import overlay GUI styles
 import OverlayGUI from '../OverlayGui'; // Import overlay GUI component
 import { 
   arrangeGrid, 
