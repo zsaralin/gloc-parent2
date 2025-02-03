@@ -12,11 +12,12 @@
    position:relative; 
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100dvh;
   }
 .grid-wrapper{
   width: 100%;
   height: 100%;
+  top:0;
   overflow: hidden;
   position: relative
 }

@@ -7,14 +7,7 @@ function LandingPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLandingVisible, setIsLandingVisible] = useState(true); // Manage landing page visibility
   const isInitializedRef = useRef(false); // Track if face detection and shuffle have been initialized
-  function updateViewportHeight() {
-    document.documentElement.style.setProperty('--viewport-height', `${window.innerHeight}px`);
-  }
-  
-  // Run on load and resize
-  window.addEventListener('resize', updateViewportHeight);
-  window.addEventListener('orientationchange', updateViewportHeight);
-  updateViewportHeight(); // Set initial height
+
   const handleAccessCamera = async () => {
     setIsLoading(true);
 
