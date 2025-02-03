@@ -2,7 +2,7 @@
 @media screen and (orientation: landscape) {
     body {
       width: 100vw;
-      height: 100svh;
+      height: 100vh;
       overflow: hidden;
     }
   }
@@ -10,7 +10,7 @@
   @media screen and (orientation: portrait) {
     body {
       width: 100vw;
-      height: 100svh;
+      height: 100vh;
       overflow: hidden;
     }
   }

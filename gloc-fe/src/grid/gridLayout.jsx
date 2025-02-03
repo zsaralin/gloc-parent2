@@ -7,20 +7,20 @@ export let topRowItemWidth = 0;
 export let bottomGridItemSize = { width: 0, height: 0 }; // Combined into an object
 
 // Configuration for row height based on screen orientation
-function getViewportHeight() {
-  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--viewport-height'));
-}
+const rowHeightConfig = {
+  wideScreen: 0.4, // 40% of viewport height
+  tallScreen: 0.25, // 25% of viewport height
+};
 
 function calculateTopRowHeight() {
-  const isWideScreen = window.innerWidth > getViewportHeight();
+  const isWideScreen = window.innerWidth > window.innerHeight;
   const heightFactor = isWideScreen
     ? rowHeightConfig.wideScreen
     : rowHeightConfig.tallScreen;
-  const height = getViewportHeight() * heightFactor;
+  const height = window.innerHeight * heightFactor;
   document.documentElement.style.setProperty('--top-row-height', `${height}px`);
-  return height;
+  return height; // Return the calculated height
 }
-
 
 export function calculateBottomGridLayout(containerWidth, containerHeight) {
   const targetAreaFraction = 1 / 30; // Each item occupies 1/30th of the area
@@ -87,9 +87,10 @@ export function calculateTopRowLayout() {
 
   topRowItemWidth = adjustedItemWidth;
 }
+
 export function arrangeGrid() {
   const viewportWidth = window.innerWidth;
-  const viewportHeight = getViewportHeight(); // Use dynamic height
+  const viewportHeight = window.innerHeight;
 
   // Calculate top row height
   const topRowHeight = calculateTopRowHeight();
@@ -101,7 +102,9 @@ export function arrangeGrid() {
   const bottomContainerHeight = viewportHeight - topRowHeight;
   calculateBottomGridLayout(viewportWidth, bottomContainerHeight);
 
-  numTotalGridItems = numTopRowItems + numBottomGridRows * numBottomGridCols;
+  // Update total grid items
+  numTotalGridItems =
+    numTopRowItems + numBottomGridRows * numBottomGridCols;
 
   console.log(`Top Row Items: ${numTopRowItems}`);
   console.log(`Bottom Rows: ${numBottomGridRows}, Columns: ${numBottomGridCols}`);
