@@ -12,16 +12,19 @@ const rowHeightConfig = {
   tallScreen: 0.25, // 25% of viewport height
 };
 
+function getViewportHeight() {
+  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--viewport-height'));
+}
+
 function calculateTopRowHeight() {
-  const isWideScreen = window.innerWidth > window.innerHeight;
+  const isWideScreen = window.innerWidth > getViewportHeight();
   const heightFactor = isWideScreen
     ? rowHeightConfig.wideScreen
     : rowHeightConfig.tallScreen;
-  const height = window.innerHeight * heightFactor;
+  const height = getViewportHeight() * heightFactor;
   document.documentElement.style.setProperty('--top-row-height', `${height}px`);
-  return height; // Return the calculated height
+  return height;
 }
-
 export function calculateBottomGridLayout(containerWidth, containerHeight) {
   const targetAreaFraction = 1 / 30; // Each item occupies 1/30th of the area
   const itemAspectRatio = 9 / 12; // Aspect ratio for items
@@ -87,10 +90,9 @@ export function calculateTopRowLayout() {
 
   topRowItemWidth = adjustedItemWidth;
 }
-
 export function arrangeGrid() {
   const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
+  const viewportHeight = getViewportHeight(); // Use dynamic height
 
   // Calculate top row height
   const topRowHeight = calculateTopRowHeight();
@@ -102,9 +104,7 @@ export function arrangeGrid() {
   const bottomContainerHeight = viewportHeight - topRowHeight;
   calculateBottomGridLayout(viewportWidth, bottomContainerHeight);
 
-  // Update total grid items
-  numTotalGridItems =
-    numTopRowItems + numBottomGridRows * numBottomGridCols;
+  numTotalGridItems = numTopRowItems + numBottomGridRows * numBottomGridCols;
 
   console.log(`Top Row Items: ${numTopRowItems}`);
   console.log(`Bottom Rows: ${numBottomGridRows}, Columns: ${numBottomGridCols}`);
