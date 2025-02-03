@@ -77,7 +77,7 @@ export function calculateTopRowLayout() {
   const possibleNumItems = Math.floor(remainingWidth / itemWidthPx);
   const totalItemsWidth = possibleNumItems * itemWidthPx;
   const adjustedItemWidth = totalItemsWidth < remainingWidth 
-    ? Math.ceil(remainingWidth / possibleNumItems )
+    ? remainingWidth / possibleNumItems
     : itemWidthPx;
 
   numTopRowItems = Math.max(possibleNumItems, 0);
