@@ -36,14 +36,14 @@ a:hover {
 }
 
 body {
+  height: var(--viewport-height); /* Use dynamically updated height */
+  overflow: hidden;
   margin: 0;
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  height: var(--viewport-height);
-  overflow: hidden;
-  position: relative; /* Ensure it stays within the viewport */
-  top: 0; /* Prevent unwanted shifting */
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  top: 0;
 }
 
 h1 {
