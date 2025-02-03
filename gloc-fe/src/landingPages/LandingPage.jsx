@@ -51,7 +51,7 @@ function LandingPage() {
       <button className="language-button">ENGLISH</button>
       <div className="overlay-content">
         <header className="header">
-          <h1>Global Level of ConfASDasdASDidence</h1>
+          <h1>Global Level of Confidence</h1>
         </header>
         <main className="content">
           <p>[Placeholder for Project Info]</p>
