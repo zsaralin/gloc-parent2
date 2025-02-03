@@ -23,9 +23,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-html {
-  height: 100%;
-}
 a {
   font-weight: 500;
   color: white;

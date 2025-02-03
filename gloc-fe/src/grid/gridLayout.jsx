@@ -5,9 +5,7 @@ export let numBottomGridCols = 0;
 export let numTotalGridItems = 0;
 export let topRowItemWidth = 0;
 export let bottomGridItemSize = { width: 0, height: 0 }; // Combined into an object
-function getViewportHeight() {
-  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--viewport-height'));
-}
+
 // Configuration for row height based on screen orientation
 const rowHeightConfig = {
   wideScreen: 0.4, // 40% of viewport height
@@ -19,7 +17,7 @@ function calculateTopRowHeight() {
   const heightFactor = isWideScreen
     ? rowHeightConfig.wideScreen
     : rowHeightConfig.tallScreen;
-  const height = getViewportHeight() * heightFactor;
+  const height = window.innerHeight * heightFactor;
   document.documentElement.style.setProperty('--top-row-height', `${height}px`);
   return height; // Return the calculated height
 }
@@ -79,7 +77,7 @@ export function calculateTopRowLayout() {
   const possibleNumItems = Math.floor(remainingWidth / itemWidthPx);
   const totalItemsWidth = possibleNumItems * itemWidthPx;
   const adjustedItemWidth = totalItemsWidth < remainingWidth 
-    ? remainingWidth / possibleNumItems
+    ? Math.ceil(remainingWidth / possibleNumItems )
     : itemWidthPx;
 
   numTopRowItems = Math.max(possibleNumItems, 0);
@@ -92,7 +90,7 @@ export function calculateTopRowLayout() {
 
 export function arrangeGrid() {
   const viewportWidth = window.innerWidth;
-  const viewportHeight = getViewportHeight();
+  const viewportHeight = window.innerHeight;
 
   // Calculate top row height
   const topRowHeight = calculateTopRowHeight();
