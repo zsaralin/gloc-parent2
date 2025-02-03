@@ -4,12 +4,13 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'; // Use the correct nam
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: './', // Use './' for relative paths or set your deployment path
+  base: '/', // Use './' for relative paths or set your deployment path
   plugins: [
     react(),
     viteStaticCopy({
       targets: [
         { src: 'internal_cdn', dest: '.' }, // Copy `internal_cdn` into `dist/internal_cdn`
+        { src: 'fonts/*', dest: 'fonts' }, // Copy fonts from `src/fonts/` to `dist/fonts/`
       ],
     }),
   ],

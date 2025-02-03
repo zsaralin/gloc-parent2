@@ -67,7 +67,7 @@ class ShuffleManager {
 
         console.log('Starting shuffle...');
         await this.getRandomImages();
-
+        console.log('done loading random iages')
         if (!this.#randomImageArr || this.#randomImageArr.length === 0) {
             return;
         }

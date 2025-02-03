@@ -49,8 +49,8 @@ function VideoContainer() {
 
   return (
     <div className="video-container">
-      <video ref={videoRef} className="video" muted></video>
-      <canvas ref={canvasRef} className="video-canvas"></canvas>
+<video ref={videoRef} className="video" muted playsInline webkit-playsinline></video>
+<canvas ref={canvasRef} className="video-canvas"></canvas>
       
       <div id="face-detect-text"></div>
       <button className="play-pause-button" onClick={togglePlayPause}>

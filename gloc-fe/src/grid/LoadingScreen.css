@@ -47,9 +47,6 @@
   0% {
     width: 0%;
   }
-  8.33% { /* First 1 second (1s / 12s * 100%) */
-    width: 20%;
-  }
   16.66% { /* Pause for 1 second */
     width: 20%;
   }
