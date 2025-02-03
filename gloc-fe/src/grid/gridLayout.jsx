@@ -6,7 +6,7 @@ export let numTotalGridItems = 0;
 export let topRowItemWidth = 0;
 export let bottomGridItemSize = { width: 0, height: 0 }; // Combined into an object
 function getViewportHeight() {
-  return window.visualViewport?.height || window.innerHeight;
+  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--viewport-height'));
 }
 // Configuration for row height based on screen orientation
 const rowHeightConfig = {
@@ -92,7 +92,7 @@ export function calculateTopRowLayout() {
 
 export function arrangeGrid() {
   const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
+  const viewportHeight = getViewportHeight();
 
   // Calculate top row height
   const topRowHeight = calculateTopRowHeight();
@@ -101,7 +101,7 @@ export function arrangeGrid() {
   calculateTopRowLayout();
 
   // Calculate bottom grid layout using remaining height
-  const bottomContainerHeight = getViewportHeight() - topRowHeight;
+  const bottomContainerHeight = viewportHeight - topRowHeight;
   calculateBottomGridLayout(viewportWidth, bottomContainerHeight);
 
   // Update total grid items
