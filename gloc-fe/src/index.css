@@ -36,20 +36,24 @@ a:hover {
 }
 
 body {
-  height: var(--viewport-height); /* Use dynamically updated height */
-  overflow: hidden;
   margin: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  top: 0;
+  place-items: center;
+  min-width: 320px;
+  height: var(--viewport-height);
+  overflow: hidden;
+  position: relative; /* Ensure it stays within the viewport */
+  top: 0; /* Prevent unwanted shifting */
 }
 
 h1 {
   font-size: 2em;
   line-height: 1.1;
   margin-top : 50px;
+}
+
+li, p {
+  font-size : .9em
 }
 
 button {
