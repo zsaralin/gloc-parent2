@@ -2,7 +2,7 @@
 import { SERVER_URL } from '../config.js';
 import { loadImages } from './ImageLoader.jsx';
 import { fillGridItems } from './updateGrid.jsx';
-
+import { numTotalGridItems } from '../grid/gridLayout.jsx';
 class ShuffleManager {
     #randomImageArr = null; // Private property
     #isFetching = false;
@@ -27,6 +27,7 @@ class ShuffleManager {
                     const response = await fetch(`${SERVER_URL}/random`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ numTotalGridItems }) // Send numTotalGridItems in the body
                     });
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
