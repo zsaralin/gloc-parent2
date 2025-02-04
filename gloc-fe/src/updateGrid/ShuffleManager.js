@@ -22,6 +22,8 @@ class ShuffleManager {
             if (!this.#isFetching) {
                 this.#isFetching = true;
                 try {
+                    const startTime = performance.now(); // Record start time
+
                     const response = await fetch(`${SERVER_URL}/random`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -30,7 +32,10 @@ class ShuffleManager {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     this.#randomImageArr = await response.json();
-                    this.shuffleArray(this.#randomImageArr);
+                
+                    const elapsedTime = performance.now() - startTime; // Calculate elapsed time
+                    console.log(`Await took ${elapsedTime.toFixed(2)} ms`);
+                    
                     this.#randomImageArr = await loadImages(this.#randomImageArr);
                 } catch (error) {
                     console.error('Error fetching random images:', error);
