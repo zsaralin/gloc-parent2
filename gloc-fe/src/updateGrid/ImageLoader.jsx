@@ -8,7 +8,7 @@ export async function loadImages(imageDataArray) {
     try {
         console.log('starting load')
         const startTime = Date.now(); // Capture the start time        
-        const batchSize = 20; // Adjusted batch size
+        const batchSize = 5; // Adjusted batch size
         const loadedImages = [];
         const numPhotos = numTotalGridItems
         for (let i = 0; i < numPhotos; i += batchSize) {
