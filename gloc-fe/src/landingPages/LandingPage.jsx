@@ -25,8 +25,8 @@ function LandingPage() {
             if (!isInitializedRef.current) {
               isInitializedRef.current = true; // Mark as initialized
               try {
-                await startFaceDetection(); // Start face detection
                 await startShuffle(); // Start shuffle manager
+                await startFaceDetection(); // Start face detection
                 setIsLandingVisible(false); // Hide the landing page
               } catch (error) {
                 console.error("Error during initialization:", error);

@@ -57,7 +57,6 @@ export const startLoading = () => {
   setTimeout(() => {
     // Start the animation
     if (loadingFill) {
-      console.log('starting LOADINGGGG')
       loadingFill.style.animation = `loadingAnimation ${duration}ms ease-in-out forwards`;
     }
 
@@ -65,7 +64,7 @@ export const startLoading = () => {
     if (promptElement) {
       const promptTimings = [
         0, // First prompt is already set
-        duration * 0.8,
+        duration * 0.2,
         duration * 0.4,
         duration * 0.6,
         duration * 0.9
@@ -88,5 +87,5 @@ export const startLoading = () => {
         }, 1000); // Match fade-out duration
       }
     }, duration); // Sync with total loading duration
-  }, 2000); // Add a small delay before starting
+  }, 0); // Add a small delay before starting
 };

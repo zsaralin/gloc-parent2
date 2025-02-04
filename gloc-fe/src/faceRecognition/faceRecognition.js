@@ -49,9 +49,9 @@ async function performRecognitionTask() {
 
         // If first update, show loading, stop shuffle
         if (isFirstUpdate) {
-            startLoading();
             const images = await loadImages(matches, abortController.signal);
             if (abortController.signal.aborted) return;
+            startLoading();
 
             // Use the dynamically updated loading duration
             await new Promise(resolve => setTimeout(resolve, overlaySettings.loadingDuration * 1000));
