@@ -66,38 +66,48 @@ class ShuffleManager {
         }
     }
 
-    async startShuffle() {
+    startShuffle() {
+        // 1. Avoid multiple concurrent shuffles
         if (this.#isShuffling) {
             return;
         }
-
-        console.log('Starting shuffle...');
-        await this.getRandomImages();
-        console.log('done loading random iages')
-        if (!this.#randomImageArr || this.#randomImageArr.length === 0) {
-            return;
-        }
-
-        this.#isShuffling = true;
-
-        const shuffleLoop = () => {
-            if (!this.#isShuffling) {
-                return;
-            }
-
+    
+        // 2. Define a function that checks if the images are ready
+        const waitForImagesAndShuffle = () => {
+            // If images aren't ready yet, wait a bit and check again
             if (!this.#randomImageArr || this.#randomImageArr.length === 0) {
-                this.stopShuffle();
+                console.log('No random images yet; waiting...');
+                setTimeout(waitForImagesAndShuffle, 100); // check again after 100ms
                 return;
             }
-
-            this.shuffleArray(this.#randomImageArr);
-            fillGridItems(this.#randomImageArr, false, false, true);
-
-            // Schedule the next shuffle
-            this.#shuffleTimeout = setTimeout(shuffleLoop, 100); // 1-second interval
+    
+            // Once random images are ready, actually start shuffling
+            this.#isShuffling = true;
+            console.log('Starting shuffle...');
+    
+            const shuffleLoop = () => {
+                if (!this.#isShuffling) {
+                    return;
+                }
+    
+                // If for some reason the array disappears or is empty, stop
+                if (!this.#randomImageArr || this.#randomImageArr.length === 0) {
+                    this.stopShuffle();
+                    return;
+                }
+    
+                this.shuffleArray(this.#randomImageArr);
+                fillGridItems(this.#randomImageArr, false, false, true);
+    
+                // Schedule the next shuffle
+                this.#shuffleTimeout = setTimeout(shuffleLoop, 100); // shuffle every second
+            };
+    
+            shuffleLoop();
         };
-
-        shuffleLoop();
+    
+        // 3. Start the check
+        waitForImagesAndShuffle();
     }
 
     stopShuffle() {

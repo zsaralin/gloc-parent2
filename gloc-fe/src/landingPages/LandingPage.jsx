@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import "./LandingPage.css";
 import { videoRef, canvasRef } from "../grid/videoRef";
 import { startFaceDetection } from "../faceDetection/faceDetection";
-import { startShuffle } from "../updateGrid/shuffleManagerService";
+import { startShuffle, fetchRandomImages } from "../updateGrid/shuffleManagerService";
 function LandingPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLandingVisible, setIsLandingVisible] = useState(true); // Manage landing page visibility
   const isInitializedRef = useRef(false); // Track if face detection and shuffle have been initialized
-  startShuffle(); // Start shuffle manager
+  fetchRandomImages(); // Start shuffle manager
 
   const handleAccessCamera = async () => {
     setIsLoading(true);
@@ -26,6 +26,7 @@ function LandingPage() {
             if (!isInitializedRef.current) {
               isInitializedRef.current = true; // Mark as initialized
               try {
+                await startShuffle()
                 await startFaceDetection(); // Start face detection
                 setIsLandingVisible(false); // Hide the landing page
               } catch (error) {
