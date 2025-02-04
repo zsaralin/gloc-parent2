@@ -11,7 +11,7 @@
   font-family: "Cascadia Mono", system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  --viewport-height: 100svh; /* Use dynamic viewport height to prevent Safari issues */
+  --viewport-height: 100%; /* Use dynamic viewport height to prevent Safari issues */
   color-scheme: light dark;
   color: rgba(255, 255, 255, 1);
   background-color: #242424;
@@ -39,7 +39,7 @@ body {
   min-width: 320px;
   height: var(--viewport-height);
   overflow: hidden;
-  position: relative; /* Ensure it stays within the viewport */
+  position: absolute; /* Ensure it stays within the viewport */
   top: 0; /* Prevent unwanted shifting */
 }
 html {
