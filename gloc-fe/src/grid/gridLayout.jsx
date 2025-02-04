@@ -86,7 +86,7 @@ export function calculateTopRowLayout() {
 
   numTopRowItems = Math.max(possibleNumItems, 0);
 
-  document.documentElement.style.setProperty('--video-height', `${rowHeightVh}vh`);
+  document.documentElement.style.setProperty('--video-height', `${rowHeightVh}dvh`);
   document.documentElement.style.setProperty('--video-aspect-ratio', `${videoAspectRatio}`);
 
   topRowItemWidth = adjustedItemWidth;
