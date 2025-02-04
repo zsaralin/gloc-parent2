@@ -8,31 +8,6 @@ function LandingPage() {
   const [isLandingVisible, setIsLandingVisible] = useState(true); // Manage landing page visibility
   const isInitializedRef = useRef(false); // Track if face detection and shuffle have been initialized
 
-  // Function to update grid dimensions dynamically
-  const updateGridSize = () => {
-    const preferredCellSize = 20; // Preferred base size (adjustable)
-    const width = window.innerWidth;
-    const height = window.visualViewport?.height || window.innerHeight;
-
-    // Calculate exact column and row sizes
-    const cols = Math.floor(width / preferredCellSize);
-    const rows = Math.floor(height / preferredCellSize);
-
-    // Compute exact cell width and height to ensure a perfect fit
-    const cellWidth = width / cols;
-    const cellHeight = height / rows;
-
-    // Apply computed values as CSS variables
-    document.documentElement.style.setProperty("--grid-cell-width", `${cellWidth}px`);
-    document.documentElement.style.setProperty("--grid-cell-height", `${cellHeight}px`);
-  };
-
-  useEffect(() => {
-    updateGridSize();
-    window.addEventListener("resize", updateGridSize);
-    return () => window.removeEventListener("resize", updateGridSize);
-  }, []);
-
   const handleAccessCamera = async () => {
     setIsLoading(true);
 
@@ -76,7 +51,7 @@ function LandingPage() {
       <button className="language-button">ENGLISH</button>
       <div className="overlay-content">
         <header className="header">
-          <h1>Global Level of Caaaaonfidence</h1>
+          <h1>Global Level of Confidence</h1>
         </header>
         <main className="content">
           <p>[Placeholder for Project Info]</p>
