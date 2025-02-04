@@ -12,7 +12,7 @@ function LandingPage() {
   const updateGridSize = () => {
     const preferredCellSize = 20; // Preferred base size (adjustable)
     const width = window.innerWidth;
-    const height = window.innerHeight;
+    const height = window.visualViewport?.height || window.innerHeight;
 
     // Calculate exact column and row sizes
     const cols = Math.floor(width / preferredCellSize);
