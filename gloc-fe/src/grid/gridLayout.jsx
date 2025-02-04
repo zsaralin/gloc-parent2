@@ -59,7 +59,7 @@ export function calculateTopRowLayout() {
   }
 
   const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
+  const viewportHeight = getViewportHeight()
 
   const itemAspectRatio = 9 / 16; // Aspect ratio for items
 
