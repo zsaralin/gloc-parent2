@@ -45,7 +45,7 @@
 /* Loading fill animation */
 @keyframes loadingAnimation {
   0% {
-    width: 0%;
+    width: 10%;
   }
   16.66% { /* Pause for 1 second */
     width: 20%;

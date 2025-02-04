@@ -3,7 +3,7 @@ import { overlaySettings } from '../OverlayGui';
 import { stopShuffle } from "../updateGrid/shuffleManagerService.js";
 import { loadImages } from "../updateGrid/ImageLoader.jsx";
 import { fillGridItems } from "../updateGrid/updateGrid.jsx";
-import { startLoading } from '../grid/LoadingScreen.jsx';
+import { preloadLoading, startLoading } from '../grid/LoadingScreen.jsx';
 
 let isFirstUpdate = true;
 let isProcessing = false;
@@ -49,9 +49,18 @@ async function performRecognitionTask() {
 
         // If first update, show loading, stop shuffle
         if (isFirstUpdate) {
+            preloadLoading();
+            const startTime = performance.now(); // Record start time
+
             const images = await loadImages(matches, abortController.signal);
             if (abortController.signal.aborted) return;
-            startLoading();
+
+            const elapsedTime = performance.now() - startTime;
+            const remainingTime = Math.max(1000 - elapsedTime, 0); // Ensure at least 1s delay
+
+            setTimeout(() => {
+                startLoading();
+            }, remainingTime);
 
             // Use the dynamically updated loading duration
             await new Promise(resolve => setTimeout(resolve, overlaySettings.loadingDuration * 1000));

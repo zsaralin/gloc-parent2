@@ -19,7 +19,7 @@ const LoadingScreen = () => {
   }, []);
 
   return (
-    <div id="loading-screen" className="loading-screen" >
+    <div id="loading-screen" className="loading-screen">
       <div className="loading-overlay"></div>
       <div className="loading-bar-container">
         <div className="loading-bar">
@@ -33,8 +33,16 @@ const LoadingScreen = () => {
 
 export default LoadingScreen;
 
+export const preloadLoading = () => {
+  const loadingFill = document.getElementById("loading-fill");
+  if (loadingFill) {
+    loadingFill.style.transition = "width 1s linear";
+    loadingFill.style.width = "10%"; // Set initial width to 10% with transition
+  }
+};
+
 export const startLoading = () => {
-  const duration = overlaySettings.loadingDuration * 1000; // Get the latest loading duration
+  const duration = overlaySettings.loadingDuration * 1000;
 
   const loadingFill = document.getElementById("loading-fill");
   const loadingScreen = document.getElementById("loading-screen");
@@ -42,8 +50,7 @@ export const startLoading = () => {
 
   if (!loadingScreen) return;
 
-  // loadingScreen.style.display = "block"; // Show loading screen
-  loadingScreen.style.opacity = "1"; // Reset opacity for re-use
+  loadingScreen.style.opacity = "1";
 
   const prompts = [
     "Extracting facial landmarks...",
@@ -53,21 +60,14 @@ export const startLoading = () => {
     "Retrieving top matches"
   ];
 
-  // Add a slight delay before starting
   setTimeout(() => {
-    // Start the animation
     if (loadingFill) {
       loadingFill.style.animation = `loadingAnimation ${duration}ms ease-in-out forwards`;
     }
 
-    // Update prompts at specific times
     if (promptElement) {
       const promptTimings = [
-        0, // First prompt is already set
-        duration * 0.2,
-        duration * 0.4,
-        duration * 0.6,
-        duration * 0.9
+        0, duration * 0.2, duration * 0.4, duration * 0.6, duration * 0.9
       ];
 
       for (let i = 1; i < prompts.length; i++) {
@@ -77,15 +77,14 @@ export const startLoading = () => {
       }
     }
 
-    // Fade out the loading screen after loading finishes
     setTimeout(() => {
       if (loadingScreen) {
         loadingScreen.style.transition = "opacity 1s ease";
-        loadingScreen.style.opacity = "0"; // Fade out
+        loadingScreen.style.opacity = "0";
         setTimeout(() => {
-          loadingScreen.style.display = "none"; // Hide after fade-out
-        }, 1000); // Match fade-out duration
+          loadingScreen.style.display = "none";
+        }, 1200);
       }
-    }, duration); // Sync with total loading duration
-  }, 0); // Add a small delay before starting
+    }, duration);
+  }, 0);
 };
