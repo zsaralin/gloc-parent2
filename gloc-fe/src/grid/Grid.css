@@ -17,7 +17,7 @@
   }
 .grid-wrapper{
   width: 100%;
-  height: var(--viewport-height); /* Dynamically updated */
+  height: 100%; /* Dynamically updated */
 
   /* height: 100svh; */
   top:0;

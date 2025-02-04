@@ -10,7 +10,7 @@ function LandingPage() {
 
   // Function to update grid dimensions dynamically
   const updateGridSize = () => {
-    const preferredCellSize = 40; // Preferred base size (adjustable)
+    const preferredCellSize = 20; // Preferred base size (adjustable)
     const width = window.innerWidth;
     const height = window.innerHeight;
 
