@@ -7,6 +7,7 @@ function LandingPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLandingVisible, setIsLandingVisible] = useState(true); // Manage landing page visibility
   const isInitializedRef = useRef(false); // Track if face detection and shuffle have been initialized
+  startShuffle(); // Start shuffle manager
 
   const handleAccessCamera = async () => {
     setIsLoading(true);
@@ -25,7 +26,6 @@ function LandingPage() {
             if (!isInitializedRef.current) {
               isInitializedRef.current = true; // Mark as initialized
               try {
-                await startShuffle(); // Start shuffle manager
                 await startFaceDetection(); // Start face detection
                 setIsLandingVisible(false); // Hide the landing page
               } catch (error) {

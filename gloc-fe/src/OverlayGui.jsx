@@ -5,7 +5,7 @@ import { SERVER_URL } from './config';
 // Static storage object (Accessible from other files)
 export const overlaySettings = {
   refreshTime: 15,
-  loadingDuration: 8,
+  loadingDuration: 6,
   zoom: 1,
   xOffset: 0,
   yOffset: 0,
