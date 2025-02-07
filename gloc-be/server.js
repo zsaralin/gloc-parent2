@@ -47,7 +47,7 @@ app.post('/match', async (req, res) => {
             return;
         }
 
-        const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos, uuid);
+        const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos+2, uuid);
         if (!nearestDescriptors) {
             res.json(null);
             return;
@@ -66,13 +66,20 @@ app.post('/random', async (req, res) => {
     try {
         const dbName = getDbName();
         const imagesFolder = path.join(localFolderPath, dbName);
-        const randomImages = await readRandomImagesFromFolder(imagesFolder, dbName);
+        
+        const { numTotalGridItems } = req.body + 10; // Extract from request body
+        const limit = numTotalGridItems || 40; // Default to 30 if not provided
+
+        console.log(`Received numTotalGridItems: ${numTotalGridItems}`);
+
+        const randomImages = await readRandomImagesFromFolder(imagesFolder, dbName, limit);
         res.json(randomImages);
     } catch (error) {
         console.error('Error processing detection:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 app.post('/set-db-name', async (req, res) => {
     const { newName } = req.body;

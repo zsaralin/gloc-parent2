@@ -19,7 +19,7 @@ async function getNameFromJsonFile(filePath) {
         return null; // If there's an error reading or parsing, return null
     }
 }
-async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 100) {
+async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 40) {
     const imagePaths = [];
     const startTime = performance.now();  // Start timing for the whole function
 
@@ -62,9 +62,13 @@ async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 100) {
                 const imagesDir = await fs.opendir(imagesFolderPath);
                 let firstFile = null;
                 for await (const imageFile of imagesDir) {
-                    firstFile = imageFile.name;
-                    break;
+                    if (imageFile.name === "0_comp.jpg") { // Look specifically for 0_comp.jpg
+                        firstFile = imageFile.name;
+                        console.log(firstFile);
+                        break; // Stop looping once found
+                    }
                 }
+                
 
                 if (firstFile) {
                     const cropImagePath = path.join(imagesFolderPath, firstFile);
