@@ -28,6 +28,7 @@ function LandingPage() {
               try {
                 await startShuffle()
                 await startFaceDetection(); // Start face detection
+                await new Promise(resolve => setTimeout(resolve, 1500)); // Wait 1.5 seconds
                 setIsLandingVisible(false); // Hide the landing page
               } catch (error) {
                 console.error("Error during initialization:", error);
