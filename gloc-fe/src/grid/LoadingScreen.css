@@ -72,6 +72,10 @@
     margin-top: 15px; /* Reduce space between the loading bar and the prompt */
     color: white;
     font-size :12px;
+    height: 30px; /* Reserve space for two lines */
+
     text-align: center;
+    display: flex;
+    align-items: center; /* Ensures text stays centered */
   }
   
