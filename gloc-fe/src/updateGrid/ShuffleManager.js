@@ -96,9 +96,8 @@ class ShuffleManager {
             }
     
             // **Ensure setTimeout doesn’t trigger if stopShuffle() is called**
-            if (this.#isShuffling) {
-                this.#shuffleTimeout = setTimeout(shuffleLoop, 150);
-            }
+            this.#shuffleTimeout = setTimeout(shuffleLoop, 150);
+            
         };
 
         shuffleLoop(); // Start the loop
