@@ -3,6 +3,7 @@ import { stopShuffle } from "./shuffleManagerService";
 const CROSSFADE_DURATION = 2; // In seconds
 const TEXT_FADE_DURATION = CROSSFADE_DURATION/2; // In seconds
 const TEXT_FADE_DELAY = CROSSFADE_DURATION * 1000; // Convert seconds to milliseconds
+
 export async function fillGridItems(images, useCrossFade = false, stagger = false, shuffle = false) {
     // Ensure images are available
     if (!images || images.length === 0) {
@@ -20,116 +21,107 @@ export async function fillGridItems(images, useCrossFade = false, stagger = fals
     }
 
     const numArrangedImages = allGridItems.length;
-    const scaleFactor = 0.05;
-
-    const updateGridItem = async (item, imageElement, index, useCrossFade) => {
+    const scaleFactor = .05; // Define your base scale factor
+    const updateGridItem = (item, imageElement, index, useCrossFade) => {
         const currImg = item.querySelector('.curr-img');
         const prevImg = item.querySelector('.prev-img');
-        const topText = item.querySelector('.top-text');
-        const bottomText = item.querySelector('.bottom-text');
-        const vertFill = item.querySelector('.vert-bar-fill');
+        const topText = item.querySelector('.top-text'); // Text for distance
+        const bottomText = item.querySelector('.bottom-text'); // Text for label
+        const vertFill = item.querySelector('.vert-bar-fill'); // Text for label
 
         if (!currImg || !prevImg || !topText || !bottomText) return;
-
-        // Prevent instant updates if the same image is already set
+    
+        // Only update if the new label is different
         const prevLabel = currImg.getAttribute('data-label');
         if (prevLabel === imageElement.label) return;
-
-        let scaledSimilarity = '';
-        item.setAttribute('data-info', JSON.stringify(imageElement));
-
+    
+        let scaledSimilarity = ''; // Declare in broader scope
+        item.setAttribute('data-info', JSON.stringify(imageElement)); // Store object as JSON string
+        
         if (!shuffle) {
+            // Calculate normalized distance
             let dynamicScaleFactor = scaleFactor * (1 - index / (numArrangedImages * 2));
             scaledSimilarity = (imageElement.distance * dynamicScaleFactor).toFixed(2);
         }
 
         if (useCrossFade) {
             currImg.setAttribute('data-label', imageElement.label);
-
-            // Move current image to `prevImg` before fading
-            prevImg.style.backgroundImage = currImg.style.backgroundImage;
-            prevImg.style.opacity = 1;
-            currImg.style.opacity = 0;
+            prevImg.style.backgroundImage = `url('${imageElement.src}')`;
+            currImg.style.transition = `opacity ${CROSSFADE_DURATION}s ease-in-out`;
+            topText.style.transition = `opacity ${TEXT_FADE_DURATION}s ease-in-out`; // Add transition for top text
+            bottomText.style.transition = `opacity ${TEXT_FADE_DURATION}s ease-in-out`; // Add transition for bottom text
 
             // Fade out text
-            topText.style.transition = `opacity ${TEXT_FADE_DURATION}s ease-in-out`;
-            bottomText.style.transition = `opacity ${TEXT_FADE_DURATION}s ease-in-out`;
             topText.style.opacity = 0;
             bottomText.style.opacity = 0;
-
-            // Short delay before setting the new image
-            await new Promise(resolve => setTimeout(resolve, 50));
-
-            // Set new image
-            currImg.style.backgroundImage = `url('${imageElement.src}')`;
-
-            // Fade in the new image
-            currImg.style.transition = `opacity ${CROSSFADE_DURATION}s ease-in-out`;
-            currImg.style.opacity = 1;
-
-            // Wait for the fade-in effect to complete
-            await new Promise(resolve => setTimeout(resolve, CROSSFADE_DURATION * 1000));
-
-            // Update and fade in text after image fade completes
-            if (!shuffle) {
-                updateTextContent(topText, bottomText, imageElement, index, scaledSimilarity);
-            }
-
-            await new Promise(resolve => setTimeout(resolve, 100));
-            topText.style.opacity = 1;
-            bottomText.style.opacity = 1;
-
-            // Ensure prevImg fades out after completion
-            prevImg.style.opacity = 0;
+            currImg.style.opacity = 0;
+    
+            setTimeout(() => {
+                currImg.style.backgroundImage = `url('${imageElement.src}')`;
+                currImg.style.transition = 'opacity 0s linear';
+                currImg.style.opacity = 1;
+    
+                // Update text content
+                if (!shuffle) {
+                    updateTextContent(topText, bottomText, imageElement, index, scaledSimilarity);
+                }
+    
+                // Fade text back in
+                setTimeout(() => {
+                    topText.style.opacity = 1;
+                    bottomText.style.opacity = 1;
+                }, TEXT_FADE_DELAY / 10); // Delay slightly to sync with the image fade
+            }, TEXT_FADE_DELAY); // Delay matches the crossfade duration
         } else {
             prevImg.style.backgroundImage = currImg.style.backgroundImage;
             currImg.style.backgroundImage = `url('${imageElement.src}')`;
-
+    
+            // Update text immediately for non-crossfade if shuffle is not active
             if (!shuffle) {
                 updateTextContent(topText, bottomText, imageElement, index, scaledSimilarity);
             }
-
-            // Fade in text immediately if no crossfade
-            topText.style.opacity = 1;
-            bottomText.style.opacity = 1;
         }
+        vertFill.style.height = scaledSimilarity*10 + '%'; // Add transition for bottom text
 
-        vertFill.style.height = scaledSimilarity * 10 + '%';
     };
-
+    
     if (stagger) {     
         // Shuffle items for randomness
         const shuffledItems = allGridItems
             .map((item, index) => ({ item, image: images[index], originalIndex: index }))
-            .filter(({ image }) => !!image)
-            .sort(() => Math.random() - 0.5);
+            .filter(({ image }) => !!image) // Ensure there are corresponding images
+            .sort(() => Math.random() - 0.5); // Shuffle the items
 
-        // **Async function to process staggered batches**
-        async function processBatch(startIndex) {
-            if (startIndex >= shuffledItems.length) return;
-
-            const batch = shuffledItems.slice(startIndex, startIndex + 5);
-            await Promise.all(batch.map(({ item, image, originalIndex }) => updateGridItem(item, image, originalIndex, true)));
-
-            return new Promise(resolve => {
-                requestAnimationFrame(() => setTimeout(() => {
-                    processBatch(startIndex + 5).then(resolve);
-                }, 200));
+        // Process items with staggered updates using requestAnimationFrame
+        const processBatch = (startIndex) => {
+            if (startIndex >= shuffledItems.length) return; // Stop if all items are processed
+            const batch = shuffledItems.slice(startIndex, startIndex + 5); // Process in batches of 3
+            batch.forEach(({ item, image, originalIndex }) => {
+                updateGridItem(item, image, originalIndex, true);
             });
-        }
 
-        return processBatch(0);
+            // Use requestAnimationFrame for staggered timing
+            requestAnimationFrame(() => {
+                setTimeout(() => processBatch(startIndex + 5), 200); // Delay next batch by 200ms
+            });
+
+
+        };
+    
+        // Start processing the first batch
+        processBatch(0);
+
     } else {
-        await Promise.all(
-            allGridItems.map(async (item, index) => {
-                if (index < images.length) {
-                    await updateGridItem(item, images[index], index, useCrossFade);
-                }
-            })
-        );
+        
+        // Update all grid items in a single loop
+        allGridItems.forEach((item, index) => {
+            if (index < images.length) {
+                const imageElement = images[index];
+                updateGridItem(item, imageElement, index, useCrossFade);
+            }
+        });
     }
 }
-
 function updateTextContent(topText, bottomText, imageElement, index, scaledSimilarity) {
     if (index === 0) {
         topText.textContent = `Level of Confidence: ${scaledSimilarity}%`;
