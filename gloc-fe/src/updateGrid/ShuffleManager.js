@@ -90,8 +90,8 @@ class ShuffleManager {
                 return;
             }
 
-            await this.shuffleArray(this.#randomImageArr);
-            fillGridItems(this.#randomImageArr, false, false, true);
+            this.shuffleArray(this.#randomImageArr);
+            await fillGridItems(this.#randomImageArr, false, false, true);
 
             this.#shuffleTimeout = setTimeout(shuffleLoop, 300); // shuffle every 300ms
         };

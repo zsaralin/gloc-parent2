@@ -22,68 +22,85 @@ export async function fillGridItems(images, useCrossFade = false, stagger = fals
 
     const numArrangedImages = allGridItems.length;
     const scaleFactor = .05; // Define your base scale factor
-    const updateGridItem = (item, imageElement, index, useCrossFade) => {
+    const updateGridItem = async (item, imageElement, index, useCrossFade) => {
         const currImg = item.querySelector('.curr-img');
         const prevImg = item.querySelector('.prev-img');
-        const topText = item.querySelector('.top-text'); // Text for distance
-        const bottomText = item.querySelector('.bottom-text'); // Text for label
-        const vertFill = item.querySelector('.vert-bar-fill'); // Text for label
-
+        const topText = item.querySelector('.top-text');
+        const bottomText = item.querySelector('.bottom-text');
+        const vertFill = item.querySelector('.vert-bar-fill');
+    
         if (!currImg || !prevImg || !topText || !bottomText) return;
     
-        // Only update if the new label is different
+        // Prevent instant updates if the same image is already set
         const prevLabel = currImg.getAttribute('data-label');
         if (prevLabel === imageElement.label) return;
     
-        let scaledSimilarity = ''; // Declare in broader scope
-        item.setAttribute('data-info', JSON.stringify(imageElement)); // Store object as JSON string
-        
+        let scaledSimilarity = '';
+        item.setAttribute('data-info', JSON.stringify(imageElement));
+    
         if (!shuffle) {
-            // Calculate normalized distance
             let dynamicScaleFactor = scaleFactor * (1 - index / (numArrangedImages * 2));
             scaledSimilarity = (imageElement.distance * dynamicScaleFactor).toFixed(2);
         }
-
+    
         if (useCrossFade) {
             currImg.setAttribute('data-label', imageElement.label);
-            prevImg.style.backgroundImage = `url('${imageElement.src}')`;
-            currImg.style.transition = `opacity ${CROSSFADE_DURATION}s ease-in-out`;
-            topText.style.transition = `opacity ${TEXT_FADE_DURATION}s ease-in-out`; // Add transition for top text
-            bottomText.style.transition = `opacity ${TEXT_FADE_DURATION}s ease-in-out`; // Add transition for bottom text
-
-            // Fade out text
-            topText.style.opacity = 0;
-            bottomText.style.opacity = 0;
+    
+            // **Step 1: Move current image to `prevImg` before applying fade**
+            prevImg.style.backgroundImage = currImg.style.backgroundImage;
+            prevImg.style.opacity = 1;
             currImg.style.opacity = 0;
     
+            // **Step 2: Fade out text smoothly**
+            topText.style.transition = `opacity ${TEXT_FADE_DURATION}s ease-in-out`;
+            bottomText.style.transition = `opacity ${TEXT_FADE_DURATION}s ease-in-out`;
+            topText.style.opacity = 0;
+            bottomText.style.opacity = 0;
+    
+            // **Step 3: Wait a small delay before setting the new image**
+            await new Promise(resolve => setTimeout(resolve, 50));
+    
+            // **Step 4: Update the new image on `currImg`**
+            currImg.style.backgroundImage = `url('${imageElement.src}')`;
+    
+            // **Step 5: Fade in the new image**
+            currImg.style.transition = `opacity ${CROSSFADE_DURATION}s ease-in-out`;
+            currImg.style.opacity = 1;
+    
+            // **Step 6: Wait for the image fade-in to complete**
+            await new Promise(resolve => setTimeout(resolve, CROSSFADE_DURATION * 1000));
+    
+            // **Step 7: Now update and fade in the text**
+            if (!shuffle) {
+                updateTextContent(topText, bottomText, imageElement, index, scaledSimilarity);
+            }
+    
+            // **Ensure text fades in after the image fade**
             setTimeout(() => {
-                currImg.style.backgroundImage = `url('${imageElement.src}')`;
-                currImg.style.transition = 'opacity 0s linear';
-                currImg.style.opacity = 1;
+                topText.style.opacity = 1;
+                bottomText.style.opacity = 1;
+            }, 100); // Small delay to ensure smooth transition
     
-                // Update text content
-                if (!shuffle) {
-                    updateTextContent(topText, bottomText, imageElement, index, scaledSimilarity);
-                }
+            // **Step 8: Ensure prevImg fades out after completion**
+            prevImg.style.opacity = 0;
     
-                // Fade text back in
-                setTimeout(() => {
-                    topText.style.opacity = 1;
-                    bottomText.style.opacity = 1;
-                }, TEXT_FADE_DELAY / 10); // Delay slightly to sync with the image fade
-            }, TEXT_FADE_DELAY); // Delay matches the crossfade duration
         } else {
             prevImg.style.backgroundImage = currImg.style.backgroundImage;
             currImg.style.backgroundImage = `url('${imageElement.src}')`;
     
-            // Update text immediately for non-crossfade if shuffle is not active
             if (!shuffle) {
                 updateTextContent(topText, bottomText, imageElement, index, scaledSimilarity);
             }
+    
+            // Fade in text immediately if no crossfade
+            topText.style.opacity = 1;
+            bottomText.style.opacity = 1;
         }
-        vertFill.style.height = scaledSimilarity*10 + '%'; // Add transition for bottom text
-
+    
+        vertFill.style.height = scaledSimilarity * 10 + '%';
     };
+    
+    
     
     if (stagger) {     
         // Shuffle items for randomness
