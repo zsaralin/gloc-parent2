@@ -6,7 +6,7 @@ const MODEL_URI = './models';
 
 const { Canvas, Image, ImageData } = canvas;
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
-const { getDbName } = require('../db.js');
+const { getDbName } = require('./db.js');
 const dbName = getDbName();
 
 // Assuming you have set GOOGLE_APPLICATION_CREDENTIALS environment variable
@@ -14,7 +14,7 @@ const dbName = getDbName();
 const util = require("util"); // Import your config file after loading env variables
 
 const targetDB = 'arg'
-const resultsFilePath = process.env.RESULTS_PATH || path.join(__dirname, `../descriptors/descriptors_${targetDB}.json`);
+const resultsFilePath = process.env.RESULTS_PATH || path.join(__dirname, `descriptors/descriptors_${targetDB}.json`);
 const mtcnnParams = {
     // These are example parameters, adjust them according to your needs
     minFaceSize: 20,
@@ -31,27 +31,34 @@ async function generateDescriptors() {
         await faceapi.nets.faceLandmark68Net.loadFromDisk(MODEL_URI);
         await faceapi.nets.faceRecognitionNet.loadFromDisk(MODEL_URI);
 
-        const targetDirectory = '../../db/' + targetDB; // Adjust the directory path as needed
+        const targetDirectory = '../db/' + targetDB; // Adjust the directory path as needed
         const files = await getAllImageFiles(targetDirectory);
 
         const results = {};
 
         for (const filePath of files) {
+            if (filePath.endsWith('0_comp.jpg')) {
+                console.log(`Skipping ${filePath} (excluded file)`);
+                continue; // Skip to the next file
+            }
             console.log(`Processing ${filePath}`);
             try {
+                console.log('loading image')
                 const img = await canvas.loadImage(filePath);
+                console.log('detect with ssd')
 
                 // First attempt to detect faces using SSD MobileNet V1
                 let allDetections = await faceapi.detectAllFaces(img, new faceapi.SsdMobilenetv1Options({ minConfidence:.5 }))
                     .withFaceLandmarks()
                     .withFaceDescriptors();
+                console.log('detect with mtcnn')
 
                 // If no faces detected with SSD MobileNet V1, fall back to MTCNN
-                if (allDetections.length === 0) {
-                    allDetections = await faceapi.detectAllFaces(img, new faceapi.MtcnnOptions(mtcnnParams))
-                        .withFaceLandmarks()
-                        .withFaceDescriptors();
-                }
+                // if (allDetections.length === 0) {
+                //     allDetections = await faceapi.detectAllFaces(img, new faceapi.MtcnnOptions(mtcnnParams))
+                //         .withFaceLandmarks()
+                //         .withFaceDescriptors();
+                // }
 
                 if (allDetections.length > 0) {
                     const detections = allDetections[0];
@@ -89,7 +96,7 @@ async function getAllImageFiles(directory) {
         if (stats.isDirectory()) {
             const subDirectoryImageFiles = await getAllImageFiles(filePath);
             imageFiles.push(...subDirectoryImageFiles);
-        } else if (stats.isFile() && file.endsWith('.png')) {
+        } else if (stats.isFile() && file.endsWith('.jpg')) {
             imageFiles.push(filePath);
         }
     }
@@ -99,3 +106,4 @@ async function getAllImageFiles(directory) {
 module.exports = {
     generateDescriptors,
 };
+generateDescriptors()
