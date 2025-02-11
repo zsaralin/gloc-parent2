@@ -6,7 +6,7 @@ export let numTotalGridItems = 0;
 export let topRowItemWidth = 0;
 export let bottomGridItemSize = { width: 0, height: 0 }; // Combined into an object
 function getViewportHeight() {
-  const height = window.visualViewport?.height || window.innerHeight;
+  const height = window.innerHeight;
   console.log(`Viewport Height: ${height}px`);
   return height; // Now always returns an accurate height in pixels
 }
