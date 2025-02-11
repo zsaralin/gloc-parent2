@@ -1,2 +1,4 @@
 db/
 gloc-fe/node_modules
+gloc-be/node_modules
+gloc-be/generateDescriptors.js
