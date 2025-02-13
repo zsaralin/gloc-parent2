@@ -22,7 +22,7 @@ function Grid() {
   const [isOverlayVisible, setIsOverlayVisible] = useState(false); // Tracks overlay visibility
   useEffect(() => {
     const handleResize = () => {
-      window.location.href = window.location.href; 
+      window.location.reload()
     };
   
     window.addEventListener("resize", handleResize);
