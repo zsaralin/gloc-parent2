@@ -81,7 +81,7 @@ export function calculateTopRowLayout() {
     ? remainingWidth / possibleNumItems
     : itemWidthPx;
 
-  numTopRowItems = Math.max(possibleNumItems, 0);
+  numTopRowItems = Math.max(possibleNumItems, 1);
 
   document.documentElement.style.setProperty('--video-height', `${rowHeightVh}dvh`);
   document.documentElement.style.setProperty('--video-aspect-ratio', `${videoAspectRatio}`);
@@ -105,7 +105,7 @@ export function arrangeGrid() {
 
   // Update total grid items
   numTotalGridItems =
-    numTopRowItems + numBottomGridRows * numBottomGridCols;
+    numTopRowItems + numBottomGridRows * numBottomGridCols + 10;
 
   console.log(`Top Row Items: ${numTopRowItems}`);
   console.log(`Bottom Rows: ${numBottomGridRows}, Columns: ${numBottomGridCols}`);

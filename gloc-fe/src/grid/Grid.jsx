@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import TopRow from './TopRow'; // Assuming these are your components
+import TopRow from './TopRow';
 import BottomSection from './BottomSection';
 import './Grid.css';
-import '../OverlayGui.css'; // Import overlay GUI styles
-import OverlayGUI from '../OverlayGui'; // Import overlay GUI component
+import '../OverlayGui.css';
+import OverlayGUI from '../OverlayGui';
 import { 
   arrangeGrid, 
   numTopRowItems, 
@@ -16,37 +16,47 @@ import { startFaceDetection } from '../faceDetection/faceDetection';
 import LandingPage from '../landingPages/LandingPage';
 import { setupOverlayTransparency } from '../updateGrid/updateGrid';
 import LoadingScreen from './LoadingScreen';
-
+import { updateGridImmediately } from '../faceRecognition/faceRecognition';
 function Grid() {
-  const [isGridReady, setIsGridReady] = useState(false); // Tracks grid readiness
-  const [isOverlayVisible, setIsOverlayVisible] = useState(false); // Tracks overlay visibility
-  useEffect(() => {
-    const handleResize = () => {
-      window.location.href = window.location.href; 
-    };
-  
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const [gridConfig, setGridConfig] = useState({
+    numTopRowItems,
+    numBottomGridRows,
+    numBottomGridCols,
+    topRowItemWidth,
+    bottomGridItemSize,
+  });
+
+  const [isGridReady, setIsGridReady] = useState(false);
+  const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+
   useEffect(() => {
     const handleResize = async () => {
-      arrangeGrid(); // Recalculate the grid layout on resize
-      setIsGridReady(true); // Mark grid as ready
+      arrangeGrid(); // Recalculate grid layout
+
+      // Update state with the new values (forcing re-render)
+      setGridConfig({
+        numTopRowItems,
+        numBottomGridRows,
+        numBottomGridCols,
+        topRowItemWidth,
+        bottomGridItemSize,
+      });
+
+      setIsGridReady(true);
+      setTimeout(updateGridImmediately, 200);
     };
 
-    handleResize(); // Initial calculation
+    handleResize(); // Run on mount
     window.addEventListener('resize', handleResize);
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
     const initializeGrid = async () => {
       if (isGridReady) {
         setupOverlayTransparency();
-        await startFaceDetection(); // Await the async function
+        await startFaceDetection();
       }
     };
 
@@ -61,10 +71,7 @@ function Grid() {
     };
 
     window.addEventListener('keydown', handleKeyPress);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyPress);
-    };
+    return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
 
   return (
@@ -74,17 +81,17 @@ function Grid() {
       {isGridReady && (
         <div className="grid-container">
           <TopRow 
-            numItems={numTopRowItems} 
-            itemWidth={topRowItemWidth} 
+            numItems={gridConfig.numTopRowItems} 
+            itemWidth={gridConfig.topRowItemWidth} 
           />
           <BottomSection 
-            rows={numBottomGridRows} 
-            cols={numBottomGridCols} 
-            itemSize={bottomGridItemSize} // Pass as a single object
+            rows={gridConfig.numBottomGridRows} 
+            cols={gridConfig.numBottomGridCols} 
+            itemSize={gridConfig.bottomGridItemSize} 
           />
         </div>
       )}
-      {isOverlayVisible && <OverlayGUI />} {/* Render overlay GUI when visible */}
+      {isOverlayVisible && <OverlayGUI />}
     </div>
   );
 }

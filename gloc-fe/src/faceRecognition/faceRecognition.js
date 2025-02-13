@@ -9,7 +9,7 @@ let isFirstUpdate = true;
 let isProcessing = false;
 let recognitionIntervalId = null;
 let abortController = globalAbortController; // Keep reference to the global abortController
-
+let currImages = null; 
 const CHECK_INTERVAL = 1000; 
 
 async function performRecognitionTask() {
@@ -53,6 +53,7 @@ async function performRecognitionTask() {
             const startTime = performance.now(); // Record start time
 
             const images = await loadImages(matches, abortController.signal);
+            currImages = images
             if (abortController.signal.aborted) return;
 
             const elapsedTime = performance.now() - startTime;
@@ -128,3 +129,9 @@ window.addEventListener('refreshTimeUpdated', () => {
     stopRecognitionTasks();
     startRecognitionTask();
 });
+
+export function updateGridImmediately(){
+    if(currImages){
+        fillGridItems(currImages, false, false, false)
+    }
+}
