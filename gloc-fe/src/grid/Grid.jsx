@@ -32,8 +32,7 @@ function Grid() {
   useEffect(() => {
     const handleResize = async () => {
       arrangeGrid(); // Recalculate grid layout
-
-      // Update state with the new values (forcing re-render)
+  
       setGridConfig({
         numTopRowItems,
         numBottomGridRows,
@@ -41,15 +40,18 @@ function Grid() {
         topRowItemWidth,
         bottomGridItemSize,
       });
-
+  
       setIsGridReady(true);
       setTimeout(updateGridImmediately, 200);
     };
-
-    handleResize(); // Run on mount
-    window.addEventListener('resize', handleResize);
-
-    return () => window.removeEventListener('resize', handleResize);
+  
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize); // Detect mobile rotation
+  
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
   }, []);
 
   useEffect(() => {
