@@ -47,7 +47,7 @@ function Grid() {
   
     window.addEventListener("resize", handleResize);
     window.addEventListener("orientationchange", handleResize); // Detect mobile rotation
-  
+    handleResize()
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("orientationchange", handleResize);
