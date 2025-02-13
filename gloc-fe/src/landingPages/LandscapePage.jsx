@@ -21,7 +21,7 @@ function LandscapePage() {
   }, []);
 
   return (
-    isLandscape && (
+    true && (
       <div className="landscape-overlay">
         This experience is designed for portrait mode. Please rotate your device to continue.
       </div>
