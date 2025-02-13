@@ -5,7 +5,7 @@
        url('/fonts/CascadiaMono.woff') format('woff');   /* Older browsers */
   font-weight: bold;
   font-style: normal;
-  font-display: swap; /* Ensures text is visible while the font loads */
+  font-display: optional; /* Ensures text is visible while the font loads */
 }
 :root {
   font-family: "Cascadia Mono", system-ui, Avenir, Helvetica, Arial, sans-serif;

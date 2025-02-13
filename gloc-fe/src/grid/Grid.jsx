@@ -20,7 +20,14 @@ import LoadingScreen from './LoadingScreen';
 function Grid() {
   const [isGridReady, setIsGridReady] = useState(false); // Tracks grid readiness
   const [isOverlayVisible, setIsOverlayVisible] = useState(false); // Tracks overlay visibility
-
+  useEffect(() => {
+    const handleResize = () => {
+      window.location.href = window.location.href; 
+    };
+  
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   useEffect(() => {
     const handleResize = async () => {
       arrangeGrid(); // Recalculate the grid layout on resize
