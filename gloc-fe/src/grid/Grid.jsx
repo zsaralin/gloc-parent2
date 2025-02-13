@@ -14,6 +14,7 @@ import {
 } from './gridLayout'; 
 import { startFaceDetection } from '../faceDetection/faceDetection';
 import LandingPage from '../landingPages/LandingPage';
+import LandscapePage from '../landingPages/LandscapePage';
 import { setupOverlayTransparency } from '../updateGrid/updateGrid';
 import LoadingScreen from './LoadingScreen';
 import { updateGridImmediately } from '../faceRecognition/faceRecognition';
@@ -78,6 +79,7 @@ function Grid() {
 
   return (
     <div className="grid-wrapper">
+      <LandscapePage />
       <LandingPage />
       <LoadingScreen />
       {isGridReady && (
