@@ -18,7 +18,7 @@ function calculateTopRowHeight() {
   const heightFactor = isWideScreen
     ? rowHeightConfig.wideScreen
     : rowHeightConfig.tallScreen;
-  const height = THEHEIGHT * heightFactor;
+  const height = window.innerHeight * heightFactor;
   document.documentElement.style.setProperty('--top-row-height', `${height}px`);
   return height; // Return the calculated height
 }
@@ -56,7 +56,7 @@ export function calculateTopRowLayout() {
   }
 
   const viewportWidth = window.innerWidth;
-  const viewportHeight = THEHEIGHT
+  const viewportHeight = window.innerHeight
 
   const itemAspectRatio = 9 / 16; // Aspect ratio for items
 
@@ -91,7 +91,7 @@ export function calculateTopRowLayout() {
 
 export function arrangeGrid() {
   const viewportWidth = window.innerWidth;
-  const viewportHeight = THEHEIGHT
+  const viewportHeight = window.innerHeight
 
   // Calculate top row height
   const topRowHeight = calculateTopRowHeight();
