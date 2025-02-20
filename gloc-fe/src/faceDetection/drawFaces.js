@@ -35,7 +35,7 @@ export function drawFaces(mediapipeResult, canvas) {
 
     const landmarks = mediapipeResult.faceLandmarks[0];
     if (!canvasCleared) {
-        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        // ctx.clearRect(0, 0, canvasWidth, canvasHeight);
         canvas.style.opacity = 1;
 
         // Ensure the line width and styles are set before drawing
