@@ -20,6 +20,7 @@ async function fetchFaceRecognitionData() {
             return;
         }
         try {
+            console.log('FETCHING!!!!!!!!!!!!!!!!!')
             const response = await fetch(`${SERVER_URL}/match`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
