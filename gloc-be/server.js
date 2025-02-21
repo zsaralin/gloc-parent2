@@ -2,7 +2,6 @@
 
 const express = require('express');
 const fs = require('fs');
-
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -36,34 +35,40 @@ app.listen(PORT, async () => {
 createScoresTable();
 // Serve static files for all images
 app.use('/static/images', express.static(localFolderPath));
+(async () => {
+    const { default: pLimit } = await import('p-limit'); // Dynamically import ESM module
+    const limit = pLimit(5); // Set concurrency limit
 
-// Other routes and middleware
-app.post('/match', async (req, res) => {
-    try {
-        const { photo, numPhotos, uuid } = req.body;
-        const descriptor = await getDescriptor(photo);
-        if (!descriptor) {
-            res.json(null);
-            return;
+    app.post('/match', async (req, res) => {
+        try {
+            await limit(async () => {
+                const { photo, numPhotos, uuid } = req.body;
+                const descriptor = await getDescriptor(photo);
+                if (!descriptor) {
+                    res.json(null);
+                    return;
+                }
+
+                const startTime = performance.now();
+                const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos + 2, uuid);
+                const endTime = performance.now();
+                console.log(`findNearestDescriptors took ${(endTime - startTime).toFixed(2)} ms`);
+
+                if (!nearestDescriptors) {
+                    res.json(null);
+                    return;
+                }
+
+                const responseArray = await processNearestDescriptors(nearestDescriptors, localFolderPath);
+                res.json(responseArray);
+            });
+        } catch (error) {
+            console.error('Error processing detection:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
         }
+    });
+})();
 
-        const startTime = performance.now(); // Start timing
-        const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos + 2, uuid);
-        const endTime = performance.now(); // End timing
-        console.log(`findNearestDescriptors took ${(endTime - startTime).toFixed(2)} ms`);
-
-        if (!nearestDescriptors) {
-            res.json(null);
-            return;
-        }
-
-        const responseArray = await processNearestDescriptors(nearestDescriptors, localFolderPath);
-        res.json(responseArray);
-    } catch (error) {
-        console.error('Error processing detection:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
 
 app.post('/random', async (req, res) => {
     try {
