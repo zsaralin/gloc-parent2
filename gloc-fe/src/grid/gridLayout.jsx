@@ -1,4 +1,5 @@
 // Exported variables to hold grid layout information
+import { fetchRandomImages } from "../updateGrid/shuffleManagerService";
 export let numTopRowItems = 0;
 export let numBottomGridRows = 0;
 export let numBottomGridCols = 0;
@@ -106,6 +107,8 @@ export function arrangeGrid() {
   // Update total grid items
   numTotalGridItems =
     numTopRowItems + numBottomGridRows * numBottomGridCols + 10;
+  
+  fetchRandomImages(); // Start shuffle manager
 
   console.log(`Top Row Items: ${numTopRowItems}`);
   console.log(`Bottom Rows: ${numBottomGridRows}, Columns: ${numBottomGridCols}`);

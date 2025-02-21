@@ -66,8 +66,8 @@ app.post('/random', async (req, res) => {
     try {
         const dbName = getDbName();
         const imagesFolder = path.join(localFolderPath, dbName);
-        
-        const { numTotalGridItems } = req.body + 10; // Extract from request body
+        console.log(req.body)
+        const numTotalGridItems = (req.body.numTotalGridItems || 0) + 10;
         const limit = numTotalGridItems || 40; // Default to 30 if not provided
 
         console.log(`Received numTotalGridItems: ${numTotalGridItems}`);

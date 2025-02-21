@@ -49,7 +49,7 @@ function VideoContainer() {
 
   return (
     <div className="video-container">
-<video ref={videoRef} className="video" muted playsInline webkit-playsinline></video>
+<video ref={videoRef} className="video" muted playsInline webkitplaysinline="true"></video>
 <canvas ref={canvasRef} className="video-canvas"></canvas>
       
       <div id="face-detect-text"></div>

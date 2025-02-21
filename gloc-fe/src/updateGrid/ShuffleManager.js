@@ -23,7 +23,7 @@ class ShuffleManager {
                 this.#isFetching = true;
                 try {
                     const startTime = performance.now(); // Record start time
-
+                    console.log(numTotalGridItems + ' TOTAL GRID ')
                     const response = await fetch(`${SERVER_URL}/random`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
