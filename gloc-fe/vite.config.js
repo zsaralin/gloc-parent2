@@ -4,7 +4,10 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'; // Use the correct nam
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/', // Use './' for relative paths or set your deployment path
+  base: './', // Use './' for relative paths or set your deployment path
+  server: {
+    port: 5173, // Ensure Vite is using the expected port
+  },
   plugins: [
     react(),
     viteStaticCopy({

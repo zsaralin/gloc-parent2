@@ -2,6 +2,7 @@ import { FilesetResolver, FaceLandmarker } from '/internal_cdn/package0/vision_b
 import { drawFaces } from "./drawFaces.js";
 import { videoRef, canvasRef } from '../grid/videoRef.jsx';
 import { setCurrFace } from './newFaces.js';
+import { overlaySettings } from '../OverlayGui';
 
 export let faceLandmarker;
 let setupPromise;
@@ -62,64 +63,106 @@ function getBoundingBox(landmarks) {
     });
     return { minX, minY, maxX, maxY };
   }
+  let animationFrameId = null; // Track requestAnimationFrame
+
   export async function startFaceDetection() {
     let video = videoRef.current;
     let canvas = canvasRef.current;
   
     await setupFaceLandmarker();
-  
     if (!video || video.paused || !video.videoWidth || !video.videoHeight) return false;
   
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext("2d");
   
-    const offscreenCanvas = document.createElement('canvas');
-    const offscreenContext = offscreenCanvas.getContext('2d');
+    const offscreenCanvas = document.createElement("canvas");
+    const offscreenContext = offscreenCanvas.getContext("2d");
   
     let lastFaceBox = null; // Store last detected face position
+  
+    function stopCurrentLoop() {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+    }
   
     async function detectAndZoom() {
       if (!video || video.paused) return;
   
-      const { videoWidth, videoHeight } = video;
-      const { width: cWidth, height: cHeight } = canvas;
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, canvas.width, canvas.height);
   
-      context.clearRect(0, 0, cWidth, cHeight);
-  
-      // 1️⃣ Draw the full video frame onto the **main canvas**
-      context.drawImage(video, 0, 0, videoWidth, videoHeight, 0, 0, cWidth, cHeight);
-  
-      // 2️⃣ Detect faces from the **main canvas**
-      const startTimeMs = performance.now();
-      const mediapipeResult = faceLandmarker.detectForVideo(canvas, startTimeMs);
-  
+      const mediapipeResult = runFaceDetection(canvas);
       if (mediapipeResult && mediapipeResult.faceLandmarks.length > 0) {
-        const faceLandmarks = mediapipeResult.faceLandmarks[0];
-        lastFaceBox = getBoundingBox(faceLandmarks); // Update last known face box
-  
-        // Draw detected faces directly on the main canvas (before cropping)
+        lastFaceBox = getBoundingBox(mediapipeResult.faceLandmarks[0]);
         drawFaces(mediapipeResult, canvas);
-  
-        // Save detected face for external processing
-        const imageDataURL = canvas.toDataURL('image/jpeg', 0.5);
-        setCurrFace(mediapipeResult, imageDataURL);
+        setCurrFace(mediapipeResult, canvas.toDataURL("image/jpeg", 0.5));
       }
   
       if (!lastFaceBox) {
-        // No face detected before → keep last known frame
-        requestAnimationFrame(detectAndZoom);
+        animationFrameId = requestAnimationFrame(detectAndZoom);
         return;
       }
   
-      // 3️⃣ Extract the last known **face bounding box**
-      const { minX, minY, maxX, maxY } = lastFaceBox;
+      // Compute zoomed-in area
+      const { sx, sy, sWidth, sHeight } = computeZoomArea(lastFaceBox, canvas.width, canvas.height);
+  
+      // Draw zoomed-in image using an offscreen canvas
+      offscreenCanvas.width = canvas.width;
+      offscreenCanvas.height = canvas.height;
+      offscreenContext.clearRect(0, 0, canvas.width, canvas.height);
+      offscreenContext.drawImage(canvas, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height);
+  
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(offscreenCanvas, 0, 0, canvas.width, canvas.height);
+  
+      animationFrameId = requestAnimationFrame(detectAndZoom);
+    }
+  
+    async function detectAndDraw() {
+      if (!video || video.paused) return;
+  
+      context.clearRect(0, 0, canvas.width, canvas.height);
+  
+      const { cropX, cropY, cropWidth, cropHeight } = calculateCoverCrop(
+        video.videoWidth,
+        video.videoHeight,
+        canvas.width,
+        canvas.height
+      );
+  
+      context.drawImage(
+        video,
+        cropX, cropY, cropWidth, cropHeight,
+        0, 0, canvas.width, canvas.height
+      );
+  
+      offscreenCanvas.width = cropWidth;
+      offscreenCanvas.height = cropHeight;
+      offscreenContext.drawImage(video, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+  
+      const mediapipeResult = runFaceDetection(offscreenCanvas);
+      setCurrFace(mediapipeResult, offscreenCanvas.toDataURL("image/jpeg", 0.5));
+  
+      if (mediapipeResult) drawFaces(mediapipeResult, canvas);
+  
+      animationFrameId = requestAnimationFrame(detectAndDraw);
+    }
+  
+    function runFaceDetection(inputCanvas) {
+      const startTimeMs = performance.now();
+      return faceLandmarker.detectForVideo(inputCanvas, startTimeMs);
+    }
+  
+    function computeZoomArea(faceBox, cWidth, cHeight) {
+      const { minX, minY, maxX, maxY } = faceBox;
       const faceW = maxX - minX;
       const faceH = maxY - minY;
       const faceCenterX = minX + faceW / 2;
       const faceCenterY = minY + faceH / 2;
   
-      // 4️⃣ Compute zoom level (keeping face at 50% of view)
       const desiredFaceFraction = 0.4;
       const scaleFactor = faceW > 0 ? desiredFaceFraction / faceW : 1.0;
       const clampScale = Math.min(Math.max(scaleFactor, 1.0), 4.0);
@@ -130,30 +173,31 @@ function getBoundingBox(landmarks) {
       let sourceX = faceCenterX - drawW / 2;
       let sourceY = faceCenterY - drawH / 2;
   
-      if (sourceX < 0) sourceX = 0;
-      if (sourceY < 0) sourceY = 0;
-      if (sourceX + drawW > 1) sourceX = 1 - drawW;
-      if (sourceY + drawH > 1) sourceY = 1 - drawH;
+      sourceX = Math.max(0, Math.min(1 - drawW, sourceX));
+      sourceY = Math.max(0, Math.min(1 - drawH, sourceY));
   
-      // 5️⃣ Crop the **already drawn canvas** to zoom and center the face
-      const sx = sourceX * cWidth;
-      const sy = sourceY * cHeight;
-      const sWidth = drawW * cWidth;
-      const sHeight = drawH * cHeight;
-  
-      // 6️⃣ Use an offscreen canvas to avoid frame overlap
-      offscreenCanvas.width = cWidth;
-      offscreenCanvas.height = cHeight;
-      offscreenContext.clearRect(0, 0, cWidth, cHeight);
-      offscreenContext.drawImage(canvas, sx, sy, sWidth, sHeight, 0, 0, cWidth, cHeight);
-  
-      // 7️⃣ Copy the **zoomed-in** face back to the main canvas
-      context.clearRect(0, 0, cWidth, cHeight);
-      context.drawImage(offscreenCanvas, 0, 0, cWidth, cHeight);
-  
-      requestAnimationFrame(detectAndZoom);
+      return {
+        sx: sourceX * cWidth,
+        sy: sourceY * cHeight,
+        sWidth: drawW * cWidth,
+        sHeight: drawH * cHeight
+      };
     }
   
-    detectAndZoom();
+    function restartDetection() {
+      stopCurrentLoop(); // Stop any existing loop
+  
+      if (overlaySettings.zoomVideo) {
+        detectAndZoom();
+      } else {
+        detectAndDraw();
+      }
+    }
+  
+    // Listen for zoomVideo changes and restart detection
+    window.addEventListener("zoomVideoUpdated", restartDetection);
+  
+    // Start the initial loop
+    restartDetection();
   }
   
