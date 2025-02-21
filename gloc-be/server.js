@@ -47,14 +47,17 @@ app.post('/match', async (req, res) => {
             return;
         }
 
-        const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos+2, uuid);
+        const startTime = performance.now(); // Start timing
+        const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos + 2, uuid);
+        const endTime = performance.now(); // End timing
+        console.log(`findNearestDescriptors took ${(endTime - startTime).toFixed(2)} ms`);
+
         if (!nearestDescriptors) {
             res.json(null);
             return;
         }
-        const responseArray = await processNearestDescriptors(
-            nearestDescriptors,localFolderPath
-        );
+
+        const responseArray = await processNearestDescriptors(nearestDescriptors, localFolderPath);
         res.json(responseArray);
     } catch (error) {
         console.error('Error processing detection:', error);
@@ -66,7 +69,6 @@ app.post('/random', async (req, res) => {
     try {
         const dbName = getDbName();
         const imagesFolder = path.join(localFolderPath, dbName);
-        console.log(req.body)
         const numTotalGridItems = (req.body.numTotalGridItems || 0) + 10;
         const limit = numTotalGridItems || 40; // Default to 30 if not provided
 
