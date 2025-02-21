@@ -9,6 +9,7 @@ export const overlaySettings = {
   zoom: 1,
   xOffset: 0,
   yOffset: 0,
+  zoomVideo : false, 
 
   setRefreshTime(value) {
     overlaySettings.refreshTime = value;
@@ -29,6 +30,10 @@ export const overlaySettings = {
   setYOffset(value) {
     overlaySettings.yOffset = value;
     window.dispatchEvent(new Event('yOffsetUpdated'));
+  },
+  setZoomVideo(value) {
+    overlaySettings.zoomVideo = Boolean(value); // Ensure it's always true/false
+    window.dispatchEvent(new Event('zoomVideoUpdated'));
   }
 };
 
@@ -39,6 +44,7 @@ function OverlayGUI() {
   const [zoom, setZoom] = useState(overlaySettings.zoom);
   const [xOffset, setXOffset] = useState(overlaySettings.xOffset);
   const [yOffset, setYOffset] = useState(overlaySettings.yOffset);
+  const [zoomVideo, setZoomVideo] = useState(overlaySettings.zoomVideo);
 
   // ✅ Sync local state with overlaySettings when the component mounts
   useEffect(() => {
@@ -47,6 +53,7 @@ function OverlayGUI() {
     setZoom(overlaySettings.zoom);
     setXOffset(overlaySettings.xOffset);
     setYOffset(overlaySettings.yOffset);
+    setZoomVideo(overlaySettings.zoomVideo)
   }, []);
 
   // ✅ Update overlaySettings and local state when sliders change
@@ -79,6 +86,11 @@ function OverlayGUI() {
     overlaySettings.setYOffset(value);
     setYOffset(value);
   };
+  const handleZoomVideoChange = (e) => {
+    const value = e.target.checked; // ✅ FIXED: Use 'checked' instead of 'value'
+    overlaySettings.setZoomVideo(value);
+    setZoomVideo(value);
+  };
 
   const saveSettings = () => {
     fetch(`${SERVER_URL}/settings`, {
@@ -89,7 +101,8 @@ function OverlayGUI() {
         loadingDuration: overlaySettings.loadingDuration,
         zoom: overlaySettings.zoom,
         xOffset: overlaySettings.xOffset,
-        yOffset: overlaySettings.yOffset
+        yOffset: overlaySettings.yOffset,
+        zoomVideo : overlaySettings.zoomVideo
       })
     })
       .then(() => console.log("Settings saved successfully"))
@@ -163,6 +176,17 @@ function OverlayGUI() {
         />
       </div>
 
+      {/* Zoom Video Checkbox */}
+      <div className="checkbox-container">
+        <label>
+          <input 
+            type="checkbox" 
+            checked={zoomVideo} 
+            onChange={handleZoomVideoChange} 
+          />
+          Zoom Video
+        </label>
+      </div>
       {/* Save Button */}
       <button className="save-button" onClick={saveSettings}>Save</button>
     </div>
