@@ -64,7 +64,7 @@ async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 40) {
                 for await (const imageFile of imagesDir) {
                     if (imageFile.name === "0_comp.jpg") { // Look specifically for 0_comp.jpg
                         firstFile = imageFile.name;
-                        console.log(firstFile);
+                        // console.log(firstFile);
                         break; // Stop looping once found
                     }
                 }
@@ -74,11 +74,11 @@ async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 40) {
                     const cropImagePath = path.join(imagesFolderPath, firstFile);
 
                     // Check if the crop image exists
-                    console.log(`Checking existence of: ${cropImagePath}`);
+                    // console.log(`Checking existence of: ${cropImagePath}`);
                     await fs.access(cropImagePath);
 
                     // Read JSON data
-                    console.log(`Reading JSON file: ${jsonFilePath}`);
+                    // console.log(`Reading JSON file: ${jsonFilePath}`);
                     const name = await getNameFromJsonFile(jsonFilePath) || folderName;
 
                     // Assuming `imagesFolder` is relative to the static directory
