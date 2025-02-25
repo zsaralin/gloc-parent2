@@ -55,7 +55,7 @@ function closeAllConnections() {
 
     console.log("All connections have been forcefully terminated.");
 }
-closeAllConnections()
+// closeAllConnections()
 
 // Create Scores Table
 createScoresTable();
