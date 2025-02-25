@@ -38,7 +38,6 @@ createScoresTable();
 app.use('/static/images', express.static(localFolderPath));
 
 app.post('/match', async (req, res) => {
-    return res.status(403).json({ reload: true }); // 🚨 Tell clients to reload
     try {
             const { photo, numPhotos, uuid } = req.body;
             const descriptor = await getDescriptor(photo);
