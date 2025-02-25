@@ -61,7 +61,7 @@ async function fetchFaceRecognitionData() {
 async function continuousFaceRecognition() {
     await fetchFaceRecognitionData();
     if (!abortController.signal.aborted) {
-        setTimeout(continuousFaceRecognition, FACE_RECOG_INTERVAL);
+        // setTimeout(continuousFaceRecognition, FACE_RECOG_INTERVAL);
     }
 }
 
