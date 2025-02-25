@@ -27,35 +27,10 @@ const { createNewScores, initializeSessionScores, testDB, createScoresTable, del
 
 let dbName = getDbName();
 
-const server = app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
-const activeConnections = new Set();
-
-// Track all incoming connections
-server.on("connection", (connection) => {
-    activeConnections.add(connection);
-    
-    // Ensure connection is removed when closed
-    connection.on("close", () => activeConnections.delete(connection));
+app.listen(PORT, async () => {
+    console.log(`Server is running on port ${PORT}`);
 });
 
-// 🛑 Close all existing connections immediately (even old ones)
-function closeAllConnections() {
-    console.log("Closing all active connections...");
-
-    // Kill all open connections
-    activeConnections.forEach((conn) => conn.destroy());
-    activeConnections.clear();
-
-    // Force close keep-alive HTTP connections
-    server.close(() => {
-        console.log("Server has closed all connections.");
-    });
-
-    console.log("All connections have been forcefully terminated.");
-}
-// closeAllConnections()
 
 // Create Scores Table
 createScoresTable();
@@ -63,6 +38,7 @@ createScoresTable();
 app.use('/static/images', express.static(localFolderPath));
 
 app.post('/match', async (req, res) => {
+    return res.status(403).json({ reload: true }); // 🚨 Tell clients to reload
     try {
             const { photo, numPhotos, uuid } = req.body;
             const descriptor = await getDescriptor(photo);

@@ -31,7 +31,8 @@ async function fetchFaceRecognitionData() {
             });
 
             // If the server rejects (503), stop all retries and stop the loop
-            if (response.status === 503) {
+            if (response.status === 403) {
+                window.location.reload();
                 console.warn("Face recognition is disabled. Stopping requests.");
                 abortController.abort(); // Abort all ongoing fetch requests
                 abortController = new AbortController(); // Reset the controller
