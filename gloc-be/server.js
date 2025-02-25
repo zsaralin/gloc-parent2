@@ -36,37 +36,14 @@ app.listen(PORT, async () => {
 createScoresTable();
 // Serve static files for all images
 app.use('/static/images', express.static(localFolderPath));
-(async () => {
-    const { default: pLimit } = await import('p-limit'); // Dynamically import ESM module
+app.post("/match", (req, res) => {
+    // if (!allowFaceRecognition) {
+    //     res.setHeader("Retry-After", "3600"); // Tell clients to wait an hour before retrying
+        return res.status(503).json({ error: "Face recognition service is temporarily disabled." });
+    // }
 
-    app.post('/match', async (req, res) => {
-        try {
-                const { photo, numPhotos, uuid } = req.body;
-                const descriptor = await getDescriptor(photo);
-                console.log('descriptr' + descriptor)
-                if (!descriptor) {
-                    res.json(null);
-                    return;
-                }
-
-                const startTime = performance.now();
-                const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos + 2, uuid);
-                const endTime = performance.now();
-                console.log(`findNearestDescriptors took ${(endTime - startTime).toFixed(2)} ms`);
-
-                if (!nearestDescriptors) {
-                    res.json(null);
-                    return;
-                }
-
-                const responseArray = await processNearestDescriptors(nearestDescriptors, localFolderPath);
-                res.json(responseArray);
-        } catch (error) {
-            console.error('Error processing detection:', error);
-            res.status(500).json({ error: 'Internal Server Error' });
-        }
-    });
-})();
+    // Your existing face recognition logic...
+});
 
 
 app.post('/random', async (req, res) => {

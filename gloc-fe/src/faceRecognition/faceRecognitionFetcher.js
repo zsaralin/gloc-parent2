@@ -11,7 +11,6 @@ export let abortController = new AbortController();
 const RETRY_LIMIT = 5;           // Max retries before giving up
 const RETRY_INTERVAL = 2000;     // Retry every 2 seconds if data is null
 const FACE_RECOG_INTERVAL = 3000; // Run face recognition every 3 seconds
-
 async function fetchFaceRecognitionData() {
     let attempts = 0;
     while (attempts < RETRY_LIMIT) {
@@ -28,7 +27,16 @@ async function fetchFaceRecognitionData() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ photo: currFace, numPhotos: numTotalGridItems, uuid: userID }),
+                signal: abortController.signal,
             });
+
+            // If the server rejects (503), stop all retries and stop the loop
+            if (response.status === 503) {
+                console.warn("Face recognition is disabled. Stopping requests.");
+                stopContinuousFaceRecognition();
+                return;
+            }
+
             const data = await response.json();
             if (data !== null) {
                 matches = data;
