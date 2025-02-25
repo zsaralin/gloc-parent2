@@ -31,11 +31,11 @@ async function performRecognitionTask() {
         // Calculate max checks based on the current refresh time
         const maxChecks = Math.floor((overlaySettings.refreshTime * 1000) / CHECK_INTERVAL);
 
-        // Wait for matches or timeout
         let attempts = 0;
         while ((!matches || matches.length === 0) && attempts < maxChecks) {
             if (abortController.signal.aborted) {
                 console.log('Recognition aborted during match wait.');
+                isProcessing = false;
                 return;
             }
             await new Promise(resolve => setTimeout(resolve, CHECK_INTERVAL));
@@ -44,34 +44,43 @@ async function performRecognitionTask() {
 
         if (!matches || matches.length === 0) {
             console.warn('No matches found; skipping this cycle.');
+            isProcessing = false;
             return;
         }
 
         // If first update, show loading, stop shuffle
         if (isFirstUpdate) {
             preloadLoading();
-            const startTime = performance.now(); // Record start time
+            const startTime = performance.now();
 
             const images = await loadImages(matches, abortController.signal);
-            currImages = images
-            if (abortController.signal.aborted) return;
+            currImages = images;
+            if (abortController.signal.aborted) {
+                isProcessing = false;
+                return;
+            }
 
             const elapsedTime = performance.now() - startTime;
-            const remainingTime = Math.max(1000 - elapsedTime, 0); // Ensure at least 1s delay
+            const remainingTime = Math.max(1000 - elapsedTime, 0);
 
             setTimeout(() => {
                 startLoading();
             }, remainingTime);
 
-            // Use the dynamically updated loading duration
             await new Promise(resolve => setTimeout(resolve, overlaySettings.loadingDuration * 1000));
             stopShuffle();
             fillGridItems(images, false, true, false);
             isFirstUpdate = false;
         } else {
             const images = await loadImages(matches, abortController.signal);
-            if (abortController.signal.aborted) return;
-            if(document.hidden) return
+            if (abortController.signal.aborted) {
+                isProcessing = false;
+                return;
+            }
+            if(document.hidden) {
+                isProcessing = false;
+                return;
+            }
             fillGridItems(images, true, false, false);
         }
 
@@ -82,37 +91,34 @@ async function performRecognitionTask() {
             console.error('Error during recognition task:', error);
         }
     } finally {
-        isProcessing = false;
+        isProcessing = false; // ✅ Ensure this resets after completion
     }
 }
 
 export async function startRecognitionTask() {
-    // Prevent multiple intervals
-    if (recognitionIntervalId) {
-        console.warn('Recognition task already running. Stop it before starting again.');
-        return;
-    }
+    // ✅ Ensure previous task is fully stopped before starting
+    stopRecognitionTasks();
 
-    // Reset the abort controller if it's already aborted
-    if (abortController.signal.aborted) {
-        abortController = new AbortController();
-    }
+    // ✅ Reset abort controller if needed
+    abortController = new AbortController();
 
     startContinuousFaceRecognition();
 
     // Run immediately once
-    performRecognitionTask();
+    await performRecognitionTask();
 
     if (isFirstUpdate) {
         await new Promise(resolve => setTimeout(resolve, overlaySettings.refreshTime * 1000));
     }
 
-    // Schedule subsequent runs at a fixed interval
-    recognitionIntervalId = setInterval(() => {
-        if (!abortController.signal.aborted) {
-            performRecognitionTask();
-        }
-    }, overlaySettings.refreshTime * 1000);
+    // ✅ Prevent multiple intervals
+    if (!recognitionIntervalId) {
+        recognitionIntervalId = setInterval(() => {
+            if (!abortController.signal.aborted) {
+                performRecognitionTask();
+            }
+        }, overlaySettings.refreshTime * 1000);
+    }
 }
 
 export function stopRecognitionTasks() {
@@ -120,7 +126,10 @@ export function stopRecognitionTasks() {
         clearInterval(recognitionIntervalId);
         recognitionIntervalId = null;
     }
-    abortController.abort();
+    if (!abortController.signal.aborted) {
+        abortController.abort();
+    }
+    isProcessing = false; // ✅ Ensure next task can start fresh
     console.log('Recognition tasks stopped.');
 }
 
@@ -132,6 +141,6 @@ window.addEventListener('refreshTimeUpdated', () => {
 
 export function updateGridImmediately(){
     if(currImages){
-        fillGridItems(currImages, false, false, false)
+        fillGridItems(currImages, false, false, false);
     }
 }
