@@ -8,7 +8,7 @@ import { userID } from "./userScoresManager.js";
 export let matches = null; // Initialize matches
 export let abortController = new AbortController();
 
-const RETRY_LIMIT = 5;           // Max retries before giving up
+const RETRY_LIMIT = 1;           // Max retries before giving up
 const RETRY_INTERVAL = 2000;     // Retry every 2 seconds if data is null
 const FACE_RECOG_INTERVAL = 3000; // Run face recognition every 3 seconds
 async function fetchFaceRecognitionData() {
@@ -33,7 +33,8 @@ async function fetchFaceRecognitionData() {
             // If the server rejects (503), stop all retries and stop the loop
             if (response.status === 503) {
                 console.warn("Face recognition is disabled. Stopping requests.");
-                stopContinuousFaceRecognition();
+                abortController.abort(); // Abort all ongoing fetch requests
+                abortController = new AbortController(); // Reset the controller
                 return;
             }
 
