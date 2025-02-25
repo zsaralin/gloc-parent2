@@ -3,13 +3,35 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const http = require("http");
+const socketIo = require("socket.io");
 const app = express();
 const PORT = process.env.PORT || 5000;
 const cors = require('cors');
 const { findNearestDescriptors, loadDataIntoMemory, processNearestDescriptors } = require('./topDescriptors');
 require('dotenv').config();
 const localFolderPath = path.resolve(__dirname, '../db');  // Adjust the folder path as needed
+const server = http.createServer(app);
+const io = socketIo(server, { cors: { origin: "*" } });
 
+io.on("connection", (socket) => {
+    console.log(`Client connected: ${socket.id}`);
+});
+
+// 🔴 Function to force ALL clients to reload
+function forceReloadAllClients() {
+    console.log("Forcing all clients to reload...");
+    io.emit("forceReload"); // Send reload event to all connected clients
+}
+// 🛑 API to manually trigger a forced reload
+app.post("/trigger-reload", (req, res) => {
+    forceReloadAllClients();
+    res.json({ message: "Reload triggered for all clients" });
+});
+
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
 app.use(cors());
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -27,9 +49,9 @@ const { createNewScores, initializeSessionScores, testDB, createScoresTable, del
 
 let dbName = getDbName();
 
-app.listen(PORT, async () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// app.listen(PORT, async () => {
+//     console.log(`Server is running on port ${PORT}`);
+// });
 
 
 // Create Scores Table
