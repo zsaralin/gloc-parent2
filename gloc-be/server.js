@@ -30,7 +30,32 @@ let dbName = getDbName();
 app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
 });
+const activeConnections = new Set();
 
+// Track all incoming connections
+server.on("connection", (connection) => {
+    activeConnections.add(connection);
+    
+    // Ensure connection is removed when closed
+    connection.on("close", () => activeConnections.delete(connection));
+});
+
+// 🛑 Close all existing connections immediately (even old ones)
+function closeAllConnections() {
+    console.log("Closing all active connections...");
+
+    // Kill all open connections
+    activeConnections.forEach((conn) => conn.destroy());
+    activeConnections.clear();
+
+    // Force close keep-alive HTTP connections
+    server.close(() => {
+        console.log("Server has closed all connections.");
+    });
+
+    console.log("All connections have been forcefully terminated.");
+}
+closeAllConnections()
 
 // Create Scores Table
 createScoresTable();
