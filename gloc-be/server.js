@@ -41,9 +41,9 @@ app.use('/static/images', express.static(localFolderPath));
 
     app.post('/match', async (req, res) => {
         try {
-            console.log('calling match')
                 const { photo, numPhotos, uuid } = req.body;
                 const descriptor = await getDescriptor(photo);
+                console.log('descriptr' + descriptor)
                 if (!descriptor) {
                     res.json(null);
                     return;
