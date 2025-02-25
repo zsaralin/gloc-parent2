@@ -7,22 +7,6 @@ import Grid from './grid/Grid'; // Import the Grid component
 
 // window.addEventListener('resize', setHeight);
 // setHeight();
-const socket = new WebSocket("ws://sandbx.levelofconfidence.net");
-
-// When the connection opens
-socket.onopen = () => {
-    console.log("Connected to WebSocket server");
-};
-
-// When the connection closes
-socket.onclose = () => {
-    console.log("Disconnected from WebSocket server");
-};
-
-// Handle incoming messages (if needed)
-socket.onmessage = (event) => {
-    console.log("Message from server:", event.data);
-};
 
 function App() {
   return (

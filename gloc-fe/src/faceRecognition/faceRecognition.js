@@ -10,7 +10,7 @@ let isProcessing = false;
 let recognitionIntervalId = null;
 let abortController = globalAbortController; // Keep reference to the global abortController
 let currImages = null; 
-const CHECK_INTERVAL = 1000; 
+const CHECK_INTERVAL = 5000; 
 
 async function performRecognitionTask() {
     if (isProcessing) {

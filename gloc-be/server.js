@@ -1,51 +1,24 @@
 // v1.0.1
 
+const express = require('express');
 const fs = require('fs');
 const path = require('path');
-
+const app = express();
+const PORT = process.env.PORT || 5000;
+const cors = require('cors');
 const { findNearestDescriptors, loadDataIntoMemory, processNearestDescriptors } = require('./topDescriptors');
 require('dotenv').config();
 const localFolderPath = path.resolve(__dirname, '../db');  // Adjust the folder path as needed
-const express = require('express');
-const http = require('http');
-const WebSocket = require('ws');
-const cors = require('cors');
-
-const app = express();
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
-
-const PORT = process.env.PORT || 5000;
 
 app.use(cors());
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    next();
+});
 app.use(express.json());
-
-let activeClients = 0;
-
-// WebSocket connection handling
-wss.on('connection', (ws) => {
-    activeClients++;
-    console.log(`New frontend connected. Active clients: ${activeClients}`);
-
-    ws.on('close', () => {
-        activeClients--;
-        console.log(`Frontend disconnected. Active clients: ${activeClients}`);
-    });
-});
-
-server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-// app.use(cors());
-// app.use((req, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-//     res.setHeader('Access-Control-Allow-Credentials', true);
-//     next();
-// });
-// app.use(express.json());
-// const server = http.createServer(app);  // Wrap express inside http server
 
 const { readRandomImagesFromFolder } = require("./randomImages");
 const { getDbName, setDbName } = require('./db.js');
@@ -54,17 +27,21 @@ const { createNewScores, initializeSessionScores, testDB, createScoresTable, del
 
 let dbName = getDbName();
 
+app.listen(PORT, async () => {
+    console.log(`Server is running on port ${PORT}`);
+});
+
+
 // Create Scores Table
 createScoresTable();
 // Serve static files for all images
 app.use('/static/images', express.static(localFolderPath));
 (async () => {
     const { default: pLimit } = await import('p-limit'); // Dynamically import ESM module
-    const limit = pLimit(5); // Set concurrency limit
 
     app.post('/match', async (req, res) => {
         try {
-            await limit(async () => {
+            console.log('calling match')
                 const { photo, numPhotos, uuid } = req.body;
                 const descriptor = await getDescriptor(photo);
                 if (!descriptor) {
@@ -84,7 +61,6 @@ app.use('/static/images', express.static(localFolderPath));
 
                 const responseArray = await processNearestDescriptors(nearestDescriptors, localFolderPath);
                 res.json(responseArray);
-            });
         } catch (error) {
             console.error('Error processing detection:', error);
             res.status(500).json({ error: 'Internal Server Error' });
