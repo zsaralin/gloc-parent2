@@ -28,6 +28,10 @@ app.post("/trigger-reload", (req, res) => {
     forceReloadAllClients();
     res.json({ message: "Reload triggered for all clients" });
 });
+app.use((req, res, next) => {
+    res.setHeader("Connection", "close"); // Prevent Keep-Alive
+    next();
+});
 
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
