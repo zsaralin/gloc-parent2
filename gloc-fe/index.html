@@ -7,8 +7,16 @@
     <title>Global Level of Confidence</title>
   </head>
   <body>
-    <script>const global = {}</script>
+    <script>const global = {}
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for (let registration of registrations) {
+                registration.unregister();
+            }
+        });
+    }
+  </script>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="/src/main.jsx?v=1.0.1"></script>
   </body>
 </html>

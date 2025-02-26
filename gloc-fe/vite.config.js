@@ -4,6 +4,9 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'; // Use the correct nam
 
 // https://vite.dev/config/
 export default defineConfig({
+  esbuild: {
+    loader: "jsx", // ✅ Use a valid loader type ("jsx", "ts", "tsx", etc.)
+  },
   base: '/', // Use './' for relative paths or set your deployment path
   plugins: [
     react(),
@@ -16,5 +19,6 @@ export default defineConfig({
   ],
   define: {
     global: ({})
-}
+},
+
 });
