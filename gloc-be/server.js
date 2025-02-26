@@ -68,8 +68,8 @@ app.post('/match', async (req, res) => {
             console.warn(`🚫 Blocked localhost request to /match from: ${req.ip}`);
             return res.status(403).json({ error: "Local requests to /match are blocked" });
         }
-        console.log(`Incoming /match request from: ${req.ip} - ${req.headers['user-agent']} at ${new Date().toISOString()}`);
-        return
+        // console.log(`Incoming /match request from: ${req.ip} - ${req.headers['user-agent']} at ${new Date().toISOString()}`);
+        // return
             const { photo, numPhotos, uuid } = req.body;
             const descriptor = await getDescriptor(photo);
 
