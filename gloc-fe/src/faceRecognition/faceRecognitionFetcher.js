@@ -23,27 +23,28 @@ async function fetchFaceRecognitionData() {
             return; // Skip if the tab is not active
         }
         try {
-            const response = await fetch(`${SERVER_URL}/match`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ photo: currFace, numPhotos: numTotalGridItems, uuid: userID }),
-                signal: abortController.signal,
-            });
+            // const response = await fetch(`${SERVER_URL}/match`, {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ photo: currFace, numPhotos: numTotalGridItems, uuid: userID }),
+            //     signal: abortController.signal,
+            // });
 
             // If the server rejects (503), stop all retries and stop the loop
-            if (response.status === 403) {
-                window.location.reload();
-                console.warn("Face recognition is disabled. Stopping requests.");
-                abortController.abort(); // Abort all ongoing fetch requests
-                abortController = new AbortController(); // Reset the controller
-                return;
-            }
+            // if (response.status === 403) {
+            //     window.location.reload();
+            //     console.warn("Face recognition is disabled. Stopping requests.");
+            //     abortController.abort(); // Abort all ongoing fetch requests
+            //     abortController = new AbortController(); // Reset the controller
+            //     return;
+            // }
 
-            const data = await response.json();
-            if (data !== null) {
-                matches = data;
-                return;
-            }
+            // const data = await response.json();
+            // if (data !== null) {
+            //     matches = data;
+            //     return;
+            // }
+            return
         } catch (error) {
             if (error.name === 'AbortError') {
                 console.log('Fetch aborted');
