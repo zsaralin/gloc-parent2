@@ -64,6 +64,10 @@ app.use('/static/images', express.static(localFolderPath));
 
 app.post('/match', async (req, res) => {
     try {
+        if (req.ip === "67.218.223.210") {
+            console.warn(`🚫 Blocked localhost request to /match from: ${req.ip}`);
+            return res.status(403).json({ error: "Local requests to /match are blocked" });
+        }
         console.log(`Incoming /match request from: ${req.ip} - ${req.headers['user-agent']} at ${new Date().toISOString()}`);
         return
             const { photo, numPhotos, uuid } = req.body;
