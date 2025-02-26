@@ -14,6 +14,7 @@ const localFolderPath = path.resolve(__dirname, '../db');  // Adjust the folder 
 const server = http.createServer(app);
 const io = socketIo(server, { cors: { origin: "*" } });
 
+
 io.on("connection", (socket) => {
     console.log(`Client connected: ${socket.id}`);
 

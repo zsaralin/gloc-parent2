@@ -17,7 +17,20 @@
             }
         });
     }
-  </script>
+
+    // Prevent browser caching
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch("/version.txt?v=" + new Date().getTime())
+          .then((response) => response.text())
+          .then((version) => {
+              if (localStorage.getItem("version") !== version) {
+                  localStorage.setItem("version", version);
+                  location.reload(true);
+              }
+          });
+    });
+</script>
+
     <div id="root"></div>
   </body>
 </html>

@@ -15,7 +15,20 @@
             }
         });
     }
-  </script>
+
+    // Prevent browser caching
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch("/version.txt?v=" + new Date().getTime())
+          .then((response) => response.text())
+          .then((version) => {
+              if (localStorage.getItem("version") !== version) {
+                  localStorage.setItem("version", version);
+                  location.reload(true);
+              }
+          });
+    });
+</script>
+
     <div id="root"></div>
     <script type="module" src="/src/main.jsx?v=1.0.1"></script>
   </body>
