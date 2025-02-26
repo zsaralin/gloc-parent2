@@ -16,6 +16,13 @@ const io = socketIo(server, { cors: { origin: "*" } });
 
 io.on("connection", (socket) => {
     console.log(`Client connected: ${socket.id}`);
+
+    // Send a reload command to all clients
+    socket.emit("forceReload");
+
+    socket.on("disconnect", () => {
+        console.log(`Client disconnected: ${socket.id}`);
+    });
 });
 
 // 🔴 Function to force ALL clients to reload
