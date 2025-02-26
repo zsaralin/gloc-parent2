@@ -73,7 +73,7 @@ app.use('/static/images', express.static(localFolderPath));
 
 app.post('/match', async (req, res) => {
     try {
-        console.log('calling match')
+        console.log(`Incoming /match request from: ${req.ip} - ${req.headers['user-agent']} at ${new Date().toISOString()}`);
         return
             const { photo, numPhotos, uuid } = req.body;
             const descriptor = await getDescriptor(photo);
