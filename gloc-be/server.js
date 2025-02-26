@@ -14,9 +14,9 @@ const localFolderPath = path.resolve(__dirname, '../db');  // Adjust the folder 
 const server = http.createServer(app);
 const io = socketIo(server, { cors: { origin: "*" } });
 
-io.sockets.disconnectSockets();
-console.log("🔴 Disconnected all WebSockets.");
-
+// io.sockets.disconnectSockets();
+// console.log("🔴 Disconnected all WebSockets.");
+app.set("trust proxy", true);
 // 🔴 Function to force ALL clients to reload
 function forceReloadAllClients() {
     console.log("Forcing all clients to reload...");
@@ -64,10 +64,8 @@ app.use('/static/images', express.static(localFolderPath));
 
 app.post('/match', async (req, res) => {
     try {
-        if (req.ip === "::ffff:127.0.0.1" || req.ip === "127.0.0.1") {
-            console.warn(`🚫 Blocked localhost request to /match from: ${req.ip}`);
-            return res.status(403).json({ error: "Local requests to /match are blocked" });
-        }
+        console.log(`Incoming /match request from: ${req.ip} - ${req.headers['user-agent']} at ${new Date().toISOString()}`);
+        return
             const { photo, numPhotos, uuid } = req.body;
             const descriptor = await getDescriptor(photo);
 
