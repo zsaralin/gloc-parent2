@@ -8,9 +8,10 @@ import { userID } from "./userScoresManager.js";
 export let matches = null; // Initialize matches
 export let abortController = new AbortController();
 
-const RETRY_LIMIT = 1;           // Max retries before giving up
+const RETRY_LIMIT = 5;           // Max retries before giving up
 const RETRY_INTERVAL = 2000;     // Retry every 2 seconds if data is null
 const FACE_RECOG_INTERVAL = 3000; // Run face recognition every 3 seconds
+
 async function fetchFaceRecognitionData() {
     let attempts = 0;
     while (attempts < RETRY_LIMIT) {
@@ -23,28 +24,16 @@ async function fetchFaceRecognitionData() {
             return; // Skip if the tab is not active
         }
         try {
-            // const response = await fetch(`${SERVER_URL}/match`, {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ photo: currFace, numPhotos: numTotalGridItems, uuid: userID }),
-            //     signal: abortController.signal,
-            // });
-
-            // If the server rejects (503), stop all retries and stop the loop
-            // if (response.status === 403) {
-            //     window.location.reload();
-            //     console.warn("Face recognition is disabled. Stopping requests.");
-            //     abortController.abort(); // Abort all ongoing fetch requests
-            //     abortController = new AbortController(); // Reset the controller
-            //     return;
-            // }
-
-            // const data = await response.json();
-            // if (data !== null) {
-            //     matches = data;
-            //     return;
-            // }
-            return
+            const response = await fetch(`${SERVER_URL}/match`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ photo: currFace, numPhotos: numTotalGridItems, uuid: userID }),
+            });
+            const data = await response.json();
+            if (data !== null) {
+                matches = data;
+                return;
+            }
         } catch (error) {
             if (error.name === 'AbortError') {
                 console.log('Fetch aborted');
@@ -62,7 +51,7 @@ async function fetchFaceRecognitionData() {
 async function continuousFaceRecognition() {
     await fetchFaceRecognitionData();
     if (!abortController.signal.aborted) {
-        // setTimeout(continuousFaceRecognition, FACE_RECOG_INTERVAL);
+        setTimeout(continuousFaceRecognition, FACE_RECOG_INTERVAL);
     }
 }
 
