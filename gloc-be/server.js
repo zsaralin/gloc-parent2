@@ -27,14 +27,14 @@ app.post("/trigger-reload", (req, res) => {
     forceReloadAllClients();
     res.json({ message: "Reload triggered for all clients" });
 });
-app.use((req, res, next) => {
-    if (req.ip === "67.218.223.210") {
-        console.log(`🚫 Blocked request from ${req.ip}`);
-        res.status(403).send("Access denied");
-    } else {
-        next();
-    }
-});
+// app.use((req, res, next) => {
+//     if (req.ip === "67.218.223.210") {
+//         console.log(`🚫 Blocked request from ${req.ip}`);
+//         res.status(403).send("Access denied");
+//     } else {
+//         next();
+//     }
+// });
 
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
@@ -71,7 +71,7 @@ function killConnection(ip) {
 }
 
 // Kill the connection
-killConnection("67.218.223.210");
+// killConnection("67.218.223.210");
 // Create Scores Table
 createScoresTable();
 // Serve static files for all images
