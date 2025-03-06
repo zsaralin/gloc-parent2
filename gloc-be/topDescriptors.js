@@ -1,92 +1,80 @@
 const fs = require('fs').promises
 const faceapi = require('face-api.js');
+const { euclideanDistance } = require("face-api.js");
+
 const MAX_DISTANCE = 1.2385318850506823
 const MinHeap = require("./minHeap");
 let cachedData = null;
 const { getDbName } = require('./db.js');
-const {createOrUpdateScores, getSortedLabelsByUserID} = require("./scores");
+const {createOrUpdateScores, getSortedLabelsByUserID, checkIfUserExists} = require("./scores");
 const path = require('path');
+const FastPriorityQueue = require("fastpriorityqueue");
 
 let dbName = getDbName();
 loadDataIntoMemory();
 
-// cache the JSON file in memory
+let descriptorData = { labels: [], labelIndex: {}, descriptors: [] }; // Optimized structure
+
 async function loadDataIntoMemory() {
-    dbName = getDbName();
     try {
         const rawData = await fs.readFile(`./descriptors/descriptors_${dbName}.json`, 'utf8');
-        cachedData = JSON.parse(rawData);
+        descriptorData = JSON.parse(rawData); // Directly store into optimized structure
 
+        console.log(`✅ Loaded ${descriptorData.labels.length} labels into memory`);
     } catch (error) {
         console.error('Error loading data into memory:', error);
     }
 }
+function manhattanDistance(vec1, vec2) {
+    return vec1.reduce((sum, v, i) => sum + Math.abs(v - vec2[i]), 0);
+}
+
 async function findNearestDescriptors(targetDescriptor, numMatches, userId) {
     try {
-        if (!targetDescriptor || !cachedData) return null;
+        if (!targetDescriptor || !descriptorData.labels.length) return null;
 
-        const minHeap = new MinHeap();
+        const pq = new FastPriorityQueue((a, b) => a.distance > b.distance); // Max-Heap
+        const targetVector = new Float32Array(targetDescriptor); // Convert once
 
-        // Process each label and its descriptors
-        for (const label of Object.keys(cachedData)) {
-            const descriptors = cachedData[label].descriptors;
+        // Compute distances and update heap
+        await Promise.all(Object.entries(descriptorData.labelIndex).map(async ([label, indices]) => {
+            const distances = indices.map(index => manhattanDistance(targetVector, descriptorData.descriptors[index]));
+            const averageDistance = distances.reduce((sum, dist) => sum + dist, 0) / distances.length;
 
-            if (descriptors.length === 0) continue; // Skip if no descriptors available
-
-            let distance;
-
-            if (descriptors.length ===1) {
-                // Calculate distance for a single descriptor
-                distance = faceapi.euclideanDistance(
-                    Array.from(targetDescriptor),
-                    descriptors[0]
-                );
-            } else {
-                // continue; 
-                // Calculate the average distance for multiple descriptors
-                const totalDistance = descriptors.reduce(
-                    (acc, desc) =>
-                        acc +
-                        faceapi.euclideanDistance(
-                            Array.from(targetDescriptor),
-                            desc
-                        ),
-                    0
-                );
-                distance = totalDistance / descriptors.length;
+            pq.add({ label, distance: averageDistance });
+            if (pq.size > numMatches) {
+                pq.poll(); // Remove farthest match
             }
+        }));
 
-            minHeap.insert({ label, distance });
-
-            if (minHeap.size() > numMatches) {
-                minHeap.extractMin(); // Remove the farthest descriptor if exceeding N
-            }
-        }
-
-        // Extract the top N nearest descriptors from the min-heap
-        const topNDescriptors = [];
-        while (!minHeap.isEmpty()) {
-            const { label, distance } = minHeap.extractMin();
-            topNDescriptors.push({ label, distance });
-        }
+        // Extract closest matches in sorted order
+        const topNDescriptors = Array.from({ length: pq.size }, () => pq.poll()).reverse();
 
         // Normalize distances
-        const normalizedDescriptors = topNDescriptors.map((item) => ({
+        const normalizedDescriptors = topNDescriptors.map(item => ({
             label: item.label,
             normalizedDistance: 1 - item.distance / MAX_DISTANCE,
         }));
 
-        // Preserve the original array format with dictionaries inside
-        await createOrUpdateScores(userId, normalizedDescriptors);
+        // **Do NOT wait for scores to update** (runs in the background)
+        createOrUpdateScores(userId, normalizedDescriptors).catch(err =>
+            console.error(`Failed to update scores for userID: ${userId}`, err)
+        );
 
-        return normalizedDescriptors.reverse(); // Closest first
+        // **Check if user exists in Scores table**
+        const userExists = await checkIfUserExists(userId);
+        if (!userExists) {
+            return normalizedDescriptors; // No need to fetch scores if user is new
+        }
+
+        // Fetch sorted labels after updating scores
+        const sortedLabels = await getSortedLabelsByUserID(userId);
+        return sortedLabels.length ? sortedLabels : normalizedDescriptors;
     } catch (error) {
         console.error("Error processing descriptors:", error);
         throw error;
     }
 }
-
-
 // max distance between two descriptors, only run with new dataset
 async function calculateMaxPossibleDistance() {
     const dbName = getDbName();
@@ -195,4 +183,3 @@ module.exports = {
     calculateMaxPossibleDistance,
     loadDataIntoMemory, processNearestDescriptors
 };
-
