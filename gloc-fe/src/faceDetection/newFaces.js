@@ -4,6 +4,7 @@ import {
 } from "../faceRecognition/faceRecognition.js";
 import { clearMatches } from "../faceRecognition/faceRecognitionFetcher.js";
 import {deletePrevScoresDB, generateUUID} from "../faceRecognition/userScoresManager.js";
+import { resetProgressBar, startProgressBar } from "../grid/VideoContainer.jsx";
 import { isShuffling } from "../updateGrid/shuffleManagerService.js";
 
 export let newFace = false;
@@ -21,6 +22,7 @@ export function setCurrFace(mediapipeResult, imageDataUrl) {
 }
 
 function updateFaceDetection(mediapipeResult, imageDataUrl) {
+
     if (!currFace) {
         currFace = imageDataUrl;
         handleNewFaceDetection(mediapipeResult);
@@ -41,6 +43,7 @@ function handleNoFaceDetected() {
     if (isShuffling()) {
         return
     }
+    resetProgressBar()
     resetCurrFace()
     stopRecognitionTasks();
     deletePrevScoresDB();

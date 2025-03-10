@@ -121,9 +121,10 @@ function getBoundingBox(landmarks) {
       animationFrameId = requestAnimationFrame(detectAndZoom);
     }
   
+  
     async function detectAndDraw() {
       if (!video || video.paused) return;
-  
+
       context.clearRect(0, 0, canvas.width, canvas.height);
   
       const { cropX, cropY, cropWidth, cropHeight } = calculateCoverCrop(
@@ -144,8 +145,57 @@ function getBoundingBox(landmarks) {
       offscreenContext.drawImage(video, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
   
       const mediapipeResult = runFaceDetection(offscreenCanvas);
-      setCurrFace(mediapipeResult, offscreenCanvas.toDataURL("image/jpeg", 0.5));
+      if (mediapipeResult && mediapipeResult.faceLandmarks.length > 0) {
+
+        const faceBox = getBoundingBox(mediapipeResult.faceLandmarks[0]);
+        // Convert to pixel coordinates
+        let minX = Math.floor(faceBox.minX * canvas.width);
+        let minY = Math.floor(faceBox.minY * canvas.height);
+        let maxX = Math.ceil(faceBox.maxX * canvas.width);
+        let maxY = Math.ceil(faceBox.maxY * canvas.height);
+
+        // Compute original face width and height
+        let faceWidth = maxX - minX;
+        let faceHeight = maxY - minY;
+
+        // Define padding relative to face size
+        const paddingX = faceWidth * 0.2;  // 20% of face width
+        const paddingY = faceHeight * 0.2; // 20% of face height
+
+        // Apply padding while ensuring values stay within bounds
+        minX = Math.max(0, minX - paddingX);
+        minY = Math.max(0, minY - paddingY);
+        maxX = Math.min(canvas.width, maxX + paddingX);
+        maxY = Math.min(canvas.height, maxY + paddingY);
+
+        // Recalculate face width and height after applying padding
+        faceWidth = maxX - minX;
+        faceHeight = maxY - minY;
+
+        // Create cropped face canvas
+        const croppedFaceCanvas = document.createElement("canvas");
+        const croppedFaceContext = croppedFaceCanvas.getContext("2d");
+        
+        croppedFaceCanvas.width = faceWidth;
+        croppedFaceCanvas.height = faceHeight;
+        
+        croppedFaceContext.drawImage(
+          offscreenCanvas,
+          minX, minY, faceWidth, faceHeight, // Source (from full image)
+          0, 0, faceWidth, faceHeight         // Destination (cropped face)
+        );
+        
+        // Convert cropped image to base64
+        const base64Image = croppedFaceCanvas.toDataURL("image/jpeg", 0.5).split(",")[1];
+        
   
+      // Convert to base64 and send only the face
+      setCurrFace(mediapipeResult, croppedFaceCanvas.toDataURL("image/jpeg", 0.5));
+    }
+    else{
+      setCurrFace(mediapipeResult, offscreenCanvas.toDataURL("image/jpeg", 0.5));
+
+    }
       if (mediapipeResult) drawFaces(mediapipeResult, canvas);
   
       animationFrameId = requestAnimationFrame(detectAndDraw);

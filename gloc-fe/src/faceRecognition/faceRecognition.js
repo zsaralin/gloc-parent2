@@ -4,7 +4,7 @@ import { stopShuffle } from "../updateGrid/shuffleManagerService.js";
 import { loadImages } from "../updateGrid/ImageLoader.jsx";
 import { fillGridItems } from "../updateGrid/updateGrid.jsx";
 import { preloadLoading, startLoading } from '../grid/LoadingScreen.jsx';
-
+import { startProgressBar } from '../grid/VideoContainer.jsx';
 let isFirstUpdate = true;
 let isProcessing = false;
 let recognitionIntervalId = null;
@@ -106,6 +106,7 @@ export async function startRecognitionTask() {
 
     // Run immediately once
     await performRecognitionTask();
+    startProgressBar(overlaySettings.refreshTime)
 
     if (isFirstUpdate) {
         await new Promise(resolve => setTimeout(resolve, overlaySettings.refreshTime * 1000));
@@ -114,6 +115,7 @@ export async function startRecognitionTask() {
     // ✅ Prevent multiple intervals
     if (!recognitionIntervalId) {
         recognitionIntervalId = setInterval(() => {
+            
             if (!abortController.signal.aborted) {
                 performRecognitionTask();
             }
