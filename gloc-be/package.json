@@ -6,6 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
+  "bin": "server.js",
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -22,8 +23,7 @@
     "graceful-fs": "^4.2.11",
     "jimp": "^0.22.12",
     "mime-types": "^2.1.35",
-    "pg": "^8.11.5",
-    "sharp": "^0.33.4"
+    "pg": "^8.11.5"
   },
   "keywords": [],
   "description": "",
