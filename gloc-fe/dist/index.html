@@ -5,32 +5,11 @@
     <link rel="icon" type="image/svg+xml" href="" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Global Level of Confidence</title>
-    <script type="module" crossorigin src="/assets/index-B5TgBnlv.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CZDrXsXU.css">
+    <script type="module" crossorigin src="/assets/index-wtb5PgC1.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-C7svweL1.css">
   </head>
   <body>
-    <script>const global = {}
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            for (let registration of registrations) {
-                registration.unregister();
-            }
-        });
-    }
 
-    // Prevent browser caching
-    document.addEventListener("DOMContentLoaded", function () {
-        fetch("/version.txt?v=" + new Date().getTime())
-          .then((response) => response.text())
-          .then((version) => {
-              if (localStorage.getItem("version") !== version) {
-                  localStorage.setItem("version", version);
-                  location.reload(true);
-              }
-          });
-    });
-</script>
-
-    <div id="root"></div>
+    <div id="root"></div>
   </body>
 </html>

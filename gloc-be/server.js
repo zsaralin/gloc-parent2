@@ -12,17 +12,17 @@ require('dotenv').config();
 const localFolderPath = path.resolve(__dirname, '../db');  // Adjust the folder path as needed
 // io.sockets.disconnectSockets();
 // console.log("🔴 Disconnected all WebSockets.");
-app.set("trust proxy", true);
-// 🔴 Function to force ALL clients to reload
-function forceReloadAllClients() {
-    console.log("Forcing all clients to reload...");
-    io.emit("forceReload"); // Send reload event to all connected clients
-}
-// 🛑 API to manually trigger a forced reload
-app.post("/trigger-reload", (req, res) => {
-    forceReloadAllClients();
-    res.json({ message: "Reload triggered for all clients" });
-});
+// app.set("trust proxy", true);
+// // 🔴 Function to force ALL clients to reload
+// function forceReloadAllClients() {
+//     console.log("Forcing all clients to reload...");
+//     io.emit("forceReload"); // Send reload event to all connected clients
+// }
+// // 🛑 API to manually trigger a forced reload
+// app.post("/trigger-reload", (req, res) => {
+//     forceReloadAllClients();
+//     res.json({ message: "Reload triggered for all clients" });
+// });
 // app.use((req, res, next) => {
 //     if (req.ip === "67.218.223.210") {
 //         console.log(`🚫 Blocked request from ${req.ip}`);
