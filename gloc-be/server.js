@@ -74,12 +74,10 @@ app.post('/match', async (req, res) => {
             const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos + 2, uuid);
             const endTime = performance.now();
             console.log(`findNearestDescriptors took ${(endTime - startTime).toFixed(2)} ms`);
-
             if (!nearestDescriptors) {
                 res.json(null);
                 return;
             }
-
             const responseArray = await processNearestDescriptors(nearestDescriptors, localFolderPath);
             res.json(responseArray);
     } catch (error) {

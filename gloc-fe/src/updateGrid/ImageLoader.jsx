@@ -3,14 +3,23 @@ import {numTotalGridItems} from '../grid/gridLayout.jsx'
 function encodePath(path) {
     return path.split('/').map(decodeURIComponent).map(encodeURIComponent).join('/');
 }
+let isLoading = false; // Flag to track if loadImages() is running
 
 export async function loadImages(imageDataArray) {
+    if (isLoading) {
+        console.warn('Skipping loadImages call: Already in progress');
+        return []; // Return an empty array to prevent duplicate loading
+    }
+
+    isLoading = true; // Lock the function
     try {
-        console.log('starting load')
-        const startTime = Date.now(); // Capture the start time        
+        console.log('Starting load');
+        const startTime = Date.now(); // Capture the start time
+
         const batchSize = 10; // Adjusted batch size
         const loadedImages = [];
-        const numPhotos = numTotalGridItems
+        const numPhotos = numTotalGridItems;
+
         for (let i = 0; i < numPhotos; i += batchSize) {
             const batchImages = imageDataArray.slice(i, i + batchSize);
             const batchPromises = batchImages.map(async (imageData) => {
@@ -47,9 +56,11 @@ export async function loadImages(imageDataArray) {
         }
 
         const endTime = Date.now(); // Capture the end time
-        console.log(`done load - Duration: ${endTime - startTime} ms`);
+        console.log(`Done loading - Duration: ${endTime - startTime} ms`);
         return loadedImages.slice(0, numPhotos);
     } catch (error) {
         console.error('Error loading images:', error);
+    } finally {
+        isLoading = false; // Unlock the function after execution
     }
 }

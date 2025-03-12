@@ -32,6 +32,7 @@ async function fetchFaceRecognitionData() {
             const data = await response.json();
             if (data !== null) {
                 matches = data;
+                console.log(matches)
                 return;
             }
         } catch (error) {

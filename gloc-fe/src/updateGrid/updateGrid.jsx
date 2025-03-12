@@ -3,8 +3,13 @@ import { stopShuffle } from "./shuffleManagerService";
 const CROSSFADE_DURATION = 2; // In seconds
 const TEXT_FADE_DURATION = CROSSFADE_DURATION/2; // In seconds
 const TEXT_FADE_DELAY = CROSSFADE_DURATION * 1000; // Convert seconds to milliseconds
-
+const normalizeDistance = (value, minOriginal, maxOriginal, max) => {
+    if (maxOriginal === minOriginal) return 1.5; // Prevent division by zero, center the scale
+    return max*((value - minOriginal) / (maxOriginal - minOriginal)); // Scale within 0-3
+};
 export async function fillGridItems(images, useCrossFade = false, stagger = false, shuffle = false) {
+    const max = 2 + Math.random() * (3 - 2)
+
     // Ensure images are available
     if (!images || images.length === 0) {
         console.error('No images available to fill the grid items.');
@@ -14,14 +19,16 @@ export async function fillGridItems(images, useCrossFade = false, stagger = fals
     const topGridItems = document.querySelectorAll('.top-row-item .image-container');
     const bottomGridItems = document.querySelectorAll('.bottom-grid-item .image-container');
     const allGridItems = [...topGridItems, ...bottomGridItems];
-
+    const allDistances = images.map(img => img.distance);
+    const minOriginal = Math.min(...allDistances);
+    const maxOriginal = Math.max(...allDistances);
     if (allGridItems.length === 0) {
         console.error('No grid elements with the specified classes found in the DOM.');
         return;
     }
 
     const numArrangedImages = allGridItems.length;
-    const scaleFactor = .05; // Define your base scale factor
+    const scaleFactor = 2; // Define your base scale factor
     const updateGridItem = (item, imageElement, index, useCrossFade) => {
         const currImg = item.querySelector('.curr-img');
         const prevImg = item.querySelector('.prev-img');
@@ -33,15 +40,14 @@ export async function fillGridItems(images, useCrossFade = false, stagger = fals
     
         // Only update if the new label is different
         const prevLabel = currImg.getAttribute('data-label');
-        if (prevLabel === imageElement.label) return;
+        // if (prevLabel === imageElement.label) return;
     
         let scaledSimilarity = ''; // Declare in broader scope
         item.setAttribute('data-info', JSON.stringify(imageElement)); // Store object as JSON string
         
         if (!shuffle) {
             // Calculate normalized distance
-            let dynamicScaleFactor = scaleFactor * (1 - index / (numArrangedImages * 2));
-            scaledSimilarity = (imageElement.distance * dynamicScaleFactor).toFixed(2);
+            scaledSimilarity = imageElement.distance//normalizeDistance(imageElement.distance, minOriginal, maxOriginal, max).toFixed(2);
         }
 
         if (useCrossFade) {
