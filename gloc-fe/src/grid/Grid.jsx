@@ -29,6 +29,7 @@ function Grid() {
 
   const [isGridReady, setIsGridReady] = useState(false);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+  const [cursorVisible, setCursorVisible] = useState(true);
 
   useEffect(() => {
     const handleResize = async () => {
@@ -76,9 +77,24 @@ function Grid() {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
+  useEffect(() => {
+    let hideCursorTimeout;
 
+    const showCursor = () => {
+      setCursorVisible(true);
+      clearTimeout(hideCursorTimeout);
+      hideCursorTimeout = setTimeout(() => setCursorVisible(false), 2000); // Hide after 2 sec
+    };
+
+    window.addEventListener("mousemove", showCursor);
+
+    return () => {
+      window.removeEventListener("mousemove", showCursor);
+      clearTimeout(hideCursorTimeout);
+    };
+  }, []);
   return (
-    <div className="grid-wrapper">
+    <div className="grid-wrapper" style={{ cursor: cursorVisible ? "default" : "none" }}>
       <LandscapePage />
       <LandingPage />
       <LoadingScreen />
