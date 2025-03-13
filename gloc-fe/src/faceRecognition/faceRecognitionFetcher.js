@@ -7,10 +7,10 @@ import { userID } from "./userScoresManager.js";
 export let matches = null; // Initialize matches
 export let abortController = new AbortController();
 let faceRecogTimeout = null; // Track timeout ID
-
+import { overlaySettings  } from "../OverlayGui.jsx";
 const RETRY_LIMIT = 3;           // Max retries before giving up
 const RETRY_INTERVAL = 3000;    // Retry every 15 seconds
-const FACE_RECOG_INTERVAL = 15000; // Run face recognition every 15 seconds
+const FACE_RECOG_INTERVAL = overlaySettings.refreshTime * 1000; // Run face recognition every 15 seconds
 
 async function fetchFaceRecognitionData() {
     let attempts = 0;
