@@ -4,7 +4,7 @@ const MAX_DISTANCE = 1.2385318850506823
 const MinHeap = require("./minHeap");
 let cachedData = null;
 const { getDbName } = require('./db.js');
-const {createOrUpdateScores, getSortedLabelsByUserID} = require("./scores");
+const {createOrUpdateScores, getSortedLabelsByUserID, checkIfUserExists} = require("./scores");
 const path = require('path');
 const FastPriorityQueue = require('fastpriorityqueue'); // Import FastPriorityQueue
 
@@ -15,7 +15,7 @@ loadDataIntoMemory();
 async function loadDataIntoMemory() {
     dbName = getDbName();
     try {
-        const rawData = await fs.readFile(`./descriptors/descriptors_${dbName}_old.json`, 'utf8');
+        const rawData = await fs.readFile(`./descriptors/descriptors_${dbName}.json`, 'utf8');
         cachedData = JSON.parse(rawData);
 
     } catch (error) {
@@ -33,43 +33,58 @@ async function findNearestDescriptors(targetDescriptor, numMatches, userId) {
         const dimensionSize = targetArray.length;
         const normalizationFactor = Math.sqrt(dimensionSize); // Adjust for Manhattan Distance
 
-        for (const label of Object.keys(cachedData)) {
-            const descriptors = cachedData[label].descriptors;
-            if (!descriptors || descriptors.length === 0) continue;
+        if (!cachedData.labels || !cachedData.labelIndex || !cachedData.descriptors) {
+            console.error("Invalid cached data structure.");
+            return null;
+        }
+
+        // Iterate through all labels
+        for (const label of cachedData.labels) {
+            const descriptorIndices = cachedData.labelIndex[label]; // Get index/indices for the label
+            
+            if (!descriptorIndices || descriptorIndices.length === 0) continue;
 
             let distance;
-            if (descriptors.length === 1) {
-                // Compute normalized Manhattan distance
-                distance = targetArray.reduce((acc, val, i) => acc + Math.abs(val - descriptors[0][i]), 0) / normalizationFactor;
+            if (descriptorIndices.length === 1) {
+                const descriptor = cachedData.descriptors[descriptorIndices[0]]; // Retrieve descriptor by index
+                distance = targetArray.reduce((acc, val, i) => acc + Math.abs(val - descriptor[i]), 0) / normalizationFactor;
             } else {
-                // Compute average normalized Manhattan distance
-                distance = descriptors.reduce((total, desc) =>
-                    total + targetArray.reduce((acc, val, i) => acc + Math.abs(val - desc[i]), 0), 0) / descriptors.length / normalizationFactor;
+                // Compute average normalized Manhattan distance across all stored descriptors for this label
+                distance = descriptorIndices.reduce((total, index) =>
+                    total + targetArray.reduce((acc, val, i) => acc + Math.abs(val - cachedData.descriptors[index][i]), 0), 0) 
+                    / descriptorIndices.length / normalizationFactor;
             }
 
             pq.add({ label, distance });
         }
 
         // Extract the top N nearest descriptors
-        const topNDescriptors = [];
-        for (let i = 0; i < numMatches && !pq.isEmpty(); i++) {
-            topNDescriptors.push(pq.poll());
+        const normalizedDescriptors = Array.from({ length: Math.min(numMatches, pq.size) }, () => {
+            const item = pq.poll();
+            return { label: item.label, normalizedDistance: (1 - item.distance) * 100 };
+        });
+
+        // **Do NOT wait for scores to update** (runs in the background)
+        createOrUpdateScores(userId, normalizedDescriptors).catch(err =>
+            console.error(`Failed to update scores for userID: ${userId}`, err)
+        );
+
+        // **Check if user exists in Scores table**
+        const userExists = await checkIfUserExists(userId);
+        if (!userExists) {
+            return normalizedDescriptors; // No need to fetch scores if user is new
         }
-        
-        // Normalize distances
-        const normalizedDescriptors = topNDescriptors.map((item) => ({
-            label: item.label,
-            normalizedDistance: (1-item.distance)*100, // Keeps it in the 0-1 range
-        }));
 
-        // await createOrUpdateScores(userId, normalizedDescriptors);
-
-        return normalizedDescriptors; // Closest first
+        // Fetch sorted labels after updating scores
+        const sortedLabels = await getSortedLabelsByUserID(userId);
+        return sortedLabels.length ? sortedLabels : normalizedDescriptors;
     } catch (error) {
         console.error("Error processing descriptors:", error);
         throw error;
     }
 }
+
+
 
 
 // max distance between two descriptors, only run with new dataset

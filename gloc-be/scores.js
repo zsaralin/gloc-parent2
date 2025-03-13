@@ -1,5 +1,5 @@
 const {Pool} = require("pg");
-require('dotenv').config({ path: process.cwd() + '/.env' });
+require('dotenv').config(); // Load environment variables from .env file
 
 const pool = new Pool({
     user: process.env.DB_USER,
@@ -70,34 +70,29 @@ async function createNewScores(userID) {
     }
     await printDB()
 }
-
 async function createOrUpdateScores(userID, entries) {
-    // Prepare the batch insert/update query for labels and scores
-    if (!userID) {
-        return; // Exit the function if userID is undefined
-    }
+    if (!userID || !entries.length) return; // Exit if no data to update
 
-    const baseQuery = `
+    const labels = entries.map(entry => entry.label);
+    const scores = entries.map(entry => entry.normalizedDistance);
+    const updateCounts = new Array(entries.length).fill(1); // Each update increments by 1
+
+    const query = `
         INSERT INTO Scores (userID, label, score, update_count)
-        VALUES ($1, $2, $3, 1)
-            ON CONFLICT (userID, label)
-        DO UPDATE SET
-            score = (Scores.score + EXCLUDED.score),
-                           update_count = Scores.update_count + 1;
+        VALUES ($1, unnest($2::text[]), unnest($3::double precision[]), unnest($4::int[]))
+        ON CONFLICT (userID, label)
+        DO UPDATE SET 
+            score = Scores.score + EXCLUDED.score,
+            update_count = Scores.update_count + 1;
     `;
 
     try {
-        // Process each entry in the array
-        for (let entry of entries) {
-            const { label, normalizedDistance } = entry;
-            // Insert or update the score for each label
-            await pool.query(baseQuery, [userID, label, normalizedDistance]);
-        }
+        await pool.query(query, [userID, labels, scores, updateCounts]);
     } catch (error) {
-        // Log any errors that occur during the execution of the queries
         console.error(`Failed to update scores for userID: ${userID}`, error);
     }
 }
+
 async function deleteUserEntry(userID) {
     try {
         const query = 'DELETE FROM Scores WHERE userID = $1;';
@@ -121,27 +116,29 @@ async function printDB(){
 }
 async function getSortedLabelsByUserID(userID) {
     const query = `
-        SELECT label, score, update_count
+        SELECT label, (score / NULLIF(update_count, 0)) AS "normalizedDistance", score
         FROM Scores
         WHERE userID = $1
-        ORDER BY score DESC;
+        ORDER BY "normalizedDistance" DESC;
     `;
 
     try {
-        // Execute the query with the userID as a parameter.
-        const result = await pool.query(query, [userID]);
-
-        // Extract the labels, scores, and score count from the query results
-        const sortedLabels = result.rows.map(row => ({
-            label: row.label,
-            normalizedDistance: row.score / row.update_count  // Divide each score by the score count
-        }));
-
-        return sortedLabels;
+        const { rows } = await pool.query(query, [userID]);
+        return rows;
     } catch (error) {
-        // Log any errors that occur during the execution of the query
         console.error(`Failed to fetch and sort labels for userID: ${userID}`, error);
-        return []; // Return an empty array in case of error
+        return [];
     }
 }
-module.exports = { createNewScores, createScoresTable, deleteUserEntry, createOrUpdateScores , getSortedLabelsByUserID};
+
+async function checkIfUserExists(userID) {
+    const query = `SELECT EXISTS (SELECT 1 FROM Scores WHERE userID = $1) AS user_exists;`;
+    try {
+        const { rows } = await pool.query(query, [userID]);
+        return rows[0].user_exists;
+    } catch (error) {
+        console.error(`Failed to check if user exists: ${userID}`, error);
+        return false; // Assume user doesn't exist on DB error
+    }
+}
+module.exports = { createNewScores, createScoresTable, checkIfUserExists, deleteUserEntry, createOrUpdateScores , getSortedLabelsByUserID};

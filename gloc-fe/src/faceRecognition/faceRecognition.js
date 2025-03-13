@@ -11,7 +11,7 @@ let isProcessing = false;
 let recognitionIntervalId = null;
 let abortController = globalAbortController; // Keep reference to the global abortController
 let currImages = null; 
-const CHECK_INTERVAL = overlaySettings.refreshTime; 
+const CHECK_INTERVAL = 1000; 
 
 async function performRecognitionTask() {
     if (isProcessing) {
@@ -30,7 +30,7 @@ async function performRecognitionTask() {
         console.log('Starting recognition task cycle.');
 
         // Calculate max checks based on the current refresh time
-        const maxChecks = Math.floor((overlaySettings.refreshTime * 1000) / CHECK_INTERVAL);
+        const maxChecks = 10//Math.floor((overlaySettings.refreshTime * 1000) / CHECK_INTERVAL);
 
         let attempts = 0;
         while ((!matches || matches.length === 0) && attempts < maxChecks) {
@@ -118,6 +118,7 @@ export async function startRecognitionTask() {
         recognitionIntervalId = setInterval(() => {
             if (!abortController.signal.aborted) {
                 startProgressBar(overlaySettings.refreshTime)
+                console.log('calllin perform recognitio ntask')
                 performRecognitionTask();
             }
         }, overlaySettings.refreshTime * 1000);
