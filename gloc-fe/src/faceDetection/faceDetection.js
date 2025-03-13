@@ -120,68 +120,100 @@ function getBoundingBox(landmarks) {
   
       animationFrameId = requestAnimationFrame(detectAndZoom);
     }
-  
     async function detectAndDraw() {
       if (!video || video.paused) return;
   
       context.clearRect(0, 0, canvas.width, canvas.height);
   
       const { cropX, cropY, cropWidth, cropHeight } = calculateCoverCrop(
-        video.videoWidth,
-        video.videoHeight,
-        canvas.width,
-        canvas.height
+          video.videoWidth,
+          video.videoHeight,
+          canvas.width,
+          canvas.height
       );
   
       context.drawImage(
-        video,
-        cropX, cropY, cropWidth, cropHeight,
-        0, 0, canvas.width, canvas.height
+          video,
+          cropX, cropY, cropWidth, cropHeight,
+          0, 0, canvas.width, canvas.height
       );
   
       offscreenCanvas.width = cropWidth;
       offscreenCanvas.height = cropHeight;
       offscreenContext.drawImage(video, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
-  
+      
       const mediapipeResult = runFaceDetection(offscreenCanvas);
-      setCurrFace(mediapipeResult, offscreenCanvas.toDataURL("image/jpeg", 0.5));
+      if (mediapipeResult && mediapipeResult.faceLandmarks.length > 0) {
+          // Crop face region using the extracted bounding box
+          const croppedFaceCanvas = cropFaceFromCanvas(mediapipeResult.faceLandmarks[0], offscreenCanvas, canvas.width, canvas.height);
   
-      if (mediapipeResult) drawFaces(mediapipeResult, canvas);
-  
+          if (croppedFaceCanvas) {
+              setCurrFace(mediapipeResult, croppedFaceCanvas.toDataURL("image/jpeg", 0.5));
+          }
+         drawFaces(mediapipeResult, canvas);
+
+      }
+      else{
+        setCurrFace(mediapipeResult, offscreenCanvas.toDataURL("image/jpeg", 0.5));
+      }
+
       animationFrameId = requestAnimationFrame(detectAndDraw);
-    }
+  }
+  
+  // 🆕 Function to crop and add padding based on face distance
+  function cropFaceFromCanvas(faceLandmarks, inputCanvas, canvasWidth, canvasHeight) {
+      const faceBox = getBoundingBox(faceLandmarks);
+    
+      // Convert to pixel coordinates
+      let minX = Math.floor(faceBox.minX * canvasWidth);
+      let minY = Math.floor(faceBox.minY * canvasHeight);
+      let maxX = Math.ceil(faceBox.maxX * canvasWidth);
+      let maxY = Math.ceil(faceBox.maxY * canvasHeight);
+    
+      // Compute original face width and height
+      let faceWidth = maxX - minX;
+      let faceHeight = maxY - minY;
+    
+      // ✅ Ensure face is not cropped too small (minimum 10% of canvas width)
+      const minFaceSize = canvasWidth * 0.1;
+      faceWidth = Math.max(faceWidth, minFaceSize);
+      faceHeight = Math.max(faceHeight, minFaceSize);
+    
+      // ✅ Adaptive Padding: More padding for smaller faces
+      const sizeFactor = Math.max(0.1, 1 - (faceWidth / canvasWidth)); // Inversely proportional
+      const adaptivePadding = 0.2 + 0.6 * sizeFactor; // Min 20%, Max 80% for small faces
+      const paddingX = faceWidth * adaptivePadding;
+      const paddingY = faceHeight * adaptivePadding;
+    
+      // ✅ Apply padding while ensuring within bounds
+      minX = Math.max(0, minX - paddingX);
+      minY = Math.max(0, minY - paddingY);
+      maxX = Math.min(canvasWidth, maxX + paddingX);
+      maxY = Math.min(canvasHeight, maxY + paddingY);
+    
+      // Recalculate width/height after padding
+      faceWidth = maxX - minX;
+      faceHeight = maxY - minY;
+  
+      // ✅ Create cropped face canvas
+      const croppedFaceCanvas = document.createElement("canvas");
+      const croppedFaceContext = croppedFaceCanvas.getContext("2d");
+      
+      croppedFaceCanvas.width = faceWidth;
+      croppedFaceCanvas.height = faceHeight;
+      
+      croppedFaceContext.drawImage(
+          inputCanvas,
+          minX, minY, faceWidth, faceHeight, // Source (from full image)
+          0, 0, faceWidth, faceHeight         // Destination (cropped face)
+      );
+  
+      return croppedFaceCanvas;
+  }
   
     function runFaceDetection(inputCanvas) {
       const startTimeMs = performance.now();
       return faceLandmarker.detectForVideo(inputCanvas, startTimeMs);
-    }
-  
-    function computeZoomArea(faceBox, cWidth, cHeight) {
-      const { minX, minY, maxX, maxY } = faceBox;
-      const faceW = maxX - minX;
-      const faceH = maxY - minY;
-      const faceCenterX = minX + faceW / 2;
-      const faceCenterY = minY + faceH / 2;
-  
-      const desiredFaceFraction = 0.4;
-      const scaleFactor = faceW > 0 ? desiredFaceFraction / faceW : 1.0;
-      const clampScale = Math.min(Math.max(scaleFactor, 1.0), 4.0);
-  
-      const drawW = 1 / clampScale;
-      const drawH = 1 / clampScale;
-  
-      let sourceX = faceCenterX - drawW / 2;
-      let sourceY = faceCenterY - drawH / 2;
-  
-      sourceX = Math.max(0, Math.min(1 - drawW, sourceX));
-      sourceY = Math.max(0, Math.min(1 - drawH, sourceY));
-  
-      return {
-        sx: sourceX * cWidth,
-        sy: sourceY * cHeight,
-        sWidth: drawW * cWidth,
-        sHeight: drawH * cHeight
-      };
     }
   
     function restartDetection() {

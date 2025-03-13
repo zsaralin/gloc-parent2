@@ -33,7 +33,7 @@ export async function fillGridItems(images, useCrossFade = false, stagger = fals
     
         // Only update if the new label is different
         const prevLabel = currImg.getAttribute('data-label');
-        if (prevLabel === imageElement.label) return;
+        // if (prevLabel === imageElement.label) return;
     
         let scaledSimilarity = ''; // Declare in broader scope
         item.setAttribute('data-info', JSON.stringify(imageElement)); // Store object as JSON string
@@ -49,30 +49,56 @@ export async function fillGridItems(images, useCrossFade = false, stagger = fals
             prevImg.style.backgroundImage = `url('${imageElement.src}')`;
             currImg.style.transition = `opacity ${CROSSFADE_DURATION}s ease-in-out`;
             topText.style.transition = `opacity ${TEXT_FADE_DURATION}s ease-in-out`; // Add transition for top text
-            bottomText.style.transition = `opacity ${TEXT_FADE_DURATION}s ease-in-out`; // Add transition for bottom text
+            bottomText.style.transition = `opacity ${TEXT_FADE_DURATION}s ease-in-out`; // Add transition for bottom text        
 
-            // Fade out text
+            // Compute new bottom text
+            
+            // let truncatedName = 
+            // index === 0 ?
+            // truncateNameToFit(
+            //     imageElement.jsonData.nombre,
+            //     bottomText,
+            //     3,
+            //     ` [No. Records: ${imageElement.jsonData.numeroDeRegistros}]`
+            // ) : 
+            // truncateNameToFit(
+            //     imageElement.jsonData.nombre,
+            //     bottomText,
+            //     3,
+            //     ` [${imageElement.jsonData.numeroDeRegistros}]`
+            // );
+            // const newBottomText =  `${truncatedName} [${imageElement.jsonData.numeroDeRegistros}]`
+            // const isBottomTextSame = bottomText.innerHTML === newBottomText || bottomText.innerHTML === '';
+            
             topText.style.opacity = 0;
-            bottomText.style.opacity = 0;
-            currImg.style.opacity = 0;
-    
+            // if (!isBottomTextSame) {
+                bottomText.style.opacity = 0;
+            // }
+            currImg.style.opacity = 0;    
+        
+            
+            // ✅ Fade out elements selectively
+
+        
             setTimeout(() => {
                 currImg.style.backgroundImage = `url('${imageElement.src}')`;
                 currImg.style.transition = 'opacity 0s linear';
                 currImg.style.opacity = 1;
-    
+        
                 // Update text content
                 if (!shuffle) {
                     updateTextContent(topText, bottomText, imageElement, index, scaledSimilarity);
                 }
-    
-                // Fade text back in
+        
+                // ✅ Fade back in selectively
                 setTimeout(() => {
                     topText.style.opacity = 1;
                     bottomText.style.opacity = 1;
                 }, TEXT_FADE_DELAY / 10); // Delay slightly to sync with the image fade
             }, TEXT_FADE_DELAY); // Delay matches the crossfade duration
-        } else {
+        }
+        
+        else {
             prevImg.style.backgroundImage = currImg.style.backgroundImage;
             currImg.style.backgroundImage = `url('${imageElement.src}')`;
     
@@ -122,6 +148,7 @@ export async function fillGridItems(images, useCrossFade = false, stagger = fals
         });
     }
 }
+
 function updateTextContent(topText, bottomText, imageElement, index, scaledSimilarity) {
     if (index === 0) {
         topText.textContent = `Level of Confidence: ${scaledSimilarity}%`;
@@ -146,7 +173,6 @@ function updateTextContent(topText, bottomText, imageElement, index, scaledSimil
         bottomText.innerHTML = `${truncatedName} [${imageElement.jsonData.numeroDeRegistros}]`;
     }
 }
-
 export function setupOverlayTransparency() {
     const topGridItems = document.querySelectorAll('.top-row-item .image-container');
     const bottomGridItems = document.querySelectorAll('.bottom-grid-item .image-container');

@@ -5,7 +5,7 @@ import {
 import { clearMatches } from "../faceRecognition/faceRecognitionFetcher.js";
 import {deletePrevScoresDB, generateUUID} from "../faceRecognition/userScoresManager.js";
 import { isShuffling } from "../updateGrid/shuffleManagerService.js";
-
+import { resetProgressBar, startProgressBar } from "../grid/VideoContainer.jsx";
 export let newFace = false;
 export let currFace = null;
 
@@ -41,6 +41,7 @@ function handleNoFaceDetected() {
     if (isShuffling()) {
         return
     }
+    resetProgressBar()
     resetCurrFace()
     stopRecognitionTasks();
     deletePrevScoresDB();

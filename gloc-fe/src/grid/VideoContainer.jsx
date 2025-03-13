@@ -5,12 +5,16 @@ import { isShuffling } from '../updateGrid/shuffleManagerService.js';
 import { startFaceDetection } from '../faceDetection/faceDetection.js';
 import { resetCurrFace } from '../faceDetection/newFaces.js';
 
+let setProgressGlobal;
+
 function VideoContainer() {
   const [isPlaying, setIsPlaying] = useState(false);
-
+  const [progress, setProgress] = useState(0);
+  
   useEffect(() => {
+    setProgressGlobal = setProgress;
+    
     const videoElement = videoRef.current;
-
     if (videoElement) {
       const handlePlay = () => {
         setIsPlaying(true);
@@ -49,15 +53,48 @@ function VideoContainer() {
 
   return (
     <div className="video-container">
-<video ref={videoRef} className="video" muted playsInline webkitplaysinline="true"></video>
-<canvas ref={canvasRef} className="video-canvas"></canvas>
+      <video ref={videoRef} className="video" muted playsInline webkitplaysinline="true"></video>
+      <canvas ref={canvasRef} className="video-canvas"></canvas>
       
       <div id="face-detect-text"></div>
       <button className="play-pause-button" onClick={togglePlayPause}>
         <i className={`fa ${isPlaying ? 'fa-pause' : 'fa-play'}`}></i>
       </button>
+      <div className="progress-bar-container">
+        <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+      </div>
     </div>
   );
+}
+let progressInterval = null; // Store the interval globally
+
+export function resetProgressBar() {
+  const progressBarElement = document.querySelector('.progress-bar');
+  if (progressBarElement) {
+    progressBarElement.style.transition = 'none'; // Instantly reset
+    progressBarElement.style.width = '0%';
+
+    // Force reflow (causes browser to register the width change)
+    void progressBarElement.offsetWidth;
+
+    requestAnimationFrame(() => {
+      progressBarElement.style.transition = 'width var(--progress-duration, 5s) linear';
+    });
+  }
+}
+
+export function startProgressBar(durationInSeconds) {
+  resetProgressBar(); // Reset before starting
+  console.log('starting progress bar ');
+  
+  const progressBarElement = document.querySelector('.progress-bar');
+  if (progressBarElement) {
+    progressBarElement.style.setProperty('--progress-duration', `${durationInSeconds}s`);
+
+    requestAnimationFrame(() => {
+      progressBarElement.style.width = '100%'; // Smoothly animates via CSS
+    });
+  }
 }
 
 export default VideoContainer;

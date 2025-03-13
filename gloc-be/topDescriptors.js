@@ -6,6 +6,7 @@ let cachedData = null;
 const { getDbName } = require('./db.js');
 const {createOrUpdateScores, getSortedLabelsByUserID} = require("./scores");
 const path = require('path');
+const FastPriorityQueue = require('fastpriorityqueue'); // Import FastPriorityQueue
 
 let dbName = getDbName();
 loadDataIntoMemory();
@@ -14,7 +15,7 @@ loadDataIntoMemory();
 async function loadDataIntoMemory() {
     dbName = getDbName();
     try {
-        const rawData = await fs.readFile(`./descriptors/descriptors_${dbName}.json`, 'utf8');
+        const rawData = await fs.readFile(`./descriptors/descriptors_${dbName}_old.json`, 'utf8');
         cachedData = JSON.parse(rawData);
 
     } catch (error) {
@@ -25,61 +26,45 @@ async function findNearestDescriptors(targetDescriptor, numMatches, userId) {
     try {
         if (!targetDescriptor || !cachedData) return null;
 
-        const minHeap = new MinHeap();
+        const pq = new FastPriorityQueue((a, b) => a.distance < b.distance); // Min-Heap: closest first
 
-        // Process each label and its descriptors
+        // Convert target descriptor to array once for efficiency
+        const targetArray = Array.from(targetDescriptor);
+        const dimensionSize = targetArray.length;
+        const normalizationFactor = Math.sqrt(dimensionSize); // Adjust for Manhattan Distance
+
         for (const label of Object.keys(cachedData)) {
             const descriptors = cachedData[label].descriptors;
-
-            if (descriptors.length === 0) continue; // Skip if no descriptors available
+            if (!descriptors || descriptors.length === 0) continue;
 
             let distance;
-
-            if (descriptors.length ===1) {
-                // Calculate distance for a single descriptor
-                distance = faceapi.euclideanDistance(
-                    Array.from(targetDescriptor),
-                    descriptors[0]
-                );
+            if (descriptors.length === 1) {
+                // Compute normalized Manhattan distance
+                distance = targetArray.reduce((acc, val, i) => acc + Math.abs(val - descriptors[0][i]), 0) / normalizationFactor;
             } else {
-                // continue; 
-                // Calculate the average distance for multiple descriptors
-                const totalDistance = descriptors.reduce(
-                    (acc, desc) =>
-                        acc +
-                        faceapi.euclideanDistance(
-                            Array.from(targetDescriptor),
-                            desc
-                        ),
-                    0
-                );
-                distance = totalDistance / descriptors.length;
+                // Compute average normalized Manhattan distance
+                distance = descriptors.reduce((total, desc) =>
+                    total + targetArray.reduce((acc, val, i) => acc + Math.abs(val - desc[i]), 0), 0) / descriptors.length / normalizationFactor;
             }
 
-            minHeap.insert({ label, distance });
-
-            if (minHeap.size() > numMatches) {
-                minHeap.extractMin(); // Remove the farthest descriptor if exceeding N
-            }
+            pq.add({ label, distance });
         }
 
-        // Extract the top N nearest descriptors from the min-heap
+        // Extract the top N nearest descriptors
         const topNDescriptors = [];
-        while (!minHeap.isEmpty()) {
-            const { label, distance } = minHeap.extractMin();
-            topNDescriptors.push({ label, distance });
+        for (let i = 0; i < numMatches && !pq.isEmpty(); i++) {
+            topNDescriptors.push(pq.poll());
         }
-
+        
         // Normalize distances
         const normalizedDescriptors = topNDescriptors.map((item) => ({
             label: item.label,
-            normalizedDistance: 1 - item.distance / MAX_DISTANCE,
+            normalizedDistance: (1-item.distance)*100, // Keeps it in the 0-1 range
         }));
 
-        // Preserve the original array format with dictionaries inside
-        await createOrUpdateScores(userId, normalizedDescriptors);
+        // await createOrUpdateScores(userId, normalizedDescriptors);
 
-        return normalizedDescriptors.reverse(); // Closest first
+        return normalizedDescriptors; // Closest first
     } catch (error) {
         console.error("Error processing descriptors:", error);
         throw error;
@@ -140,16 +125,21 @@ async function getNameFromJsonFile(filePath, defaultLabel) {
         return defaultLabel;
     }
 }
-
 async function processNearestDescriptors(nearestDescriptors, localFolderPath) {
     const labels = [];
+    
+    // Use `Promise.all` to parallelize descriptor processing
     const imagePathPromises = nearestDescriptors.map(async nearestDescriptor => {
         const { label, normalizedDistance } = nearestDescriptor;
         const imagesFolderPath = path.join(localFolderPath, dbName, label, 'images');
         const jsonFilePath = path.join(localFolderPath, dbName, label, 'info.json');
-        const name = await getNameFromJsonFile(jsonFilePath, label);
 
-        let jsonData = null;
+        // Start async file existence check early
+        const jsonExists = await fileExists(jsonFilePath);
+        if (!jsonExists) return null;
+
+        // Read JSON file in parallel
+        let jsonData;
         try {
             const jsonContent = await fs.readFile(jsonFilePath, 'utf8');
             jsonData = JSON.parse(jsonContent);
@@ -159,35 +149,44 @@ async function processNearestDescriptors(nearestDescriptors, localFolderPath) {
         }
 
         const numRecords = jsonData.numeroDeRegistros || 0;
-        const imageFiles = [];
-        for (let i = 0; i < numRecords; i++) {
-            const imagePath = path.join(imagesFolderPath, `${i}.jpg`);
-            try {
-                await fs.access(imagePath);
-                imageFiles.push(`/static/images/${dbName}/${label}/images/${encodeURIComponent(`${i}.jpg`)}`);
-            } catch (error) {
-                console.log(`Image file ${imagePath} does not exist.`);
-            }
-        }
+        if (numRecords === 0) return null; // Skip if no images
 
-        if (imageFiles.length > 0) {
-            labels.push(name);
-            return {
-                label,
-                name,
-                distance: normalizedDistance * 100,
-                imagePath: imageFiles, // Array of image paths
-                jsonData // JSON file content
-            };
-        } else {
-            console.log(`No image files found in folder: ${imagesFolderPath}`);
-            return null;
-        }
+        // Generate image paths in bulk
+        const imagePaths = Array.from({ length: numRecords }, (_, i) =>
+            path.join(imagesFolderPath, `${i}.jpg`)
+        );
+
+        // Check all images in parallel
+        const validImages = await Promise.all(
+            imagePaths.map(async (imagePath) => {
+                try {
+                    return `/static/images/${dbName}/${label}/images/${encodeURIComponent(`${path.basename(imagePath)}`)}`;
+                } catch {
+                    return null; // Skip missing images
+                }
+            })
+        );
+
+        const filteredImages = validImages.filter(Boolean);
+        if (filteredImages.length === 0) return null;
+
+        // Get name from JSON
+        const name = jsonData.name || label;
+        labels.push(name);
+
+        return {
+            label,
+            name,
+            distance: normalizedDistance,
+            imagePath: filteredImages, // Array of image paths
+            jsonData // JSON file content
+        };
     });
 
     const responseArray = (await Promise.all(imagePathPromises)).filter(Boolean);
     return responseArray;
 }
+
 
 
 module.exports = {

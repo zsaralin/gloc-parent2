@@ -11,34 +11,9 @@ const cors = require('cors');
 const { findNearestDescriptors, loadDataIntoMemory, processNearestDescriptors } = require('./topDescriptors');
 require('dotenv').config();
 const localFolderPath = path.resolve(__dirname, '../db');  // Adjust the folder path as needed
-const server = http.createServer(app);
-const io = socketIo(server, { cors: { origin: "*" } });
-const net = require('net')
 // io.sockets.disconnectSockets();
 // console.log("🔴 Disconnected all WebSockets.");
-app.set("trust proxy", true);
-// 🔴 Function to force ALL clients to reload
-function forceReloadAllClients() {
-    console.log("Forcing all clients to reload...");
-    io.emit("forceReload"); // Send reload event to all connected clients
-}
-// 🛑 API to manually trigger a forced reload
-app.post("/trigger-reload", (req, res) => {
-    forceReloadAllClients();
-    res.json({ message: "Reload triggered for all clients" });
-});
-// app.use((req, res, next) => {
-//     if (req.ip === "67.218.223.210") {
-//         console.log(`🚫 Blocked request from ${req.ip}`);
-//         res.status(403).send("Access denied");
-//     } else {
-//         next();
-//     }
-// });
 
-server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
 app.use(cors());
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -56,19 +31,9 @@ const { createNewScores, initializeSessionScores, testDB, createScoresTable, del
 
 let dbName = getDbName();
 
-// app.listen(PORT, async () => {
-//     console.log(`Server is running on port ${PORT}`);
-// });
-
-function killConnection(ip) {
-    console.log(`🔴 Closing connection to ${ip}...`);
-    net.createServer((socket) => {
-        if (socket.remoteAddress === ip) {
-            socket.destroy();
-            console.log(`🔴 Connection to ${ip} forcibly closed.`);
-        }
-    }).listen(0); // Listen on an unused port
-}
+app.listen(PORT, async () => {
+    console.log(`Server is running on port ${PORT}`);
+});
 
 // Kill the connection
 // killConnection("67.218.223.210");
@@ -81,7 +46,6 @@ app.post('/match', async (req, res) => {
     try {
             const { photo, numPhotos, uuid } = req.body;
             const descriptor = await getDescriptor(photo);
-
             if (!descriptor) {
                 res.json(null);
                 return;

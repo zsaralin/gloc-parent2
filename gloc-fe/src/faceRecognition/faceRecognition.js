@@ -4,13 +4,14 @@ import { stopShuffle } from "../updateGrid/shuffleManagerService.js";
 import { loadImages } from "../updateGrid/ImageLoader.jsx";
 import { fillGridItems } from "../updateGrid/updateGrid.jsx";
 import { preloadLoading, startLoading } from '../grid/LoadingScreen.jsx';
+import { startProgressBar } from '../grid/VideoContainer.jsx';
 
 let isFirstUpdate = true;
 let isProcessing = false;
 let recognitionIntervalId = null;
 let abortController = globalAbortController; // Keep reference to the global abortController
 let currImages = null; 
-const CHECK_INTERVAL = 1000; 
+const CHECK_INTERVAL = overlaySettings.refreshTime; 
 
 async function performRecognitionTask() {
     if (isProcessing) {
@@ -72,6 +73,7 @@ async function performRecognitionTask() {
             fillGridItems(images, false, true, false);
             isFirstUpdate = false;
         } else {
+            console.log(matches)
             const images = await loadImages(matches, abortController.signal);
             if (abortController.signal.aborted) {
                 isProcessing = false;
@@ -106,7 +108,7 @@ export async function startRecognitionTask() {
 
     // Run immediately once
     await performRecognitionTask();
-
+    startProgressBar(overlaySettings.refreshTime)
     if (isFirstUpdate) {
         await new Promise(resolve => setTimeout(resolve, overlaySettings.refreshTime * 1000));
     }
@@ -115,6 +117,7 @@ export async function startRecognitionTask() {
     if (!recognitionIntervalId) {
         recognitionIntervalId = setInterval(() => {
             if (!abortController.signal.aborted) {
+                startProgressBar(overlaySettings.refreshTime)
                 performRecognitionTask();
             }
         }, overlaySettings.refreshTime * 1000);

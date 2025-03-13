@@ -10,7 +10,7 @@ export let abortController = new AbortController();
 
 const RETRY_LIMIT = 5;           // Max retries before giving up
 const RETRY_INTERVAL = 2000;     // Retry every 2 seconds if data is null
-const FACE_RECOG_INTERVAL = 3000; // Run face recognition every 3 seconds
+const FACE_RECOG_INTERVAL = 5000; // Run face recognition every 3 seconds
 
 async function fetchFaceRecognitionData() {
     let attempts = 0;
