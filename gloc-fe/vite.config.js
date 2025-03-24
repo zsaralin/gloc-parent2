@@ -7,7 +7,10 @@ export default defineConfig({
   esbuild: {
     loader: "jsx", // ✅ Use a valid loader type ("jsx", "ts", "tsx", etc.)
   },
-  base: '/', // Use './' for relative paths or set your deployment path
+  base: './', // Use './' for relative paths or set your deployment path
+  server: {
+    port: 5173, // Ensure Vite is using the expected port
+  },
   plugins: [
     react(),
     viteStaticCopy({

@@ -6,11 +6,32 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "electron": "electron electron/main.js",
+    "start": "concurrently \"vite\" \"npm run electron\"",
+    "package": "electron-builder",
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "build": {
+  "appId": "com.yourapp.id",
+  "productName": "YourAppName",
+  "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*" 
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    }
+  },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.1",
+    "concurrently": "^9.1.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0"
@@ -20,6 +41,8 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
+    "electron": "^35.0.3",
+    "electron-builder": "^25.1.8",
     "eslint": "^9.13.0",
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^5.0.0",
