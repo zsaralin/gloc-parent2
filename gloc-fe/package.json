@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main": "electron/main.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -11,23 +12,6 @@
     "package": "electron-builder",
     "lint": "eslint .",
     "preview": "vite preview"
-  },
-  "build": {
-  "appId": "com.yourapp.id",
-  "productName": "YourAppName",
-  "directories": {
-      "output": "dist-electron"
-    },
-    "files": [
-      "dist/**/*",
-      "electron/**/*" 
-    ],
-    "win": {
-      "target": "nsis"
-    },
-    "mac": {
-      "target": "dmg"
-    }
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.1",

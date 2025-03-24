@@ -136,7 +136,7 @@ async function createWindow() {
 }
 
 app.whenReady().then(() => {
-  startBackendServer(); // ✅ Start `server.js` before opening the window
+  // startBackendServer(); // ✅ Start `server.js` before opening the window
   createWindow();
 
 
