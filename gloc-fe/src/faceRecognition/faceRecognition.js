@@ -1,10 +1,10 @@
-import { matches, startContinuousFaceRecognition, abortController as globalAbortController } from './faceRecognitionFetcher.js';
+import { matches, startContinuousFaceRecognition, abortController as globalAbortController, getMockImages} from './faceRecognitionFetcher.js';
 import { overlaySettings } from '../OverlayGui';
 import { stopShuffle } from "../updateGrid/shuffleManagerService.js";
 import { loadImages } from "../updateGrid/ImageLoader.jsx";
 import { fillGridItems } from "../updateGrid/updateGrid.jsx";
 import { preloadLoading, startLoading } from '../grid/LoadingScreen.jsx';
-import { startProgressBar } from '../grid/VideoContainer.jsx';
+import { startProgressBar , fastForwardProgressBar} from '../grid/VideoContainer.jsx';
 
 let isFirstUpdate = true;
 let isProcessing = false;
@@ -13,7 +13,7 @@ let abortController = globalAbortController; // Keep reference to the global abo
 let currImages = null; 
 const CHECK_INTERVAL = 1000; 
 
-async function performRecognitionTask() {
+async function performRecognitionTask(willfastforward = false, fromTimeout = false) {
     if (isProcessing) {
         console.warn('Recognition task already in progress. Skipping.');
         return;
@@ -29,60 +29,66 @@ async function performRecognitionTask() {
     try {
         console.log('Starting recognition task cycle.');
 
-        // Calculate max checks based on the current refresh time
-        const maxChecks = 10//Math.floor((overlaySettings.refreshTime * 1000) / CHECK_INTERVAL);
+        let images;
 
-        let attempts = 0;
-        while ((!matches || matches.length === 0) && attempts < maxChecks) {
-            if (abortController.signal.aborted) {
-                console.log('Recognition aborted during match wait.');
+        if (fromTimeout) {
+            console.warn('Timeout fallback active — using random images.');
+            const randomImages = await getMockImages();
+            images = await loadImages(randomImages, abortController.signal);
+        } else {
+            // Wait up to 15 seconds (or defined interval) for matches
+            const maxChecks = Math.floor((overlaySettings.refreshTime * 1000) / CHECK_INTERVAL);
+            let attempts = 0;
+            while ((!matches || matches.length === 0) && attempts < maxChecks) {
+                if (abortController.signal.aborted) {
+                    console.log('Recognition aborted during match wait.');
+                    isProcessing = false;
+                    return;
+                }
+                await new Promise(resolve => setTimeout(resolve, CHECK_INTERVAL));
+                attempts++;
+            }
+
+            if (!matches || matches.length === 0) {
+                console.warn('No matches found; skipping this cycle.');
                 isProcessing = false;
                 return;
             }
-            await new Promise(resolve => setTimeout(resolve, CHECK_INTERVAL));
-            attempts++;
+
+            images = await loadImages(matches, abortController.signal);
         }
 
-        if (!matches || matches.length === 0) {
-            console.warn('No matches found; skipping this cycle.');
+        if (abortController.signal.aborted) {
             isProcessing = false;
             return;
         }
 
-        // If first update, show loading, stop shuffle
+        // First-time display logic
         if (isFirstUpdate) {
-            preloadLoading();
             const startTime = performance.now();
 
-            const images = await loadImages(matches, abortController.signal);
             currImages = images;
-            if (abortController.signal.aborted) {
-                isProcessing = false;
-                return;
-            }
 
             const elapsedTime = performance.now() - startTime;
             const remainingTime = Math.max(1000 - elapsedTime, 0);
-
-            setTimeout(() => {
-                startLoading();
-            }, remainingTime);
+            setTimeout(() => startLoading(fromTimeout), remainingTime);
+            
 
             await new Promise(resolve => setTimeout(resolve, overlaySettings.loadingDuration * 1000));
             stopShuffle();
             fillGridItems(images, false, true, false);
             isFirstUpdate = false;
         } else {
-            console.log(matches)
-            const images = await loadImages(matches, abortController.signal);
-            if (abortController.signal.aborted) {
+            if (document.hidden) {
                 isProcessing = false;
                 return;
             }
-            if(document.hidden) {
-                isProcessing = false;
-                return;
+
+            if (willfastforward) {
+                fastForwardProgressBar(1.5);
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
+
             fillGridItems(images, true, false, false);
         }
 
@@ -93,11 +99,12 @@ async function performRecognitionTask() {
             console.error('Error during recognition task:', error);
         }
     } finally {
-        isProcessing = false; // ✅ Ensure this resets after completion
+        isProcessing = false;
     }
 }
 
-export async function startRecognitionTask() {
+
+export async function startRecognitionTask(fromTimeout = false) {
     // ✅ Ensure previous task is fully stopped before starting
     stopRecognitionTasks();
 
@@ -107,11 +114,22 @@ export async function startRecognitionTask() {
     startContinuousFaceRecognition();
 
     // Run immediately once
-    await performRecognitionTask();
-    startProgressBar(overlaySettings.refreshTime)
-    if (isFirstUpdate) {
-        await new Promise(resolve => setTimeout(resolve, overlaySettings.refreshTime * 1000));
+    if(fromTimeout){
+        await performRecognitionTask(true, fromTimeout);
+        return
     }
+    startProgressBar(15)
+
+    await performRecognitionTask(true);
+    fastForwardProgressBar(2);
+    await new Promise(resolve => setTimeout(resolve, 4 * 1000));
+
+    startProgressBar(overlaySettings.refreshTime)
+    // console.log('calllin perform recognitio ntask')
+    // performRecognitionTask();
+    // if (isFirstUpdate) {
+    //     await new Promise(resolve => setTimeout(resolve, overlaySettings.refreshTime * 1000));
+    // }
 
     // ✅ Prevent multiple intervals
     if (!recognitionIntervalId) {
@@ -134,7 +152,6 @@ export function stopRecognitionTasks() {
         abortController.abort();
     }
     isProcessing = false; // ✅ Ensure next task can start fresh
-    console.log('Recognition tasks stopped.');
 }
 
 window.addEventListener('refreshTimeUpdated', () => {

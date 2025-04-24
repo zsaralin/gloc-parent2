@@ -62,7 +62,7 @@ async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 40) {
                 const imagesDir = await fs.opendir(imagesFolderPath);
                 let firstFile = null;
                 for await (const imageFile of imagesDir) {
-                    if (imageFile.name === "0_comp.jpg") { // Look specifically for 0_comp.jpg
+                    if (imageFile.name === "0_100.jpg") { // Look specifically for 0_comp.jpg
                         firstFile = imageFile.name;
                         // console.log(firstFile);
                         break; // Stop looping once found

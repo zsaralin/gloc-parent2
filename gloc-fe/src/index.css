@@ -1,14 +1,20 @@
 @import '@fortawesome/fontawesome-free/css/all.css';
 @font-face {
-  font-family: "Cascadia Mono";
-  src: url('/fonts/CascadiaMono.woff2') format('woff2'), /* Modern browsers */
-       url('/fonts/CascadiaMono.woff') format('woff');   /* Older browsers */
-  font-weight: bold;
-  font-style: normal;
-  font-display: optional; /* Ensures text is visible while the font loads */
+  font-family: "GT-Zirkon";
+  src: url('/fonts/GT-Zirkon-Regular.woff2') format('woff2'), /* Modern browsers */
+       url('/fonts/GT-Zirkon-Regular.woff') format('woff');   /* Older browsers */
+       font-weight: 400; /* THIS is important */
+       font-style: normal;
+}
+@font-face {
+  font-family: "Univers";
+  src: url('/fonts/Univers.woff2') format('woff2'), /* Modern browsers */
+       url('/fonts/Univers.woff') format('woff');   /* Older browsers */
+       font-weight: 400; /* THIS is important */
+       font-style: normal;
 }
 :root {
-  font-family: "Cascadia Mono", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: var(--font-family, "GT-Zirkon", system-ui, Avenir, Helvetica, Arial, sans-serif);
   line-height: 1.5;
   font-weight: 400;
   --viewport-height: 100dvh; /* Use dynamic viewport height to prevent Safari issues */
@@ -52,10 +58,11 @@ h1 {
   font-size: 2em;
   line-height: 1.1;
   margin-top : 50px;
+  font-family: "Univers", system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
 li, p {
-  font-size : .9em
+  font-size : 1em
 }
 
 button {
@@ -69,13 +76,7 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
+
 
 @media (prefers-color-scheme: light) {
   :root {
@@ -88,4 +89,10 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+a:hover {
+  color: #aaa;
+}
+a{
+  color: #aaa;
 }

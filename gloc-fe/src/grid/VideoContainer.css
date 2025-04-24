@@ -89,4 +89,5 @@
   height: 5px;
   background-color: white;
   transition: width var(--progress-duration, 5s) linear; /* Smooth animation */
+  
 }

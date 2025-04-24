@@ -1,0 +1,196 @@
+/* Overlay styles */
+.wide-grid-overlay {
+    background-color: rgba(0, 0, 0, 1);
+    position: absolute;
+    top: 1;
+    /* left: 0; */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: flex-start; */
+    padding: 2rem 3rem 4rem 3rem; 
+    box-sizing: border-box;
+    opacity: 1;
+    transition: opacity 1s ease-in-out; /* Smooth transition */
+    z-index: 1000; /* Ensure it is above other elements */
+    /* overflow-y: auto; */
+
+  }
+  .wide-grid-overlay.hidden {
+    opacity: 0; /* Fade out effect */
+    pointer-events: none; /* Prevent interaction when hidden */
+  }
+  .language-button {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    background-color: white;
+    color: black;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 0.7rem;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    text-align: center;
+    display: inline-block;
+  }
+  
+  .language-button:hover {
+    background-color: black;
+    color: white;
+  }
+
+  .wide-overlay-content .camera-button {
+      position: absolute;
+      left: 50%;
+      margin-top : 30px;
+      transform: translate(-50%, 0);
+      background-color: white;
+      color: black;
+      border: none;
+      padding: 0.8rem 1.3rem;
+      font-size: 0.8rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.5s ease, color 0.5s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      white-space: nowrap; /* Prevent button content from wrapping */
+      width: max-content; /* Allow dynamic width but keeps consistent size */
+      min-width: 140px; /* Ensure consistent size between states */
+      height: 40px; /* Consistent height */
+      box-sizing: border-box;
+  }
+
+  .wide-overlay-content {
+    flex: 1;
+  display: flex; 
+  flex-direction: column;
+  height: 100%; 
+  }
+  
+  .wide-overlay-content .camera-button:hover {
+    background-color: black;
+    color: white;
+  }
+  
+
+/* Loading dots styles */
+.loading-dots span {
+    /* color:white; */
+    display: inline-block;
+    margin-left: 2px;
+    animation: blink 1.7s infinite;
+}
+
+.loading-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+/* Simple blink animation for dots */
+@keyframes blink {
+    0%, 20% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+.wide-row-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  width: 100%;
+  height: 90% ;
+  position: relative; 
+  /* background-color: green; */
+  gap: .5rem;
+  align-items: start; /* instead of center */
+}
+.wide-row-wrapper{
+  height: 100%;
+}
+.center-button {
+  display: flex;
+  /* align-items: center; */
+  justify-content: center;
+  align-items: flex-end; /* push button to bottom of this cell */
+  height: 100%;
+}
+
+.wide-col {
+  position: relative; /* <--- this is the key */
+
+  padding-right: 10px;
+  padding-left: 30px;
+  /* flex: 1; */
+  max-height: 100%;              /* Limit height */
+  height: 100%; 
+  /* height: 200px; */
+  overflow-y: auto;
+  /* padding-right: 10px; */
+  /* background-color: red; */
+  min-width: 0; /* allows scroll area to shrink */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255,255, .4) black;
+  top: 0; 
+}
+
+.wide-content{
+  height: 75%;
+  position: relative; 
+  flex: 1;
+}
+
+.footer {
+  display: flex;
+  flex-direction: row;   /* Ensure children go left-to-right */
+  justify-content: center; /* Center items horizontally */
+  align-items: center;     /* Align items vertically */
+  gap: 3rem;               /* Optional spacing between items */
+  font-size: 0.9rem;
+  color: #aaa;
+  padding-bottom:20px; 
+  background-color: black;
+  z-index: 1001; /* Ensure it is above other elements */
+
+  /* bottom: -30px;
+  position: absolute; */
+}
+
+.footer a {
+  color: rgba(255, 255, 255, 0.7); /* subtle white by default */
+  text-decoration: none;          /* remove underline */
+  transition: color 0.3s ease;
+  text-decoration: underline;
+
+}
+
+.footer a:hover {
+  color: white;                   /* fully white on hover */
+}
+
+.footer-link {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.8rem;
+  transition: color 0.3s ease;
+  text-decoration: underline;
+
+}
+
+.footer-link:hover {
+  color: white;
+}

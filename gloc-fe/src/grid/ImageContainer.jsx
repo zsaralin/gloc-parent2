@@ -48,8 +48,8 @@ function ImageContainer() {
     const infoString = event.currentTarget.getAttribute("data-info");
     const imageData = JSON.parse(infoString);
 
-    if (imageData?.imagePath) {
-      setModalImages(imageData.imagePath.map((path) => `${SERVER_URL}${path}`));
+    if (imageData?.fullImagePath) {
+      setModalImages(imageData.fullImagePath.map((path) => `${SERVER_URL}${path}`));
     }
 
     let contentHtml = `<div>${imageData.jsonData.nombre}</div>`;

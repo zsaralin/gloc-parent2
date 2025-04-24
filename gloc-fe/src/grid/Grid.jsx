@@ -12,12 +12,15 @@ import {
   topRowItemWidth, 
   bottomGridItemSize 
 } from './gridLayout'; 
-import { startFaceDetection } from '../faceDetection/faceDetection';
+import { startFaceDetection} from '../faceDetection/faceDetection';
+import { timeoutTriggered } from '../faceDetection/newFaces';
 import LandingPage from '../landingPages/LandingPage';
 import LandscapePage from '../landingPages/LandscapePage';
 import { setupOverlayTransparency } from '../updateGrid/updateGrid';
 import LoadingScreen from './LoadingScreen';
 import { updateGridImmediately } from '../faceRecognition/faceRecognition';
+import { getLanguage } from '../config';
+import LightingMessage from './LightingMessage';
 function Grid() {
   const [gridConfig, setGridConfig] = useState({
     numTopRowItems,
@@ -30,6 +33,7 @@ function Grid() {
   const [isGridReady, setIsGridReady] = useState(false);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
   const [cursorVisible, setCursorVisible] = useState(true);
+  
 
   useEffect(() => {
     const handleResize = async () => {
@@ -95,9 +99,11 @@ function Grid() {
   }, []);
   return (
     <div className="grid-wrapper" style={{ cursor: cursorVisible ? "default" : "none" }}>
-      <LandscapePage />
-      <LandingPage />
-      <LoadingScreen />
+   <LandingPage  />
+<LandscapePage  />
+<LoadingScreen />
+<LightingMessage isLightingPoor = {timeoutTriggered}/>
+
       {isGridReady && (
         <div className="grid-container">
           <TopRow 

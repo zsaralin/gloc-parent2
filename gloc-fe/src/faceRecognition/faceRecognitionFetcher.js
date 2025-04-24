@@ -8,11 +8,13 @@ export let matches = null; // Initialize matches
 export let abortController = new AbortController();
 let faceRecogTimeout = null; // Track timeout ID
 import { overlaySettings  } from "../OverlayGui.jsx";
+import {getLanguage} from "../config"
 const RETRY_LIMIT = 3;           // Max retries before giving up
 const RETRY_INTERVAL = 3000;    // Retry every 15 seconds
 const FACE_RECOG_INTERVAL = overlaySettings.refreshTime * 1000; // Run face recognition every 15 seconds
 
 async function fetchFaceRecognitionData() {
+
     let attempts = 0;
     while (attempts < RETRY_LIMIT) {
 
@@ -28,7 +30,7 @@ async function fetchFaceRecognitionData() {
         const response = await fetch(`${SERVER_URL}/match`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ photo: currFace, numPhotos: numTotalGridItems, uuid: userID }),
+            body: JSON.stringify({ photo: currFace, numPhotos: numTotalGridItems, uuid: userID, language: getLanguage()}),
         });
         const data = await response.json();
         if (data !== null) {
@@ -81,4 +83,16 @@ export function stopContinuousFaceRecognition() {
 
 export function clearMatches() {
     matches = null;
+}
+
+export async function getMockImages() {
+    const response = await fetch(`${SERVER_URL}/mock-match`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ numTotalGridItems, language: getLanguage() }) 
+    });
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
 }

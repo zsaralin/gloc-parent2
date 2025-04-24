@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import "./LandscapePage.css";
-
+import { getLanguage, getText } from "../config";
 function LandscapePage() {
+  const text = getText()
+  
   const getIsLandscape = () => {
     return window.orientation === 90 || window.orientation === -90;
   };
@@ -23,7 +25,7 @@ function LandscapePage() {
   return (
     isLandscape && (
       <div className="landscape-overlay">
-        This experience is designed for portrait mode. Please rotate your device to continue.
+        {text.orientation}
       </div>
     )
   );

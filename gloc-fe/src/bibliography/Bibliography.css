@@ -1,0 +1,42 @@
+.bibliography-page {
+    padding: 2em 3rem 0rem 3rem; 
+    color: white;
+    background-color: black;
+    position: absolute;
+    top:0;
+    left: 0;
+    width: 100%;
+    height: 100%; 
+  }
+  
+  .bibliography-page h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .bibliography-page p {
+    font-size: .9rem;
+    opacity: 1;
+    margin-top: 30px; 
+  }
+  
+  .bibliography-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .bibliography-list li {
+    margin-bottom: 0.75rem;
+  }
+  
+  .bibliography-list a {
+    color: white;
+    text-decoration: none;
+    border-bottom: 1px solid grey;
+    transition: opacity 0.2s ease;
+  }
+  
+  .bibliography-list a:hover {
+    opacity: 0.7;
+  }

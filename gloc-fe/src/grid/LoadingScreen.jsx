@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
 import "./LoadingScreen.css";
 import { overlaySettings } from '../OverlayGui';
+import { getText } from "../config";
+let prompts = ""
 
 const LoadingScreen = () => {
-  const [isVisible, setIsVisible] = useState(false);
+  const text = getText()
 
+  prompts = text?.loading_bar; 
+
+  const [isVisible, setIsVisible] = useState(false);
+  prompts = text?.loading_bar; 
   useEffect(() => {
     const handleShowLoading = () => {
       setIsVisible(true);
-      startLoading();
+      startLoading(text);
     };
 
     window.addEventListener('showLoadingScreen', handleShowLoading);
@@ -25,7 +31,8 @@ const LoadingScreen = () => {
         <div className="loading-bar">
           <div id="loading-fill" className="loading-fill"></div>
         </div>
-        <div id="loading-prompt" className="loading-prompt">Extracting facial landmarks...</div>
+        <div id="loading-prompt" className="loading-prompt"> 
+        </div>
       </div>
     </div>
   );
@@ -40,25 +47,36 @@ export const preloadLoading = () => {
     loadingFill.style.width = "10%"; // Set initial width to 10% with transition
   }
 };
+export const showFirstLoadingMessage = () => {
+  const promptElement = document.getElementById("loading-prompt");
+  const text = getText()
+  if (promptElement) {
+    promptElement.innerText = text.loading_bar[0]
+  }
+};
+export const showLoadingMessage = () => {
+  const promptElement = document.getElementById("loading-prompt");
+  const text = getText()
+  if (promptElement) {
+    promptElement.innerText = text.lighting_message
+  }
+};
+export const startLoading = (fromTimeout = false) => {
+  const text = getText()
+  prompts = text?.loading_bar; 
 
-export const startLoading = () => {
   const duration = overlaySettings.loadingDuration * 1000;
 
   const loadingFill = document.getElementById("loading-fill");
   const loadingScreen = document.getElementById("loading-screen");
   const promptElement = document.getElementById("loading-prompt");
-
+  if (!fromTimeout){
+    promptElement.innerText = prompts[0];
+  }
   if (!loadingScreen) return;
 
   loadingScreen.style.opacity = "1";
 
-  const prompts = [
-    "Extracting facial landmarks...",
-    "Sending numerical description...",
-    "Comparing biometric data...",
-    "Searching through database for similarities...",
-    "Retrieving top matches"
-  ];
 
   setTimeout(() => {
     if (loadingFill) {
@@ -69,12 +87,13 @@ export const startLoading = () => {
       const promptTimings = [
         0, duration * 0.2, duration * 0.4, duration * 0.6, duration * 0.9
       ];
-
+      if (!fromTimeout){
       for (let i = 1; i < prompts.length; i++) {
         setTimeout(() => {
           promptElement.innerText = prompts[i];
         }, promptTimings[i]);
       }
+    }
     }
 
     setTimeout(() => {

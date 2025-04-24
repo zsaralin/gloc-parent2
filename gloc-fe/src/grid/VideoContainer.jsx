@@ -18,12 +18,16 @@ function VideoContainer() {
     if (videoElement) {
       const handlePlay = () => {
         setIsPlaying(true);
+        resetProgressBar()
+
         startFaceDetection(); // Call startFaceDetection on play
       };
 
       const handlePause = () => {
         setIsPlaying(false);
         resetCurrFace(); // Call resetCurrFace on pause
+        pauseProgressBar()
+
       };
 
       // Attach event listeners
@@ -45,8 +49,10 @@ function VideoContainer() {
     if (video && video.readyState >= 2) {
       if (video.paused) {
         video.play();
+        resetProgressBar()
       } else {
         video.pause();
+        pauseProgressBar()
       }
     }
   }
@@ -84,6 +90,11 @@ export function resetProgressBar() {
 }
 
 export function startProgressBar(durationInSeconds) {
+  const video = videoRef.current;
+
+  if (video.paused) {
+    return
+  }
   resetProgressBar(); // Reset before starting
   console.log('starting progress bar ');
   
@@ -97,4 +108,48 @@ export function startProgressBar(durationInSeconds) {
   }
 }
 
+export function fastForwardProgressBar(fastDurationInSeconds = 0.3) {
+  const video = videoRef.current;
+
+  if (video.paused) {
+    return
+  }
+  const progressBarElement = document.querySelector('.progress-bar');
+  if (!progressBarElement) return;
+
+  const totalWidth = progressBarElement.parentElement.offsetWidth;
+  const currentWidth = progressBarElement.offsetWidth;
+  const currentPercent = (currentWidth / totalWidth) * 100;
+  const remainingPercent = 100 - currentPercent;
+  if(remainingPercent < 25){
+    return
+  }
+  // 1. Instantly stop current transition and fix current width
+  progressBarElement.style.transition = 'none';
+  progressBarElement.style.width = `${currentPercent}%`;
+
+  // 2. Force reflow
+  void progressBarElement.offsetWidth;
+
+  // 3. Apply fast forward transition
+  progressBarElement.style.transition = `width ${fastDurationInSeconds}s linear`;
+  progressBarElement.style.width = '100%';
+
+  console.log(`Fast forwarding from ${currentPercent.toFixed(1)}%`);
+}
+
+export function pauseProgressBar() {
+  const progressBarElement = document.querySelector('.progress-bar');
+  if (!progressBarElement) return;
+
+  const totalWidth = progressBarElement.parentElement.offsetWidth;
+  const currentWidth = progressBarElement.offsetWidth;
+  const currentPercent = (currentWidth / totalWidth) * 100;
+
+  // Stop current transition and fix current width
+  progressBarElement.style.transition = 'none';
+  progressBarElement.style.width = `${currentPercent}%`;
+
+  console.log(`Progress bar paused at ${currentPercent.toFixed(1)}%`);
+}
 export default VideoContainer;

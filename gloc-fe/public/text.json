@@ -1,0 +1,148 @@
+{
+  "en": {
+    "description": 
+    [
+      "The Context",
+      "On 24 March 1976, the Armed Forces, with the support of civilian sectors, carried out a coup d'état in Argentina, overthrowing the government of President María Estela Martínez de Perón. From then on, the situation changed completely: political parties and Congress were dissolved, freedom of the press and freedom of expression were abolished, and the constitutional guarantees of all citizens were suspended. Thus began one of the darkest periods in Argentine history, which lasted until 10 December 1983.",
+
+      "During those years, the State deployed its repressive apparatus to carry out the persecution, torture, assassinations and systematic and forced disappearances of thousands of people, mostly activists, workers, students and people linked to political or social movements. These murders were followed by clandestine burials in mass graves, burials as unidentified persons (NN) in cemeteries, and death flights throwing corpses and live people into the Río de la Plata. For this purpose, public force was used illegally and more than 500 clandestine detention centres were set up throughout the country.",
+
+      "One of the most atrocious practices implemented during state terrorism was the abduction and appropriation of minors, an unprecedented action until then. Approximately 500 children were taken from their families, either kidnapped with their parents or born in captivity in clandestine maternity wards. The military considered that these children should not grow up in their families of origin, so they were handed over to families linked to the dictatorship or abandoned in institutions, depriving them of their identity and their right to know their true history.",
+
+      "In the midst of the climate of terror and repression, the relatives of the disappeared began to organise themselves to demand answers about the whereabouts of their loved ones. In the midst of the dictatorship, they confronted the reigning fear and became the first to question the Armed Forces, demanding information on the whereabouts of their disappeared relatives. Thus was born the human rights movement in Argentina led by organisations such as the Mothers and Grandmothers of Plaza de Mayo, founded in 1977. These organisations played a fundamental role in denouncing the crimes committed, both nationally and internationally. The path of the Mothers and Grandmothers was different, despite having emerged from the same painful event. The former undertook the search for their abducted and disappeared children, while the latter, in addition to demanding the whereabouts of their relatives, had the urgency to organise themselves for a specific objective: that the abducted children be returned to their real homes. This is the motive that guides their struggle to this day, having so far achieved the restitution of 138 identities, as well as having become an emblematic collective in the struggle for justice against state violence and in the construction of collective memory, both in Argentine political history and in human rights causes around the world.",
+
+      "The years of dictatorship left deep wounds that remain open in Argentine society, scarring entire generations. The struggle for Memory, Truth and Justice became a fundamental pillar to begin to heal these scars and to build a more just and democratic society. It is through these public policies that we seek to keep the memory of the victims alive, to restore the stolen identities through forensic science and to guarantee that these crimes against humanity will never be repeated ‘Never Again’."
+    ],
+    "instructions": 
+    [
+      "Instructions",
+      "We will require access to your camera.",
+      "Your facial landmarks will be extracted.",
+      "No data is retained."
+    ],
+    "camera_access": "Access my camera",
+    "camera_denied": "Camera access denied",
+    "face_located": "Face located",
+    "no_face_located": "Locating a face...",
+    "title": "Global Level of Confidence",
+    "title_short": "Level of Confidence",
+    "legal_lease": "Legal Lease",
+    "loading_bar":
+      [
+        "Extracting facial landmarks...",
+        "Sending numerical description...",
+        "Comparing biometric data...",
+        "Searching through database for similarities...",
+        "Retrieving top matches"
+      ],
+      "technical_description":
+      [
+        "The Work",
+        "<em>Global Level of Confidence<em> aims to create a connection between the disappeared and the children of the disappeared in Argentina. Under the dictatorship (1976–1983), military personnel disappeared an estimated 30,000 individuals. Today, there are hundreds of children of the disappeared who do not know the identities of their parents.",
+        "Working in collaboration with <em>Argentina's National Bank of Genetic Data (Banco Nacional de Datos Genéticos)<em>, the public and systematic archive of genetic material and biological samples of relatives of people kidnapped and disappeared during the Argentine military dictatorship, an AI has been trained with the growing database of records that document the identities of the disappeared.",
+        
+        "To perform the biometric search, visitors' facial landmarks, registered by their webcams, are analyzed and sent to a secure server in Iceland. The platform will scan its nearly 10,000 records for physiological affinities and offer the top 15 to 30 potential fraternal connections between the visitor's facial landmarks and the faces documented in its archive. Visitors can select the possible connections and read more about each individual. The amount of possible connections shown varies depending on the size of the screen that is being used. Global Level of Confidence is built for mobile and desktop devices, and large displays.",
+        
+        "The platform uses face-api.js for face matching & extracting facial landmarks and MediaPipe for real-time face detection. It is important to note that the platform does not store data; it only analyzes data points, which are facial landmarks.",
+        
+        "<em>Global Level of Confidence</em> continues the research started in 2015 with <a href='https://www.lozano-hemmer.com/level_of_confidence.php' target='_blank' rel='noopener noreferrer'><em><u>Level of Confidence</u></em></a>, an art project made to commemorate the mass kidnapping of 43 students from the Ayotzinapa normalista school in Iguala, Guerrero, Mexico."
+        ] ,
+      "antimetric":"This is an Antimetric project.",
+      "abuelas": "Help Abuelas de Plaza de Mayo in their search",
+      "bibliography": "Bibliography",
+      "orientation" : "This experience is designed for portrait mode. Please rotate your device to continue.",
+      "appointment" : "Set up an appointment at Argentina's National Bank of Genetic Data",
+      "references" : [
+          {  "name": "Grandmothers of Plaza de Mayo", "url": "https://www.abuelas.org.ar/" },
+          {  "name": "Mothers of Plaza de Mayo", "url": "https://madres.org/" },
+          {  "name": "National Bank of Genetic Data", "url": "https://www.argentina.gob.ar/ciencia/bndg" },
+          {  "name": "National Commission for the Right to Identity", "url": "https://www.argentina.gob.ar/derechoshumanos/argentina-te-busca/conadi" },
+          {  "name": "Memoria Abierta", "url": "https://memoriaabierta.org.ar/wp/" },
+          {  "name": "Espacio Memoria ESMA", "url": "https://www.espaciomemoria.ar/" },
+          {  "name": "Sitio Memoria ESMA", "url": "http://www.museositioesma.gob.ar/" },
+          {  "name": "RUVTE", "url": "https://www.argentina.gob.ar/derechoshumanos/ANM/ruvte/informe" },
+          {  "name": "Parque de la Memoria", "url": "https://parquedelamemoria.org.ar/" },
+          {  "name": "Argentine Forensic Anthropology Team", "url": "https://eaaf.org/" },
+          {  "name": "Centre for Legal and Social Studies", "url": "https://www.cels.org.ar/web/" },
+          {  "name": "National Archive of Memory", "url": "https://www.argentina.gob.ar/derechoshumanos/ANM" },
+          {  "name": "H.I.J.O.S.", "url": "https://hijos-capital.org.ar/" }
+      ],
+      "lighting_message" : "Please ensure your face is well lit. Better lighting leads to more accurate results.",
+      "no_landmarks" : "No landmarks were detected. ",
+      "ok": "ok"
+  },
+  "es": {
+    "description": [
+      "El Contexto",
+      "El 24 de marzo de 1976, las Fuerzas Armadas con el apoyo de sectores civiles, llevaron adelante un golpe de Estado en Argentina, que derrocó al gobierno de la presidenta María Estela Martínez de Perón. La situación a partir de ese entonces se modificó por completo: disolución de los partidos políticos y del Congreso, anulación de la libertad de prensa y expresión y suspensión de las garantías constitucionales de toda la ciudadanía. Así comenzó una de las etapas más oscuras de la historia argentina, que se extendió hasta el 10 de diciembre de 1983.",
+      
+      "Durante esos años, el Estado desplegó su aparato represivo para llevar adelante la persecución, tortura, asesinatos y la desaparición sistemática y forzada de miles de personas en su mayoría militantes, trabajadores, estudiantes y personas vinculados a movimientos políticos o sociales. Estos asesinatos fueron seguidos de entierros clandestinos en fosas comunes, entierros como personas sin identifica (NN) en cementerios, y vuelos de la muerte arrojando cadáveres y personas vivas al Río de la Plata. Para ello se utilizó la fuerza pública de manera ilegal y se instalaron más de 500 centros clandestinos de detención en todo el país.",
+      
+      "Una de las prácticas más atroces implementadas durante el terrorismo de Estado fue el secuestro y la apropiación de menores, una acción inédita hasta entonces. Aproximadamente 500 niños fueron arrancados de sus familias, ya sea secuestrados junto a sus padres o nacidos en cautiverio en maternidades clandestinas. Los militares consideraban que esos chicos no debían crecer en sus familias de origen, por lo que fueron entregados a familias vinculadas a la dictadura o abandonados en instituciones, privándolos de su identidad y de su derecho a conocer su verdadera historia.",
+      
+      "En medio del clima de terror y represión, los familiares de las personas desaparecidas comenzaron a organizarse para exigir respuestas sobre el paradero de sus seres queridos. En plena dictadura, enfrentaron el miedo reinante y se convirtieron en los primeros en cuestionar a las Fuerzas Armadas, demandando información sobre el paradero de sus familiares desaparecidos. Así nació el movimiento de Derechos Humanos en Argentina encabezado por organismos como Madres y Abuelas de Plaza de Mayo, fundados en 1977. Estas organizaciones jugaron un rol fundamental en la denuncia de los crímenes cometidos, tanto a nivel nacional como internacional. El camino de las Madres y las Abuelas fue diferente a pesar de haber surgido del mismo hecho doloroso. Las primeras emprendieron la búsqueda de sus hijos secuestrados y desaparecidos, mientras que las segundas, además de reclamar por el paradero de sus familiares, tuvieron la urgencia de organizarse por un objetivo específico: que los niños secuestrados fueran restituidos a sus verdaderos hogares. Este es el motivo que guía su lucha hasta el día de hoy, habiendo logrado hasta ahora la restitución de 138 identidades, además de haberse convertido en un colectivo emblemático de la lucha por la justicia contra la violencia de Estado y de la construcción de la memoria colectiva, tanto en la historia política argentina como en las causas de derechos humanos en el mundo.",
+      
+      "Los años de dictadura dejaron heridas profundas que siguen abiertas en la sociedad argentina, marcando a generaciones enteras. La lucha por la Memoria, la Verdad y la Justicia se convirtió en un pilar fundamental para empezar a sanar estas cicatrices y para construir una sociedad más justa y democrática. Es a través de estas políticas públicas que se busca mantener vivo el recuerdo de las víctimas, restituir a través de las ciencias forenses las identidades robadas y garantizar que estos crímenes de lesa humanidad no se repitan \"Nunca Más\"."
+    ],
+    "instructions": 
+    [
+      "Instrucciones",
+      "Necesitaremos acceso a su cámara.",
+      "Se extraerán sus puntos de referencia faciales.",
+      "Sus datos no se conservarán."
+    ],
+    "camera_access": "Acceder a la cámara",
+    "camera_denied": "Acceso a la cámara denegado",
+    "face_located":"Cara localizada",
+    "no_face_located": "Localizando una cara...",
+    "title": "Nivel de Confianza Global",
+    "title_short": "Nivel de Confianza",
+    "legal_lease": "Aviso Legal",
+    "loading_bar":
+    [
+      "Extrayendo puntos de referencia faciales...",
+      "Enviando descripción numérica...",
+      "Comparando datos biométricos...",
+      "Buscando similitudes en la base de datos...",
+      "Recuperando las mejores coincidencias"
+    ],
+    "technical_description":
+    [
+      "La Obra",
+      "<em>Nivel de Confianza Global</em> intenta crear una conexión entre los desaparecidos y los hijos de desaparecidos en Argentina. Durante la dictadura (1976–1983), el Estado desapareció a aproximadamente 30.000 personas. En la actualidad, hay cientos de hijos de desaparecidos que desconocen la identidad de sus padres.",
+  
+      "En colaboración con el <em>Banco Nacional de Datos Genéticos de Argentina</em>, archivo público y sistemático de material genético y muestras biológicas de familiares de personas secuestradas y desaparecidas durante la dictadura militar argentina, se ha entrenado una IA con la creciente base de datos de registros que documentan las identidades de los desaparecidos.",
+      
+      "Para realizar la búsqueda biométrica, se analizan los puntos de referencia faciales de los visitantes, registrados por sus cámaras web, y se envían a un servidor seguro en Islandia. La plataforma escanea sus casi 10.000 registros en busca de afinidades fisiológicas y muestra las 15 a 30 conexiones fraternales potenciales entre los puntos de referencia faciales del visitante y los rostros documentados en su archivo. Los visitantes pueden seleccionar las posibles conexiones y leer más sobre cada individuo. La cantidad de posibles conexiones mostradas varía en función del tamaño de la pantalla que se esté utilizando. <em>Nivel de Confianza Global</em> está diseñado para dispositivos móviles, computadoras y pantallas de gran tamaño.",
+      
+      "La plataforma utiliza face-api.js para la comparación de rostros y la extracción de puntos de referencia faciales y MediaPipe para la detección de rostros en tiempo real. Es importante señalar que la plataforma no almacena datos; solo analiza puntos de datos, que son puntos de referencia faciales.",
+      
+      "<em>Nivel de Confianza Global</em> continúa la investigación iniciada en 2015 con <a href='https://www.lozano-hemmer.com/level_of_confidence.php' target='_blank' rel='noopener noreferrer'><em><u>Nivel de Confianza</u></em></a>, un proyecto artístico realizado para conmemorar el secuestro masivo de 43 estudiantes de la escuela normalista de Ayotzinapa en Iguala, Guerrero, México."
+    ],
+    "antimetric":"Esto es un proyecto de Antimetric.",
+    "abuelas":"Ayuda a las Abuelas de Plaza de Mayo en su búsqueda",
+    "bibliography": "Bibliografía",
+    "orientation" : "Esta experiencia está diseñada para modo retrato. Por favor rote su dispositivo para continuar.",
+    "appointment" : "Agenda una cita en el Banco Nacional de Datos Genéticos de Argentina",
+    "references" : [
+  { "name": "Abuelas de Plaza de Mayo", "url": "https://www.abuelas.org.ar/" },
+  { "name": "Madres de Plaza de Mayo", "url": "https://madres.org/" },
+  { "name": "Banco Nacional de Datos Genéticos", "url": "https://www.argentina.gob.ar/ciencia/bndg" },
+  { "name": "Comisión Nacional por el Derecho a la Identidad", "url": "https://www.argentina.gob.ar/derechoshumanos/argentina-te-busca/conadi" },
+  { "name": "Memoria Abierta", "url": "https://memoriaabierta.org.ar/wp/" },
+  { "name": "Espacio Memoria ESMA", "url": "https://www.espaciomemoria.ar/" },
+  { "name": "Sitio Memoria ESMA", "url": "http://www.museositioesma.gob.ar/" },
+  { "name": "RUVTE", "url": "https://www.argentina.gob.ar/derechoshumanos/ANM/ruvte/informe" },
+  { "name": "Parque de la Memoria", "url": "https://parquedelamemoria.org.ar/" },
+  { "name": "Equipo Argentino de Antropología Forense", "url": "https://eaaf.org/" },
+  { "name": "Centro de Estudios Legales y Sociales", "url": "https://www.cels.org.ar/web/" },
+  { "name": "Archivo Nacional de Memoria", "url": "https://www.argentina.gob.ar/derechoshumanos/ANM" },
+  { "name": "H.I.J.O.S.", "url": "https://hijos-capital.org.ar/" }
+],
+"lighting_message" : "Asegúrese de que su cara está bien iluminada. Con una mejor iluminación se obtienen resultados más precisos.",
+"no_landmarks" : "No se detectaron puntos de referencia. ",
+"ok" : "Si"
+
+  }
+
+}

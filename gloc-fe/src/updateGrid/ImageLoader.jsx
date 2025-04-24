@@ -35,6 +35,8 @@ export async function loadImages(imageDataArray) {
                     const imageElement = new Image();
                     imageElement.src = srcUrl;
                     imageElement.imagePath = imageData.imagePath;
+                    imageElement.fullImagePath = imageData.fullImagePath;
+
                     imageElement.label = imageData.label;
                     imageElement.distance = imageData.distance;
                     imageElement.jsonData = imageData.jsonData;

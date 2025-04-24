@@ -1,0 +1,35 @@
+.poor-lighting-overlay {
+    background-color: rgba(0, 0, 0, .8);
+    position: absolute;
+    top: 1;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; /* ✅ This centers horizontally */
+    padding: 3rem;
+    box-sizing: border-box;
+    opacity: 0;
+    z-index: 998;
+    color: white;
+    transition: opacity 2s ease-in-out;
+    pointer-events: none;
+  }
+  .lighting-text {
+    padding: 1.5em;
+    color: white;
+    border-radius: 6px;
+    font-size: 1em ;
+    text-align: center;
+  }
+
+  .lighting-ok-button {
+    padding: 6px 14px;
+    font-size: 14px;
+    background-color: #aaa;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }

@@ -1,85 +1,76 @@
 import React, { useState, useEffect, useRef } from "react";
-import "./LandingPage.css";
-import { videoRef, canvasRef } from "../grid/videoRef";
+import WideLandingPage from "./WideLandingPage";
+import NarrowLandingPage from "./NarrowLandingPage";
+import { videoRef } from "../grid/videoRef";
 import { startFaceDetection } from "../faceDetection/faceDetection";
-import { startShuffle, fetchRandomImages } from "../updateGrid/shuffleManagerService";
+import { startShuffle } from "../updateGrid/shuffleManagerService";
+import {setLanguage } from "../config"; // adjust the path as needed
+import { preloadLoading, showFirstLoadingMessage } from "../grid/LoadingScreen";
+
 function LandingPage() {
+  const [isWideLayout, setIsWideLayout] = useState(true);
+  const [isLandingVisible, setIsLandingVisible] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLandingVisible, setIsLandingVisible] = useState(true); // Manage landing page visibility
-  const isInitializedRef = useRef(false); // Track if face detection and shuffle have been initialized
+  const isInitializedRef = useRef(false);
+  const [currLanguage, setCurrLanguage] = useState("es");
+  useEffect(() => {
+    setLanguage(currLanguage); // update config.js and localStorage
+    console.log(currLanguage)
+  }, [currLanguage]);
+  useEffect(() => {
+    const checkWindowDimensions = () => {
+      setIsWideLayout(window.innerWidth > window.innerHeight * 1.3);
+    };
+
+    checkWindowDimensions();
+    window.addEventListener("resize", checkWindowDimensions);
+    return () => window.removeEventListener("resize", checkWindowDimensions);
+  }, []);
 
   const handleAccessCamera = async () => {
     setIsLoading(true);
-
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      if (stream) {
+      if (stream && videoRef.current) {
         localStorage.setItem("cameraAccessGranted", "true");
+        videoRef.current.srcObject = stream;
+        videoRef.current.onplaying = async () => {
+          if (!isInitializedRef.current) {
+            isInitializedRef.current = true;
+            try {
+              window.history.pushState({}, '', '/camera-active');
 
-        // Assign stream to videoRef
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-
-          // Add an onplaying handler for the first-time initialization
-          videoRef.current.onplaying = async () => {
-            if (!isInitializedRef.current) {
-              isInitializedRef.current = true; // Mark as initialized
-              try {
-                await startShuffle()
-                await startFaceDetection(); // Start face detection
-                await new Promise(resolve => setTimeout(resolve, 1500)); // Wait 1.5 seconds
-                setIsLandingVisible(false); // Hide the landing page
-              } catch (error) {
-                console.error("Error during initialization:", error);
-              }
+              await startShuffle();
+              await startFaceDetection();
+              await new Promise(resolve => setTimeout(resolve, 1500));
+              setIsLandingVisible(false);
+              showFirstLoadingMessage()
+              preloadLoading()
+            } catch (error) {
+              console.error("Error during initialization:", error);
             }
-          };
+          }
+        };
 
-          // Play the video
-          await videoRef.current.play();
-        }
+        await videoRef.current.play();
       }
     } catch (error) {
       console.error("Camera access denied:", error);
-      alert("Camera access is required to proceed.");
-      setIsLoading(false); // Reset loading state on error
+      setIsLoading(false);
     }
   };
-  return (
-    <div
-      className={`grid-overlay ${isLandingVisible ? "visible" : "hidden"}`}
-    >
-      <button className="language-button">ENGLISH</button>
-      <div className="overlay-content">
-        <header className="header">
-          <h1>Global Level of Confidence</h1>
-        </header>
-        <main className="content">
-          <p>[Placeholder for Project Info]</p>
-          <p>[Placeholder for Legal Lease]</p>
-          <ul>
-            <li>We will require access to your camera.</li>
-            <li>Your facial landmarks will be extracted.</li>
-            <li>No data is retained.</li>
-          </ul>
-          <button
-            className="camera-button"
-            onClick={handleAccessCamera}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <span className="loading-dots">
-                <span>.</span>
-                <span>.</span>
-                <span>.</span>
-              </span>
-            ) : (
-              "Access My Camera"
-            )}
-          </button>
-        </main>
-      </div>
-    </div>
+  const sharedProps = {
+    isLoading,
+    isLandingVisible,
+    handleAccessCamera,
+    currLanguage,
+    setCurrLanguage
+  };
+
+  return isWideLayout ? (
+    <WideLandingPage {...sharedProps} />
+  ) : (
+    <NarrowLandingPage {...sharedProps} />
   );
 }
 

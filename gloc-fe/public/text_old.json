@@ -1,0 +1,89 @@
+{
+  "title":
+  {
+    "en":"Level of Confidence",
+    "es": "Nivel de Confianza Global"
+  },
+  "legal_lease":
+  {
+    "en":[
+      "Legal Lease",
+      "Lorem ipsum dolor sit amet consectetur adipiscing elit. Placerat in id cursus mi pretium tellus duis. Urna tempor pulvinar vivamus fringilla lacus nec metus. Integer nunc posuere ut hendrerit semper vel class. Conubia nostra inceptos himenaeos orci varius natoque penatibus. Mus donec rhoncus eros lobortis nulla molestie mattis. Purus est efficitur laoreet mauris pharetra vestibulum fusce. Sodales consequat magna ante condimentum neque at luctus. Ligula congue sollicitudin erat viverra ac tincidunt nam. Lectus commodo augue arcu dignissim velit aliquam imperdiet. Cras eleifend turpis fames primis vulputate ornare sagittis. Libero feugiat tristique accumsan maecenas potenti ultricies habitant. Cubilia curae hac habitasse platea dictumst lorem ipsum. Faucibus ex sapien vitae pellentesque sem placerat in. Tempus leo eu aenean sed diam urna tempor."
+    ],
+    "es": [
+      "Contrato Legal",  
+      "Lorem ipsum dolor sit amet consectetur adipiscing elit. Placerat in id cursus mi pretium tellus duis. Urna tempor pulvinar vivamus fringilla lacus nec metus. Integer nunc posuere ut hendrerit semper vel class. Conubia nostra inceptos himenaeos orci varius natoque penatibus. Mus donec rhoncus eros lobortis nulla molestie mattis. Purus est efficitur laoreet mauris pharetra vestibulum fusce. Sodales consequat magna ante condimentum neque at luctus. Ligula congue sollicitudin erat viverra ac tincidunt nam. Lectus commodo augue arcu dignissim velit aliquam imperdiet. Cras eleifend turpis fames primis vulputate ornare sagittis. Libero feugiat tristique accumsan maecenas potenti ultricies habitant. Cubilia curae hac habitasse platea dictumst lorem ipsum. Faucibus ex sapien vitae pellentesque sem placerat in. Tempus leo eu aenean sed diam urna tempor."    
+    ]
+  },
+  "description": {
+    "en": [
+      "Project Description",
+      "On 24 March 1976, the Armed Forces, with the support of civilian sectors, carried out a coup d'état in Argentina, overthrowing the government of President María Estela Martínez de Perón. From then on, the situation changed completely: political parties and Congress were dissolved, freedom of the press and freedom of expression were abolished, and the constitutional guarantees of all citizens were suspended. Thus began one of the darkest periods in Argentine history, which lasted until 10 December 1983.",
+
+      "During those years, the State deployed its repressive apparatus to carry out the persecution, torture, assassinations and systematic and forced disappearances of thousands of people, mostly activists, workers, students and people linked to political or social movements. These murders were followed by clandestine burials in mass graves, burials as unidentified persons (NN) in cemeteries, and death flights throwing corpses and live people into the Río de la Plata. For this purpose, public force was used illegally and more than 500 clandestine detention centres were set up throughout the country.",
+
+      "One of the most atrocious practices implemented during state terrorism was the abduction and appropriation of minors, an unprecedented action until then. Approximately 500 children were taken from their families, either kidnapped with their parents or born in captivity in clandestine maternity wards. The military considered that these children should not grow up in their families of origin, so they were handed over to families linked to the dictatorship or abandoned in institutions, depriving them of their identity and their right to know their true history.",
+
+      "In the midst of the climate of terror and repression, the relatives of the disappeared began to organise themselves to demand answers about the whereabouts of their loved ones. In the midst of the dictatorship, they confronted the reigning fear and became the first to question the Armed Forces, demanding information on the whereabouts of their disappeared relatives. Thus was born the human rights movement in Argentina led by organisations such as the Mothers and Grandmothers of Plaza de Mayo, founded in 1977. These organisations played a fundamental role in denouncing the crimes committed, both nationally and internationally. The path of the Mothers and Grandmothers was different, despite having emerged from the same painful event. The former undertook the search for their abducted and disappeared children, while the latter, in addition to demanding the whereabouts of their relatives, had the urgency to organise themselves for a specific objective: that the abducted children be returned to their real homes. This is the motive that guides their struggle to this day, having so far achieved the restitution of 138 identities, as well as having become an emblematic collective in the struggle for justice against state violence and in the construction of collective memory, both in Argentine political history and in human rights causes around the world.",
+
+      "The years of dictatorship left deep wounds that remain open in Argentine society, scarring entire generations. The struggle for Memory, Truth and Justice became a fundamental pillar to begin to heal these scars and to build a more just and democratic society. It is through these public policies that we seek to keep the memory of the victims alive, to restore the stolen identities through forensic science and to guarantee that these crimes against humanity will never be repeated ‘Never Again’."
+    ],
+    "es": [
+      "Descripción del proyecto",
+      "El 24 de marzo de 1976, las Fuerzas Armadas con el apoyo de sectores civiles, llevaron adelante un golpe de Estado en Argentina, que derrocó al gobierno de la presidenta María Estela Martínez de Perón. La situación a partir de ese entonces se modificó por completo: disolución de los partidos políticos y del Congreso, anulación de la libertad de prensa y expresión y suspensión de las garantías constitucionales de toda la ciudadanía. Así comenzó una de las etapas más oscuras de la historia argentina, que se extendió hasta el 10 de diciembre de 1983.",
+      
+      "Durante esos años, el Estado desplegó su aparato represivo para llevar adelante la persecución, tortura, asesinatos y la desaparición sistemática y forzada de miles de personas en su mayoría militantes, trabajadores, estudiantes y personas vinculados a movimientos políticos o sociales. Estos asesinatos fueron seguidos de entierros clandestinos en fosas comunes, entierros como personas sin identifica (NN) en cementerios, y vuelos de la muerte arrojando cadáveres y personas vivas al Río de la Plata. Para ello se utilizó la fuerza pública de manera ilegal y se instalaron más de 500 centros clandestinos de detención en todo el país.",
+      
+      "Una de las prácticas más atroces implementadas durante el terrorismo de Estado fue el secuestro y la apropiación de menores, una acción inédita hasta entonces. Aproximadamente 500 niños fueron arrancados de sus familias, ya sea secuestrados junto a sus padres o nacidos en cautiverio en maternidades clandestinas. Los militares consideraban que esos chicos no debían crecer en sus familias de origen, por lo que fueron entregados a familias vinculadas a la dictadura o abandonados en instituciones, privándolos de su identidad y de su derecho a conocer su verdadera historia.",
+      
+      "En medio del clima de terror y represión, los familiares de las personas desaparecidas comenzaron a organizarse para exigir respuestas sobre el paradero de sus seres queridos. En plena dictadura, enfrentaron el miedo reinante y se convirtieron en los primeros en cuestionar a las Fuerzas Armadas, demandando información sobre el paradero de sus familiares desaparecidos. Así nació el movimiento de Derechos Humanos en Argentina encabezado por organismos como Madres y Abuelas de Plaza de Mayo, fundados en 1977. Estas organizaciones jugaron un rol fundamental en la denuncia de los crímenes cometidos, tanto a nivel nacional como internacional. El camino de las Madres y las Abuelas fue diferente a pesar de haber surgido del mismo hecho doloroso. Las primeras emprendieron la búsqueda de sus hijos secuestrados y desaparecidos, mientras que las segundas, además de reclamar por el paradero de sus familiares, tuvieron la urgencia de organizarse por un objetivo específico: que los niños secuestrados fueran restituidos a sus verdaderos hogares. Este es el motivo que guía su lucha hasta el día de hoy, habiendo logrado hasta ahora la restitución de 138 identidades, además de haberse convertido en un colectivo emblemático de la lucha por la justicia contra la violencia de Estado y de la construcción de la memoria colectiva, tanto en la historia política argentina como en las causas de derechos humanos en el mundo.",
+      
+      "Los años de dictadura dejaron heridas profundas que siguen abiertas en la sociedad argentina, marcando a generaciones enteras. La lucha por la Memoria, la Verdad y la Justicia se convirtió en un pilar fundamental para empezar a sanar estas cicatrices y para construir una sociedad más justa y democrática. Es a través de estas políticas públicas que se busca mantener vivo el recuerdo de las víctimas, restituir a través de las ciencias forenses las identidades robadas y garantizar que estos crímenes de lesa humanidad no se repitan \"Nunca Más\"."
+    ]
+  },
+  "instructions" : {
+    "en": [
+      "We will require access to your camera.",
+      "Your facial landmarks will be extracted.",
+      "No data is retained."
+    ],
+    "es": [
+      "Necesitaremos acceso a su cámara.",
+      "Se extraerán sus puntos de referencia faciales.",
+      "Sus datos no se conservarán."
+    ]
+  },
+  "camera_access":{
+    "en": "Access my camera",
+    "es": "Acceder a la cámara"
+  },
+  "camera_denied":{
+    "en": "Camera access denied",
+    "es": "Acceso a la cámara denegado"
+  },
+  "face_located":{
+    "en": "Face located",
+    "es": "Cara localizada"
+  },
+  "no_face_located":{
+    "en": "Locating a face...",
+    "es": "Localizando una cara..."
+  },
+  "loading_bar":{
+    "en": [
+      "Extracting facial landmarks...",
+      "Sending numerical description...",
+      "Comparing biometric data...",
+      "Searching through database for similarities...",
+      "Retrieving top matches"
+    ],
+    "es": [
+      "Extrayendo puntos de referencia faciales...",
+      "Enviando descripción numérica...",
+      "Comparando datos biométricos...",
+      "Buscando similitudes en la base de datos...",
+      "Recuperando las mejores coincidencias"
+    ]
+  }
+
+}

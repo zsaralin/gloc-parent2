@@ -1,3 +1,4 @@
+import { getLanguage, getText } from "../config";
 import { stopShuffle } from "./shuffleManagerService";
 
 const CROSSFADE_DURATION = 2; // In seconds
@@ -31,17 +32,13 @@ export async function fillGridItems(images, useCrossFade = false, stagger = fals
 
         if (!currImg || !prevImg || !topText || !bottomText) return;
     
-        // Only update if the new label is different
-        const prevLabel = currImg.getAttribute('data-label');
-        // if (prevLabel === imageElement.label) return;
-    
         let scaledSimilarity = ''; // Declare in broader scope
         item.setAttribute('data-info', JSON.stringify(imageElement)); // Store object as JSON string
         
         if (!shuffle) {
             // Calculate normalized distance
             let dynamicScaleFactor = scaleFactor * (1 - index / (numArrangedImages * 2));
-            scaledSimilarity = (imageElement.distance * dynamicScaleFactor).toFixed(2);
+            scaledSimilarity = imageElement.distance  !== 0 ? (imageElement.distance * dynamicScaleFactor).toFixed(2) : 0
         }
 
         if (useCrossFade) {
@@ -150,29 +147,23 @@ export async function fillGridItems(images, useCrossFade = false, stagger = fals
 }
 
 function updateTextContent(topText, bottomText, imageElement, index, scaledSimilarity) {
-    if (index === 0) {
-        topText.textContent = `Level of Confidence: ${scaledSimilarity}%`;
-
-        // Truncate the name only
-        const truncatedName = truncateNameToFit(
-            imageElement.jsonData.nombre,
-            bottomText,
-            3,
-            ` [No. Records: ${imageElement.jsonData.numeroDeRegistros}]`
-        );
-        bottomText.innerHTML = `${truncatedName} [No. Records: ${imageElement.jsonData.numeroDeRegistros}]`;
-    } else {
-        topText.textContent = `${scaledSimilarity}%`;
-
-        const truncatedName = truncateNameToFit(
-            imageElement.jsonData.nombre,
-            bottomText,
-            3,
-            ` [${imageElement.jsonData.numeroDeRegistros}]`
-        );
-        bottomText.innerHTML = `${truncatedName} [${imageElement.jsonData.numeroDeRegistros}]`;
-    }
-}
+    const { title_short } = getText();
+    const currLanguage = getLanguage();
+    const data = imageElement.jsonData;
+  
+    const name = currLanguage === 'es' ? data.nombre : data.name;
+    const numRecords = currLanguage === 'es' ? data.numeroDeRegistros : data.numberOfRecords;
+  
+    const recordSuffix = index === 0 ? ` [No. Records: ${numRecords}]` : ` [${numRecords}]`;
+  
+    const truncatedName = truncateNameToFit(name, bottomText, 3, recordSuffix);
+    bottomText.innerHTML = `${truncatedName}${recordSuffix}`;
+  
+    topText.textContent = index === 0
+      ? `${title_short}: ${scaledSimilarity}%`
+      : `${scaledSimilarity}%`;
+  }
+  
 export function setupOverlayTransparency() {
     const topGridItems = document.querySelectorAll('.top-row-item .image-container');
     const bottomGridItems = document.querySelectorAll('.bottom-grid-item .image-container');

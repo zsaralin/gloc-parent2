@@ -1,13 +1,14 @@
 import React, { useRef, useEffect, useState } from "react";
 import "./Modal.css";
 import ImageModal from "./ImageModal"; // Import the new modal component
+import { getText } from "../config";
 
 const Modal = ({ images, text, onClose }) => {
   const containerRef = useRef(null);
   const [imageStyle, setImageStyle] = useState({});
   const [gridStyle, setGridStyle] = useState({});
   const [selectedImage, setSelectedImage] = useState(null); // Track clicked image
-
+  const button_text = getText()
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -36,9 +37,13 @@ const Modal = ({ images, text, onClose }) => {
       });
 
       setImageStyle({
-        maxWidth: "100%",
-        maxHeight: "100%",
+        width: "100%",
+        height: "100%",
         objectFit: "contain",
+        objectPosition: "center",
+        display: "block",      // removes baseline whitespace from inline images
+        flexShrink: 0,
+        flexGrow: 1,
         cursor: "pointer",
       });
       return;
@@ -103,9 +108,14 @@ const Modal = ({ images, text, onClose }) => {
             className="modal-text"
             dangerouslySetInnerHTML={{ __html: text }}
           ></div>
-          <div className="genetic-bank-button">
-            Set Up Appointment At Genetic Bank
-          </div>
+          <a 
+            href="https://www.argentina.gob.ar/ciencia/bndg" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="genetic-bank-button"
+          >
+            {button_text.appointment}
+          </a>
         </div>
       </div>
 

@@ -4,11 +4,10 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const http = require("http");
-const socketIo = require("socket.io");
 const app = express();
 const PORT = process.env.PORT || 5000;
 const cors = require('cors');
-const { findNearestDescriptors, loadDataIntoMemory, processNearestDescriptors } = require('./topDescriptors');
+const { findNearestDescriptors, loadDataIntoMemory, processNearestDescriptors, findMockNearestDescriptors } = require('./topDescriptors');
 require('dotenv').config();
 const localFolderPath = path.resolve(__dirname, '../db');  // Adjust the folder path as needed
 // io.sockets.disconnectSockets();
@@ -44,7 +43,7 @@ app.use('/static/images', express.static(localFolderPath));
 
 app.post('/match', async (req, res) => {
     try {
-            const { photo, numPhotos, uuid } = req.body;
+            const { photo, numPhotos, uuid, language } = req.body;
             const descriptor = await getDescriptor(photo);
             if (!descriptor) {
                 res.json(null);
@@ -61,7 +60,7 @@ app.post('/match', async (req, res) => {
                 return;
             }
 
-            const responseArray = await processNearestDescriptors(nearestDescriptors, localFolderPath);
+            const responseArray = await processNearestDescriptors(nearestDescriptors, localFolderPath, language);
             res.json(responseArray);
     } catch (error) {
         console.error('Error processing detection:', error);
@@ -69,7 +68,26 @@ app.post('/match', async (req, res) => {
     }
 });
 
+app.post('/mock-match', async (req, res) => {
+    try {
+            const { numPhotos, language } = req.body;
+            const startTime = performance.now();
+            const nearestDescriptors = await findMockNearestDescriptors(numPhotos + 2);
+            const endTime = performance.now();
+            console.log(`findNearestDescriptors took ${(endTime - startTime).toFixed(2)} ms`);
 
+            if (!nearestDescriptors) {
+                res.json(null);
+                return;
+            }
+
+            const responseArray = await processNearestDescriptors(nearestDescriptors, localFolderPath, language);
+            res.json(responseArray);
+    } catch (error) {
+        console.error('Error processing detection:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 app.post('/random', async (req, res) => {
     try {
         const dbName = getDbName();
