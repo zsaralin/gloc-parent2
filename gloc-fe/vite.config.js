@@ -17,6 +17,10 @@ export default defineConfig({
       targets: [
         { src: 'internal_cdn', dest: '.' }, // Copy `internal_cdn` into `dist/internal_cdn`
         { src: 'fonts/*', dest: 'fonts' }, // Copy fonts from `src/fonts/` to `dist/fonts/`
+        { src: 'text.json', dest: '.' }, // Copy fonts from `src/fonts/` to `dist/fonts/`
+        { src: 'text.json', dest: '.' }, // Copy fonts from `src/fonts/` to `dist/fonts/`
+
+
       ],
     }),
   ],

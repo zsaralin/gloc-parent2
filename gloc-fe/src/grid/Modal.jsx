@@ -8,8 +8,24 @@ const Modal = ({ images, text, onClose }) => {
   const [imageStyle, setImageStyle] = useState({});
   const [gridStyle, setGridStyle] = useState({});
   const [selectedImage, setSelectedImage] = useState(null); // Track clicked image
-  const button_text = getText()
+  const [button_text, setText] = useState(null);
+
+  // useEffect(() => {
+  //   async function loadText() {
+  //     const result = await getText();
+  //     setText(result);
+  //   }
+  //   loadText();
+  // }, []);
+  // if(!button_text) return null
+
   useEffect(() => {
+    async function loadText() {
+      const result = await getText();
+      setText(result);
+    }
+    loadText();
+  // }, []);
     const container = containerRef.current;
     if (!container) return;
 
@@ -83,7 +99,7 @@ const Modal = ({ images, text, onClose }) => {
       cursor: "pointer",
     });
   }, [images]);
-
+  if(!button_text) return null
   return (
     <>
       {/* Parent Modal */}

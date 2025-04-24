@@ -1,8 +1,17 @@
 import "./LightingMessage.css";
 import { getText } from "../config";
-
+import { useState, useEffect } from "react";
 function LightingMessage() {
-  const text = getText();
+  const [text, setText] = useState(null);
+
+  useEffect(() => {
+    async function loadText() {
+      const result = await getText();
+      setText(result);
+    }
+    loadText();
+  }, []);
+  if(!text) return
 
   const handleOkClick = () => {
     const overlay = document.querySelector(".poor-lighting-overlay");

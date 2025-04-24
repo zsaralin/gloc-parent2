@@ -18,6 +18,8 @@ export let timeoutTriggered = false;
 const NO_FACE_SECOND_TIMEOUT = 20000; // 15 seconds
 const NO_FACE_FIRST_TIMEOUT = 10000; // 15 seconds
 
+let validFaceFrameCount = 0;
+const REQUIRED_VALID_FRAMES = 50;
 
 export function setCurrFace(mediapipeResult, imageDataUrl) {
     // if (!imageDataUrl) return;  // Exit if no image data is provided
@@ -28,20 +30,25 @@ export function setCurrFace(mediapipeResult, imageDataUrl) {
     }
 }
 
-function updateFaceDetection(mediapipeResult, imageDataUrl) {
-    const text = getText();
+async function updateFaceDetection(mediapipeResult, imageDataUrl) {
+    const text = await getText();
 
     if (!currFace) {
+        validFaceFrameCount++;
+        if (validFaceFrameCount >= REQUIRED_VALID_FRAMES) {
+          currFace = imageDataUrl;
+          firstFaceDetected = true;
+          handleNewFaceDetection();
+        }
+      } else {
+        validFaceFrameCount = 0; // Reset counter once currFace is set
         currFace = imageDataUrl;
-        firstFaceDetected = true; // ✅ Set this when we see the first face
-        handleNewFaceDetection();
-    } else {
-        currFace = imageDataUrl;
+      }
+    
+      clearTimeout(noFaceTimeoutTimer);
+      document.getElementById("face-detect-text").innerHTML = text.face_located;
     }
 
-    clearTimeout(noFaceTimeoutTimer); // ✅ Clear timeout since a face is now detected
-    document.getElementById('face-detect-text').innerHTML = text.face_located;
-}
 
 function handleNewFaceDetection(fromTimeout = false) {
     console.log('New face detected');
@@ -50,8 +57,8 @@ function handleNewFaceDetection(fromTimeout = false) {
     startRecognitionTask(fromTimeout);
 }
 
-function handleNoFaceDetected() {
-    const text = getText();
+async function handleNoFaceDetected() {
+    const text = await getText();
         // First timeout triggers loading message
         if (!noFaceTimeoutTimer) {
             noFaceTimeoutTimer = setTimeout(() => {
@@ -94,7 +101,8 @@ function handleNoFaceDetected() {
 
 export function resetCurrFace() {
     currFace = null;
+    validFaceFrameCount = 0; // ✅ Reset detection count
     clearMatches();
-    clearTimeout(noFaceTimeoutTimer); // ✅ Cancel if a reset is triggered
+    clearTimeout(noFaceTimeoutTimer);
     noFaceTimeoutTimer = null;
-}
+  }

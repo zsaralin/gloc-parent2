@@ -4,7 +4,7 @@ import NarrowLandingPage from "./NarrowLandingPage";
 import { videoRef } from "../grid/videoRef";
 import { startFaceDetection } from "../faceDetection/faceDetection";
 import { startShuffle } from "../updateGrid/shuffleManagerService";
-import {setLanguage } from "../config"; // adjust the path as needed
+import {loadTextJson, setLanguage } from "../config"; // adjust the path as needed
 import { preloadLoading, showFirstLoadingMessage } from "../grid/LoadingScreen";
 
 function LandingPage() {
@@ -24,9 +24,17 @@ function LandingPage() {
 
     checkWindowDimensions();
     window.addEventListener("resize", checkWindowDimensions);
+    loadTextJson()
+
     return () => window.removeEventListener("resize", checkWindowDimensions);
   }, []);
+  useEffect(() => {
+    async function fetchData() {
 
+    await loadTextJson()
+    }
+    fetchData()
+  }, []);
   const handleAccessCamera = async () => {
     setIsLoading(true);
     try {

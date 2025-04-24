@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef , useState, useEffect} from "react";
 import "./WideLandingPage.css";
 import LanguageButton from "./LanguageButton";
 import { getText } from "../config";
@@ -6,7 +6,17 @@ import { Link } from "react-router-dom";
 
 function WideLandingPage({ isLoading, isLandingVisible, handleAccessCamera, currLanguage, setCurrLanguage}) {
     const contentRef = useRef(null); // NEW
-    const text = getText()
+    const [text, setText] = useState(null);
+
+    useEffect(() => {
+      async function loadText() {
+        const result = await getText();
+        setText(result);
+      }
+      loadText();
+    }, [currLanguage]); // 👈 this makes it re-run when the language changes
+    if (!text) return null;
+
     const scrollToTop = () => {
       if (contentRef.current) {
         contentRef.current.scrollTo({ top: 0, behavior: "smooth" });

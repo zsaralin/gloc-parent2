@@ -2,10 +2,17 @@ export const SERVER_URL =  "http://localhost:5000";//"https://face-recognition-b
 
 
 let currLanguage = localStorage.getItem("language") || "es";
+let cachedText = null;
 
-// Hold loaded text in memory
-const response = await fetch('/text.json');
-let cachedText = await response.json();
+// Fetch and cache text.json
+export async function loadTextJson() {
+  if (!cachedText) {
+    const response = await fetch("/text.json");
+    cachedText = await response.json();
+    console.log(cachedText)
+  }
+  return cachedText[currLanguage] || {};
+}
 
 export const getLanguage = () => currLanguage;
 
@@ -21,7 +28,7 @@ export const toggleLanguage = () => {
 };
 
 // ✅ Fetch text.json only once, then return correct language subset
-export const getText = () => {
-  if(!cachedText) return null
+export const getText = async () => {
+  if(!cachedText) await loadTextJson()
   return cachedText[currLanguage] || {};
 };

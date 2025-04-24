@@ -19,7 +19,6 @@ import LandscapePage from '../landingPages/LandscapePage';
 import { setupOverlayTransparency } from '../updateGrid/updateGrid';
 import LoadingScreen from './LoadingScreen';
 import { updateGridImmediately } from '../faceRecognition/faceRecognition';
-import { getLanguage } from '../config';
 import LightingMessage from './LightingMessage';
 function Grid() {
   const [gridConfig, setGridConfig] = useState({

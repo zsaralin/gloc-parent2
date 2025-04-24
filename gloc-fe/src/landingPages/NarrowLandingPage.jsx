@@ -12,7 +12,15 @@ function NarrowLandingPage({
   setCurrLanguage,
 }) {
   const contentRef = useRef(null);
-  const text = getText();
+  const [text, setText] = useState(null);
+
+  useEffect(() => {
+    async function loadText() {
+      const result = await getText();
+      setText(result);
+    }
+    loadText();
+  }, [currLanguage]);
   const [pageIndex, setPageIndex] = useState(0); // page 0, 1, or 2
 
   const scrollToTop = () => {

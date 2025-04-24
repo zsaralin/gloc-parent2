@@ -146,8 +146,8 @@ export async function fillGridItems(images, useCrossFade = false, stagger = fals
     }
 }
 
-function updateTextContent(topText, bottomText, imageElement, index, scaledSimilarity) {
-    const { title_short } = getText();
+async function updateTextContent(topText, bottomText, imageElement, index, scaledSimilarity) {
+    const { title_short } = await getText();
     const currLanguage = getLanguage();
     const data = imageElement.jsonData;
   
