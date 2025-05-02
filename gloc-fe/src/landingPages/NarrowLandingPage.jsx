@@ -14,7 +14,8 @@ function NarrowLandingPage({
   const contentRef = useRef(null);
   const [text, setText] = useState(null);
   const [pageIndex, setPageIndex] = useState(0); // page 0, 1, or 2
-
+  const videoRef = useRef(null);
+  const [textVisible, setTextVisible] = useState(false);
   useEffect(() => {
     async function loadText() {
       const result = await getText();
@@ -22,7 +23,21 @@ function NarrowLandingPage({
     }
     loadText();
   }, [currLanguage]);
-
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+  
+    const handlePlay = () => {
+      setTextVisible(true);
+    };
+  
+    video.addEventListener("play", handlePlay);
+  
+    return () => {
+      video.removeEventListener("play", handlePlay);
+    };
+  }, []);
+  
   const scrollToTop = () => {
     if (contentRef.current) {
       contentRef.current.scrollTo({ top: 0, behavior: "smooth" });
@@ -83,32 +98,34 @@ function NarrowLandingPage({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
+     <div className="top-bar">
+      <h2 className="top-bar-title">{text.title}</h2>
       <LanguageButton
         currLanguage={currLanguage}
         setCurrLanguage={setCurrLanguage}
       />
-
+    </div>
       <div className="overlay-content">
-        <header className="header">
-          <h1>{text.title}</h1>
-        </header>
-        <div className="nav-divider-line">
-          <button
-            onClick={handleBack}
-            disabled={pageIndex === 0}
-            className="nav-arrow"
-          >
-            ‹
-          </button>
-          <div className="nav-line" />
-          <button
-            onClick={handleNext}
-            disabled={pageIndex === 2}
-            className="nav-arrow"
-          >
-            ›
-          </button>
-        </div>
+      <div className="hero-video-wrapper">
+    <video
+      className="hero-video"
+      ref={videoRef}
+
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      // poster="/videos/preview.jpg"
+    >
+      <source src="/video.mp4" type="video/mp4" />
+    </video>
+    <div className="hero-video-overlay"></div>
+    <div className="hero-video-text">
+  <h1>{text.title}</h1>
+    <h2>An artwork by Rafael Lozano-Hemmer</h2>
+</div>
+  </div>
         <main className="content">
           <div className="side">
             {pageIndex === 0 && Array.isArray(text.technical_description) &&

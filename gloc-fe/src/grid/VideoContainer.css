@@ -3,6 +3,7 @@
     flex: 0 0 auto; /* Do not grow or shrink */
     aspect-ratio: var(--video-aspect-ratio); /* Maintain aspect ratio */
     height: 100%; /* Match row height */
+    display: none; 
   }
   
   .video-container video,

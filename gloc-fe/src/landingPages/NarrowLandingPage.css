@@ -3,40 +3,43 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  /* width: 100%;
+  height: 100%; */
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   opacity: 1;
   transition: opacity 1s ease-in-out;
   z-index: 1000;
-  padding: 2em 3rem 0rem 3rem; 
+  /* padding: 1em 1.5rem 0rem 1.5rem;  */
+  overflow-y: auto; 
 }
   .grid-overlay.hidden {
     opacity: 0; /* Fade out effect */
     pointer-events: none; /* Prevent interaction when hidden */
   }
-  .language-button {
-    position: absolute;
-    top: 2rem;
-    right: 2rem;
+  .grid-overlay .language-button {
+    position: static; /* override absolute */
+  font-size: 0.6rem;
+  padding: 0.3rem 0.6rem;
     background-color: white;
     color: black;
     border: none;
-    padding: 0.5rem 1rem;
-    font-size: 0.7rem;
     font-weight: bold;
     border-radius: 4px;
+    margin-right: 2rem; /* or 1rem */
+    
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
     text-align: center;
     display: inline-block;
   }
-  
-  .language-button:hover {
-    background-color: black;
-    color: white;
+
+  .content{
+    height:100%; 
+    background-color: #2c2c2c;
+    padding: 1rem;
+    border-radius: 1rem; 
   }
 
   .narrow-camera-button:hover {
@@ -45,13 +48,14 @@
     /* height: 100%; */
   }
   .overlay-content {
+    margin-top: 50px; 
     flex: 1;
     display: flex;
     flex-direction: column;
     min-height: 0;
     overflow: hidden;
     padding: 0;
-    margin: 0;
+    /* margin: 0; */
   }
   
   /* General button styles */
@@ -77,14 +81,6 @@
     min-width: 140px; /* Ensure consistent size between states */
     height: 40px; /* Consistent height */
     /* box-sizing: border-box; */
-}
-.content {
-  flex: 1;
-  /* height: 100%;  */
-  /* overflow-y: auto; */
-  max-height: 100%;
-  /* border: 1px solid white;  */
-  min-height: 0; /* ✅ required for proper flex scroll */
 }
 
 .narrow-camera-button:disabled {
@@ -145,107 +141,24 @@
     padding-top: 30px; 
 }
 
-.back-to-top-container {
-    text-align: center;
-    margin-top: 5rem;
-    bottom: 0;
-  }
-  
-  .back-to-top-button {
-    background-color: grey;
-    color: black;
-    border: 1px solid black;
-    padding: 0.4rem 1rem;
-    font-size: 0.7rem;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.4s ease, color 0.4s ease;
-  }
-  
-  .back-to-top-button:hover {
-    background-color: black;
-    color: white;
-    border: 1px solid black; /* make sure this is consistent */
-}
 
-  
 .narrow-footer {
   justify-content: center; /* Center items horizontally */
   align-items: center;    
   text-align: center; 
-  font-size: 0.7rem;
+  font-size: 0.9rem;
   color: #aaa;
   padding-bottom:10px; 
   background-color: black;
-  z-index: 1001; /* Ensure it is above other elements */
-  padding: 15px 5px 15px 5px;
+  padding: 10px 5px 15px 5px;
+  bottom: 0; 
   /* bottom: -30px;
   position: absolute; */
 }
+
 .narrow-footer p {
-  margin: 3px;            /* ✅ remove default space between p tags */
+  margin: 7px;            /* ✅ remove default space between p tags */
   line-height: 1.2;     /* ✅ tighter spacing */
-}
-
-.page-nav-buttons {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  /* padding: 0 1rem; */
-  /* margin-bottom: 1rem; */
-}
-
-.page-nav-buttons button {
-  background: none;
-  /* border: 1px solid white; */
-  color: white;
-  /* padding: 0.4rem 0.8rem; */
-  cursor: pointer;
-  /* font-weight: bold; */
-}
-
-.page-nav-buttons button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-.nav-divider-line {
-  display: flex;
-  align-items: center;
-  margin:0 ;
-  padding:0; 
-  /* background-color: red; */
-  justify-content: space-between;
-  /* margin: 1rem 1rem 0.5rem; */
-}
-
-.nav-arrow {
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 1);  /* Subtle */
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: color 0.3s ease;
-  padding: 0;
-  margin : 0; 
-  margin: 0 0 .7rem; 
-
-}
-
-.nav-arrow:hover {
-  color: white;
-}
-
-.nav-arrow:disabled {
-  opacity: 0.3;
-  cursor: default;
-}
-
-.nav-line {
-  flex: 1;
-  height: 1px;
-  background-color: rgba(255, 255, 255, 0.3);
-  margin: 0 0.3rem .5rem;
 }
 
 .narrow-footer a,
@@ -267,20 +180,97 @@
   color: white;
 }
 
-.tap-zone {
+.top-bar {
   position: fixed;
   top: 0;
-  width: 50% ;
-  height: 100vh;
-  z-index: 10;
-  /* background-color: red; */
-}
-
-.tap-zone.left {
   left: 0;
+  width: 100%;
+  height: 4rem;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  z-index: 1000;
+  background-color: black;
 }
 
-.tap-zone.right {
-  right: 0;
-  width: 30%
+.top-bar-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.hero-video-wrapper {
+  width: 100vw;
+  position: relative;
+  /* left: 50%;
+  right: 50%; */
+  /* margin-left: -50vw;
+  margin-right: -50vw; */
+  overflow: hidden;
+  z-index: 1;
+  margin-top: 1rem; 
+}
+
+.hero-video {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  /* max-height: 50vh; */
+}
+/* 👇 Overlay on top of video */
+.hero-video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* adjust alpha for darkness */
+  z-index: 2;
+  pointer-events: none; /* allows clicks to pass through */
+}
+.hero-video-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;                /* 👈 Ensures it spans full width */
+  font-size: 1.5rem;
+  color: white;
+  z-index: 3;
+  text-align: left;
+  padding: 1rem 2rem;
+
+  max-width: none;         /* 👈 Remove if you want full width always */
+  width: 100%;
+  box-sizing: border-box;  /* 👈 Includes padding in the width */
+  overflow-wrap: break-word; /* 👈 Ensures long words wrap */
+  opacity: 0;
+  animation: fadeInUp .5s ease-out forwards;
+}
+.hero-video-wrapper h2 {
+  font-size: 1.3rem;
+}
+
+@media (max-width: 735px) {
+  .hero-video-text {
+    font-size: 1.3rem;
+  }
+}
+@media (max-width: 735px) {
+  .hero-video-wrapper h2 {
+    font-size: 1rem;
+  }
+}
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

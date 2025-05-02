@@ -1,7 +1,8 @@
 {
-  "refreshTime": "15",
-  "loadingDuration": "6",
+  "refreshTime": 15,
+  "loadingDuration": 10,
   "zoom": 1,
   "xOffset": 0,
-  "yOffset": 0
+  "yOffset": 0,
+  "zoomVideo": false
 }

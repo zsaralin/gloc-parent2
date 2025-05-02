@@ -2,7 +2,7 @@
 .wide-grid-overlay {
     background-color: rgba(0, 0, 0, 1);
     position: absolute;
-    top: 1;
+    top: 0;
     /* left: 0; */
     width: 100%;
     height: 100%;
@@ -14,14 +14,18 @@
     opacity: 1;
     transition: opacity 1s ease-in-out; /* Smooth transition */
     z-index: 1000; /* Ensure it is above other elements */
-    /* overflow-y: auto; */
+    overflow-y: hidden;
 
+  }
+  
+  .wide-overlay-content header {
+    font-size: 1.5rem; 
   }
   .wide-grid-overlay.hidden {
     opacity: 0; /* Fade out effect */
     pointer-events: none; /* Prevent interaction when hidden */
   }
-  .language-button {
+  .wide-grid-overlay .language-button {
     position: absolute;
     top: 2rem;
     right: 2rem;
@@ -38,7 +42,7 @@
     display: inline-block;
   }
   
-  .language-button:hover {
+  .wide-grid-overlay .language-button:hover {
     background-color: black;
     color: white;
   }
@@ -66,7 +70,10 @@
       height: 40px; /* Consistent height */
       box-sizing: border-box;
   }
-
+  .white-overlay-content .language-button:hover {
+    background-color: black;
+    color: white;
+  }
   .wide-overlay-content {
     flex: 1;
   display: flex; 

@@ -1,4 +1,3 @@
-@import '@fortawesome/fontawesome-free/css/all.css';
 @font-face {
   font-family: "GT-Zirkon";
   src: url('/fonts/GT-Zirkon-Regular.woff2') format('woff2'), /* Modern browsers */
@@ -44,8 +43,8 @@ body {
   display: flex;
   place-items: center;
   min-width: 100vw;
-  height: var(--viewport-height);
-  overflow: hidden;
+  /* height: var(--viewport-height); */
+  overflow-x: hidden;
   position: absolute; /* Ensure it stays within the viewport */
   top: 0; /* Prevent unwanted shifting */
 }
@@ -55,9 +54,10 @@ html {
   padding: 0;
 }
 h1 {
-  font-size: 2em;
-  line-height: 1.1;
+  font-size: 1.4em;
+  line-height: 1.5em;
   margin-top : 50px;
+  margin-bottom: 35px; 
   font-family: "Univers", system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
@@ -74,7 +74,7 @@ button {
   font-family: inherit;
   background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s;
+  /* transition: border-color 0.25s; */
 }
 
 
