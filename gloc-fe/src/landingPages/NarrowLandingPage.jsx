@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import "./NarrowLandingPage.css";
 import LanguageButton from "./LanguageButton";
 import { getText } from "../config";
@@ -11,8 +11,9 @@ function NarrowLandingPage({
   currLanguage,
   setCurrLanguage,
 }) {
-  const contentRef = useRef(null);
+const contentRef = useRef(null);
   const [text, setText] = useState(null);
+  const [pageIndex, setPageIndex] = useState(0); // page 0, 1, or 2
 
   useEffect(() => {
     async function loadText() {
@@ -21,7 +22,6 @@ function NarrowLandingPage({
     }
     loadText();
   }, [currLanguage]);
-  const [pageIndex, setPageIndex] = useState(0); // page 0, 1, or 2
 
   const scrollToTop = () => {
     if (contentRef.current) {
@@ -72,6 +72,8 @@ function NarrowLandingPage({
       }
     }
   };
+  if (!text) return null;
+
   return (
     <div
       className={`grid-overlay ${isLandingVisible ? "visible" : "hidden"}`}
