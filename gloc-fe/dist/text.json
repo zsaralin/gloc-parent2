@@ -18,7 +18,8 @@
       "Instructions",
       "We will require access to your camera.",
       "Your facial landmarks will be extracted.",
-      "No data is retained."
+      "No data is retained.",
+      "Please ensure your face is clearly visible and well-lit for best results."
     ],
     "camera_access": "Access my camera",
     "camera_denied": "Camera access denied",
@@ -69,7 +70,8 @@
       ],
       "lighting_message" : "Please ensure your face is well lit. Better lighting leads to more accurate results.",
       "no_landmarks" : "No landmarks were detected. ",
-      "ok": "ok"
+      "ok": "ok",
+      "rafael": "An artwork by Rafael Lozano-Hemmer"
   },
   "es": {
     "description": [
@@ -89,7 +91,8 @@
       "Instrucciones",
       "Necesitaremos acceso a su cámara.",
       "Se extraerán sus puntos de referencia faciales.",
-      "Sus datos no se conservarán."
+      "Sus datos no se conservarán.",
+      "Por favor, asegúrate de que tu rostro esté bien iluminado y claramente visible."
     ],
     "camera_access": "Acceder a la cámara",
     "camera_denied": "Acceso a la cámara denegado",
@@ -141,8 +144,7 @@
 ],
 "lighting_message" : "Asegúrese de que su cara está bien iluminada. Con una mejor iluminación se obtienen resultados más precisos.",
 "no_landmarks" : "No se detectaron puntos de referencia. ",
-"ok" : "Si"
-
+"ok" : "Si",
+"rafael" : "Una obra de Rafael Lozano-Hemmer"
   }
-
 }

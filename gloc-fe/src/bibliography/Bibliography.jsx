@@ -1,10 +1,29 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Bibliography.css";
 import { getText } from "../config";
+import { useLocation } from "react-router-dom";
 
 function Bibliography() {
-    const text = getText()
-    const references = text.references;
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const lang = params.get("lang");
+
+  const [text, setText] = useState(null);
+  const [references, setReferences] = useState([]);
+
+  useEffect(() => {
+    async function loadText() {
+      const result = await getText(lang); // optionally pass lang
+      setText(result);
+      setReferences(result.references || []);
+    }
+
+    if (lang) {
+      loadText();
+    }
+  }, [lang]);
+
+  if (!text) return null;
 
   return (
     <div className="bibliography-page">

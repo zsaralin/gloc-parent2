@@ -83,7 +83,10 @@ function WideLandingPage({ isLoading, isLandingVisible, handleAccessCamera, curr
             </a>
           </p>
           <p>
-          <Link to="/bibliography" className="footer-link">
+          <Link
+            to={`/bibliography?lang=${currLanguage}`}
+            className="narrow-footer-link"
+          >
             {text.bibliography}
           </Link>
           </p>

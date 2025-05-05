@@ -19,7 +19,7 @@ async function getNameFromJsonFile(filePath) {
         return null; // If there's an error reading or parsing, return null
     }
 }
-async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 200) {
+async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 40) {
     const imagePaths = [];
     const startTime = performance.now();  // Start timing for the whole function
 

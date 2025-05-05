@@ -9,7 +9,7 @@ function TopRow({ numItems, itemWidth }) {
     <div className="top-row">
       <VideoContainer /> {/* Render the VideoContainer */}
 
-      {[...Array(numItems+2)].map((_, index) => (
+      {[...Array(numItems)].map((_, index) => (
         <div
           className="top-row-item"
           key={index}

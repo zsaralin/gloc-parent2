@@ -32,7 +32,7 @@
     align-items: center; /* Center children horizontally */
     justify-content: center; /* Center children vertically */
     z-index: 2;
-    display:none; 
+    /* display:none;  */
   }
   
   /* Outer loading bar */
