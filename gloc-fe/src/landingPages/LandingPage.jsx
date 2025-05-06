@@ -19,7 +19,7 @@ function LandingPage() {
   }, [currLanguage]);
   useEffect(() => {
     const checkWindowDimensions = () => {
-      setIsWideLayout(window.innerWidth > window.innerHeight * 1.3);
+      setIsWideLayout(window.innerWidth >900);
     };
 
     checkWindowDimensions();
