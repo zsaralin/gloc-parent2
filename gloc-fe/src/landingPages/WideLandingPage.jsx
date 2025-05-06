@@ -36,6 +36,8 @@ function WideLandingPage({ isLoading, isLandingVisible, handleAccessCamera, curr
             loop
             playsInline
             preload="auto"
+            poster="/video_frame.jpg"
+
           >
             <source src="/video.mp4" type="video/mp4" />
           </video>
