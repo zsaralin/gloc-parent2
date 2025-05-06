@@ -71,16 +71,6 @@ function Grid() {
   }, [isGridReady]);
 
   useEffect(() => {
-    const handleKeyPress = (event) => {
-      if (event.key === 'g' || event.key === 'G') {
-        setIsOverlayVisible((prev) => !prev);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, []);
-  useEffect(() => {
     let hideCursorTimeout;
 
     const showCursor = () => {
