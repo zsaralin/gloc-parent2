@@ -1,4 +1,4 @@
-export const SERVER_URL =  "https://be.niveldeconfianza.net";//"https://face-recognition-be.onrender.com"; //
+export const SERVER_URL =  "https://sandbx.niveldeconfianza.net";//"https://face-recognition-be.onrender.com"; //
 
 
 let currLanguage = localStorage.getItem("language") || "es";
