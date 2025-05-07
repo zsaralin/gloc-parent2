@@ -1,0 +1,10 @@
+.languageButton{
+    position: static;
+    background: none;
+    color: white;
+    font-size: .8rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-right: 1rem; 
+    border: 2px solid grey; 
+}

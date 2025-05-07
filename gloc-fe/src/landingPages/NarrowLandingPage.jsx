@@ -166,13 +166,21 @@ function NarrowLandingPage({
           <video
             className="hero-video"
             ref={videoRef}
-
-            autoPlay
             muted
             loop
             playsInline
             preload="auto"
-          poster="/video_frame.jpg"
+            poster="/video_frame.jpg"
+            onLoadedMetadata={() => {
+              setTimeout(() => {
+                if (videoRef.current) {
+                  videoRef.current
+                    .play()
+                    .then(() => console.log("Video playing"))
+                    .catch((err) => console.warn("Autoplay failed:", err));
+                }
+              }, 500);
+            }}
           >
             <source src="/video.mp4" type="video/mp4" />
           </video>
@@ -204,19 +212,19 @@ function NarrowLandingPage({
           <div className="modal-content" ref={workModalRef}>
             <button className="modal-close" onClick={() => setWorkModalVisible(false)}>×</button>
             {text.technical_description.map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
+              <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
             ))}
           </div>
         </div>
         <div className={`modal-overlay ${isContextModalVisible ? 'visible' : ''}`}>
-        <div className="modal-content" ref={contextModalRef}>
+          <div className="modal-content" ref={contextModalRef}>
 
-          <button className="modal-close" onClick={() => setContextModalVisible(false)}>×</button>
-          {text.description.map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
+            <button className="modal-close" onClick={() => setContextModalVisible(false)}>×</button>
+            {text.description.map((paragraph, index) => (
+              <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
             ))}
           </div>
-          </div>
+        </div>
 
         <div className="instructions-wrapper" id="instructions">
           <p>{text.instructions[0]}</p>

@@ -4,7 +4,7 @@ import NarrowLandingPage from "./NarrowLandingPage";
 import { videoRef } from "../grid/videoRef";
 import { startFaceDetection } from "../faceDetection/faceDetection";
 import { startShuffle } from "../updateGrid/shuffleManagerService";
-import {loadTextJson, setLanguage } from "../config"; // adjust the path as needed
+import { loadTextJson, setLanguage } from "../config"; // adjust the path as needed
 import { preloadLoading, showFirstLoadingMessage } from "../grid/LoadingScreen";
 
 function LandingPage() {
@@ -19,7 +19,7 @@ function LandingPage() {
   }, [currLanguage]);
   useEffect(() => {
     const checkWindowDimensions = () => {
-      setIsWideLayout(window.innerWidth >900);
+      setIsWideLayout(window.innerWidth >1000);
     };
 
     checkWindowDimensions();
@@ -31,7 +31,7 @@ function LandingPage() {
   useEffect(() => {
     async function fetchData() {
 
-    await loadTextJson()
+      await loadTextJson()
     }
     fetchData()
   }, []);

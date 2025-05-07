@@ -64,8 +64,17 @@ function VideoContainer() {
       
       <div id="face-detect-text"></div>
       <button className="play-pause-button" onClick={togglePlayPause}>
-        <i className={`fa ${isPlaying ? 'fa-pause' : 'fa-play'}`}></i>
-      </button>
+  {isPlaying ? (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+      <rect x="7" y="7" width="3" height="10" />
+      <rect x="14" y="7" width="3" height="10" />
+    </svg>
+  ) : (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+      <polygon points="10,6 16,12 10,18" />
+    </svg>
+  )}
+</button>
       <div className="progress-bar-container">
         <div className="progress-bar" style={{ width: `${progress}%` }}></div>
       </div>

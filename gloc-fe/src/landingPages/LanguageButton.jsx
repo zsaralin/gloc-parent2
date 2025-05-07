@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { setLanguage } from "../config";
+import styles from './LanguageButton.module.css';
+
 function LanguageButton({ currLanguage, setCurrLanguage }) {
     const handleClick = () => {
       const newLang = currLanguage === "es" ? "en" : "es";
@@ -8,7 +10,7 @@ function LanguageButton({ currLanguage, setCurrLanguage }) {
     };
   
     return (
-      <button className="language-button" onClick={handleClick}>
+      <button className= {styles.languageButton} onClick={handleClick}>
         {currLanguage === "es" ? "English" : "Español"}
       </button>
     );
