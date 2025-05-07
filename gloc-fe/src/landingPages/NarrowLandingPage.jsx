@@ -21,6 +21,7 @@ function NarrowLandingPage({
   const [isContextModalVisible, setContextModalVisible] = useState(false);
   const workModalRef = useRef(null);
   const contextModalRef = useRef(null);
+  const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
     async function loadText() {
@@ -30,20 +31,6 @@ function NarrowLandingPage({
     loadText();
   }, [currLanguage]);
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const handlePlay = () => {
-      setTextVisible(true);
-    };
-
-    video.addEventListener("play", handlePlay);
-
-    return () => {
-      video.removeEventListener("play", handlePlay);
-    };
-  }, []);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -173,12 +160,16 @@ function NarrowLandingPage({
             poster="/video_frame.jpg"
             onLoadedMetadata={() => {
               setTimeout(() => {
-                if (videoRef.current) {
-                  videoRef.current
-                    .play()
-                    .then(() => console.log("Video playing"))
-                    .catch((err) => console.warn("Autoplay failed:", err));
-                }
+                const vid = videoRef.current;
+                if (!vid) return;
+                vid.play()
+                  .then(() => {
+                    setVideoReady(true); // ✅ show video after successful play
+                    console.log("Video playing");
+                  })
+                  .catch((err) => {
+                    console.warn("Autoplay failed:", err);
+                  });
               }, 500);
             }}
           >

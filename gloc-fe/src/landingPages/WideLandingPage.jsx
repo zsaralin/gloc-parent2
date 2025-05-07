@@ -30,20 +30,6 @@ function WideLandingPage({
     loadText();
   }, [currLanguage]);
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const handlePlay = () => {
-      setTextVisible(true);
-    };
-
-    video.addEventListener("play", handlePlay);
-
-    return () => {
-      video.removeEventListener("play", handlePlay);
-    };
-  }, []);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
