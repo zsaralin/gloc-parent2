@@ -12,7 +12,7 @@ function LandingPage() {
   const [isLandingVisible, setIsLandingVisible] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const isInitializedRef = useRef(false);
-  const [currLanguage, setCurrLanguage] = useState("en");
+  const [currLanguage, setCurrLanguage] = useState("es");
   useEffect(() => {
     setLanguage(currLanguage); // update config.js and localStorage
     console.log(currLanguage)
