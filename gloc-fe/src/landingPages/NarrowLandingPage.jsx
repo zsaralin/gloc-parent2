@@ -158,20 +158,7 @@ function NarrowLandingPage({
             playsInline
             preload="auto"
             poster="/video_frame.jpg"
-            onLoadedMetadata={() => {
-              setTimeout(() => {
-                const vid = videoRef.current;
-                if (!vid) return;
-                vid.play()
-                  .then(() => {
-                    setVideoReady(true); // ✅ show video after successful play
-                    console.log("Video playing");
-                  })
-                  .catch((err) => {
-                    console.warn("Autoplay failed:", err);
-                  });
-              }, 500);
-            }}
+            autoPlay
           >
             <source src="/video.mp4" type="video/mp4" />
           </video>

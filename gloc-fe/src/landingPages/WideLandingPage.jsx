@@ -160,13 +160,8 @@ function WideLandingPage({
         playsInline
         preload="auto"
         poster="/video_frame.jpg"
-        onLoadedMetadata={() => {
-          setTimeout(() => {
-            videoRef.current?.play().catch((err) => {
-              console.warn("Autoplay failed:", err);
-            });
-          }, 500);
-        }}
+        autoPlay
+
       >
         <source src="/video.mp4" type="video/mp4" />
       </video>
