@@ -21,6 +21,8 @@ function WideLandingPage({
   const [isContextModalVisible, setContextModalVisible] = useState(false);
   const workModalRef = useRef(null);
   const contextModalRef = useRef(null);
+  const [expandWork, setExpandWork] = useState(false);
+  const [expandContext, setExpandContext] = useState(false);
 
   useEffect(() => {
     async function loadText() {
@@ -124,146 +126,160 @@ function WideLandingPage({
   if (!text) return null;
 
   return (
-<div
-  className={`${styles.gridOverlay} ${isLandingVisible ? styles.visible : styles.hidden}`}
-  ref={contentRef}
->  
+    <div
+      className={`${styles.gridOverlay} ${isLandingVisible ? styles.visible : styles.hidden}`}
+      ref={contentRef}
+    >
 
-<div className={styles.pageContainer}>
+      <div className={styles.pageContainer}>
 
-  <div className={styles.topBar}>
-  <div className={styles.topBarContainer}>
+        <div className={styles.topBar}>
+          <div className={styles.topBarContainer}>
 
-    <h2 className={styles.topBarTitle}>{text.title}</h2>
+            <h2 className={styles.topBarTitle}>{text.title}</h2>
 
-    <div className={styles.topBarControls}>
-      <LanguageButton currLanguage={currLanguage} setCurrLanguage={setCurrLanguage} />
+            <div className={styles.topBarControls}>
+              <LanguageButton currLanguage={currLanguage} setCurrLanguage={setCurrLanguage} />
 
-      <div className={styles.menuContainer} ref={menuContainerRef}>
-        <button
-          className={styles.hamburgerButton}
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsMenuOpen((prev) => !prev);
-          }}
-        >
-          ☰
-        </button>
+              <div className={styles.menuContainer} ref={menuContainerRef}>
+                <button
+                  className={styles.hamburgerButton}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMenuOpen((prev) => !prev);
+                  }}
+                >
+                  ☰
+                </button>
 
-        {isMenuOpen && (
-          <DropdownMenu style = {{marginTop: '4rem', marginRight:'17rem'}}
-            ref={dropdownRef}
-            text={text}
-            currLanguage={currLanguage}
-            handleDropdownClick={handleDropdownClick}
-          />
-        )}
+                {isMenuOpen && (
+                  <DropdownMenu
+                    ref={dropdownRef}
+                    text={text}
+                    currLanguage={currLanguage}
+                    handleDropdownClick={handleDropdownClick}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div className={styles.overlayContent}>
+          <div className={styles.heroVideoWrapper}>
+            <video
+              className={styles.heroVideo}
+              ref={videoRef}
+              muted
+              loop
+              playsInline
+              preload="auto"
+              poster="/video_frame.jpg"
+              autoPlay
+            >
+              <source src="/video.mp4" type="video/mp4" />
+            </video>
+            <div className={styles.heroVideoOverlay}></div>
+
+            <div className={`${styles.heroVideoText} ${textVisible ? styles.visible : ''}`}>
+              <h1>{text.title}</h1>
+              <h2>{text.rafael}</h2>
+            </div>
+          </div>
+
+          <div className={`${styles.content} ${styles.wideWork}`} style={{ marginTop: 0 }}>
+            <div
+              id="technical_description"
+              className={expandWork ? styles.expanded : ''}
+            >
+              {text.technical_description.map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
+            </div>
+
+            <button className={styles.plusButton} onClick={() => setExpandWork(prev => !prev)}
+            >{expandWork ? '-' : '+'}
+            </button>
+          </div>
+
+          <div className={`${styles.content} ${styles.wideContext}`}>
+            <div
+              id="description"
+              className={expandContext ? styles.expanded : ''}
+            >
+              {text.description.map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
+            </div>
+
+            <button
+              className={styles.plusButton}
+              onClick={() => setExpandContext(prev => !prev)}
+            >
+              {expandContext ? '-' : '+'}
+            </button>    </div>
+
+          <div className={`${styles.modalOverlay} ${isWorkModalVisible ? styles.visible : ''}`}>
+            <div className={styles.modalContent} ref={workModalRef}>
+              <button className={styles.modalClose} onClick={() => setWorkModalVisible(false)}>×</button>
+              {text.technical_description.map((paragraph, index) => (
+                <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
+              ))}
+            </div>
+          </div>
+
+          <div className={`${styles.modalOverlay} ${isContextModalVisible ? styles.visible : ''}`}>
+            <div className={styles.modalContent} ref={contextModalRef}>
+              <button className={styles.modalClose} onClick={() => setContextModalVisible(false)}>×</button>
+              {text.description.map((paragraph, index) => (
+                <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
+              ))}
+            </div>
+
+          </div>
+
+          <div className={styles.instructionsWrapper} id="instructions">
+            <p>{text.instructions[0]}</p>
+            <p>
+              {text.instructions.slice(1).map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </p>
+            <button
+              className={styles.narrowCameraButton}
+              onClick={handleAccessCamera}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <span className={styles.loadingDots}>
+                  <span>.</span>
+                  <span>.</span>
+                  <span>.</span>
+                </span>
+              ) : (
+                text.camera_access
+              )}
+            </button>
+          </div>
+        </div>
+
+        <footer className={styles.narrowFooter}>
+          <p>{text.antimetric}</p>
+          <p>
+            <a href="https://www.abuelas.org.ar/donaciones" target="_blank" rel="noopener noreferrer">
+              {text.abuelas}
+            </a>
+          </p>
+          <p>
+            <Link to={`/bibliography?lang=${currLanguage}`} className={styles.narrowFooterLink}>
+              {text.bibliography}
+            </Link>
+          </p>
+          <p>{text.legal_lease}</p>
+        </footer>
       </div>
     </div>
-    </div>
-
-  </div>
-
-  <div className={styles.overlayContent}>
-  <div className={styles.heroVideoWrapper}>
-      <video
-        className={styles.heroVideo}
-        ref={videoRef}
-        muted
-        loop
-        playsInline
-        preload="auto"
-        poster="/video_frame.jpg"
-        autoPlay
-      >
-        <source src="/video.mp4" type="video/mp4" />
-      </video>
-      <div className={styles.heroVideoOverlay}></div>
-
-      <div className={`${styles.heroVideoText} ${textVisible ? styles.visible : ''}`}>
-        <h1>{text.title}</h1>
-        <h2>{text.rafael}</h2>
-      </div>
-    </div>
-
-  <div className={`${styles.content} ${styles.wideWork}`} style={{ marginTop: 0 }}>
-      <div id="technical_description">
-        {text.technical_description.slice(0, 3).map((paragraph, index) => (
-          <p key={index}>{paragraph}</p>
-        ))}
-      </div>
-      <button className={styles.plusButton} onClick={() => setWorkModalVisible(true)}>+</button>
-    </div>
-
-    <div className={`${styles.content} ${styles.wideContext}`}>
-    <div id="description">
-        {text.description.slice(0, 3).map((paragraph, index) => (
-          <p key={index}>{paragraph}</p>
-        ))}
-      </div>
-      <button className={styles.plusButton} onClick={() => setContextModalVisible(true)}>+</button>
-    </div>
-
-    <div className={`${styles.modalOverlay} ${isWorkModalVisible ? styles.visible : ''}`}>
-      <div className={styles.modalContent} ref={workModalRef}>
-        <button className={styles.modalClose} onClick={() => setWorkModalVisible(false)}>×</button>
-        {text.technical_description.map((paragraph, index) => (
-              <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
-            ))}
-      </div>
-    </div>
-
-    <div className={`${styles.modalOverlay} ${isContextModalVisible ? styles.visible : ''}`}>
-      <div className={styles.modalContent} ref={contextModalRef}>
-        <button className={styles.modalClose} onClick={() => setContextModalVisible(false)}>×</button>
-        {text.description.map((paragraph, index) => (
-              <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
-            ))}
-      </div>
-
-    </div>
-
-    <div className={styles.instructionsWrapper} id="instructions">
-      <p>{text.instructions[0]}</p>
-      <p>
-        {text.instructions.slice(1).map((item, index) => (
-          <li key={index}>{item}</li>
-        ))}
-      </p>
-      <button
-        className={styles.narrowCameraButton}
-        onClick={handleAccessCamera}
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <span className={styles.loadingDots}>
-            <span>.</span>
-            <span>.</span>
-            <span>.</span>
-          </span>
-        ) : (
-          text.camera_access
-        )}
-      </button>
-    </div>
-  </div>
-
-  <footer className={styles.narrowFooter}>
-    <p>{text.antimetric}</p>
-    <p>
-      <a href="https://www.abuelas.org.ar/donaciones" target="_blank" rel="noopener noreferrer">
-        {text.abuelas}
-      </a>
-    </p>
-    <p>
-      <Link to={`/bibliography?lang=${currLanguage}`} className={styles.narrowFooterLink}>
-        {text.bibliography}
-      </Link>
-    </p>
-    <p>{text.legal_lease}</p>
-  </footer>
-</div>
-</div>
 
   );
 }

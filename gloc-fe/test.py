@@ -1,22 +1,19 @@
-import cv2
+import os
 
-# Input video path
-video_path = './dist/video.mp4'
-# Output image path
-output_image_path = 'placeholder.jpg'
 
-# Open the video file
-cap = cv2.VideoCapture(video_path)
+# 🔧 Replace this with your folder path
+folder = "c:/users/admin/videos"
+files_to_delete = [
+    "2025-05-01 14-43-36.avi",
+    "2025-05-01 14-53-04.mp4",
+    "2025-05-01 14-53-47.mp4"
+]
 
-# Read the first frame
-ret, frame = cap.read()
 
-if ret:
-    # Save the frame as an image
-    cv2.imwrite(output_image_path, frame)
-    print(f"First frame saved to {output_image_path}")
+file_path = "c:/users/admin/videos/2025-05-01 14-43-36.avi"
+
+if os.path.exists(file_path):
+    os.remove(file_path)
+    print("File deleted successfully.")
 else:
-    print("Failed to read the first frame.")
-
-# Release the video capture object
-cap.release()
+    print("File does not exist.")
