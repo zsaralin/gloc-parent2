@@ -194,7 +194,7 @@ function WideLandingPage({
               className={expandWork ? styles.expanded : ''}
             >
               {text.technical_description.map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
+                <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
               ))}
             </div>
 
@@ -209,7 +209,7 @@ function WideLandingPage({
               className={expandContext ? styles.expanded : ''}
             >
               {text.description.map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
+                <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
               ))}
             </div>
 
@@ -219,25 +219,6 @@ function WideLandingPage({
             >
               {expandContext ? '-' : '+'}
             </button>    </div>
-
-          <div className={`${styles.modalOverlay} ${isWorkModalVisible ? styles.visible : ''}`}>
-            <div className={styles.modalContent} ref={workModalRef}>
-              <button className={styles.modalClose} onClick={() => setWorkModalVisible(false)}>×</button>
-              {text.technical_description.map((paragraph, index) => (
-                <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
-              ))}
-            </div>
-          </div>
-
-          <div className={`${styles.modalOverlay} ${isContextModalVisible ? styles.visible : ''}`}>
-            <div className={styles.modalContent} ref={contextModalRef}>
-              <button className={styles.modalClose} onClick={() => setContextModalVisible(false)}>×</button>
-              {text.description.map((paragraph, index) => (
-                <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
-              ))}
-            </div>
-
-          </div>
 
           <div className={styles.instructionsWrapper} id="instructions">
             <p>{text.instructions[0]}</p>

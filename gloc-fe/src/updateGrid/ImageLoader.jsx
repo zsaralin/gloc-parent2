@@ -5,7 +5,7 @@ function encodePath(path) {
 }
 let isLoading = false; // Flag to track if loadImages() is running
 
-export async function loadImages(imageDataArray) {
+export async function loadImages(imageDataArray, abortController, isRandom) {
     if (isLoading) {
         console.warn('Skipping loadImages call: Already in progress');
         return []; // Return an empty array to prevent duplicate loading
@@ -29,11 +29,13 @@ export async function loadImages(imageDataArray) {
                 }
 
                 const encodedImagePath = encodePath(imageData.imagePath[0]);
+                console.log(imageData.smallImagePath)
                 const srcUrl = `${SERVER_URL}${encodedImagePath}`;
 
                 try {
                     const imageElement = new Image();
                     imageElement.src = srcUrl;
+                    imageElement.smallImagePath = imageData.smallImagePath;
                     imageElement.imagePath = imageData.imagePath;
                     imageElement.fullImagePath = imageData.fullImagePath;
 
@@ -41,10 +43,10 @@ export async function loadImages(imageDataArray) {
                     imageElement.distance = imageData.distance;
                     imageElement.jsonData = imageData.jsonData;
 
-                    await new Promise((resolve, reject) => {
-                        imageElement.onload = resolve;
-                        imageElement.onerror = reject;
-                    });
+                    // await new Promise((resolve, reject) => {
+                    //     imageElement.onload = resolve;
+                    //     imageElement.onerror = reject;
+                    // });
 
                     return imageElement;
                 } catch (err) {

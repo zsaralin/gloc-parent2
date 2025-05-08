@@ -32,7 +32,7 @@ async function findAndCompressImages(baseDir) {
     }
 }
 
-async function processLargeImages(baseDir) {
+async function processOgTo100Images(baseDir) {
     try {
         const entries = await fs.readdir(baseDir, { withFileTypes: true });
 
@@ -40,110 +40,101 @@ async function processLargeImages(baseDir) {
             const entryPath = path.join(baseDir, entry.name);
 
             if (entry.isDirectory()) {
-                if (!entry.name.endsWith("_comp")) {
-                    // Check if this folder is an 'images' folder
-                    if (entry.name === "images") {
-                        const imageFiles = await fs.readdir(entryPath);
+                await processOgTo100Images(entryPath); // Recurse into subfolders
+            } else if (
+                entry.isFile() &&
+                /_og\.jpe?g$/i.test(entry.name)
+            ) {
+                const ext = path.extname(entry.name);
+                const baseName = path.basename(entry.name, ext);
+                const newName = baseName.replace(/_og$/, '_100') + ext;
+                const outputPath = path.join(baseDir, newName);
 
-                        for (const file of imageFiles) {
-                            const ext = path.extname(file).toLowerCase();
-                            const baseName = path.basename(file, ext);
+                try {
+                    const image = sharp(entryPath);
+                    const metadata = await image.metadata();
+                    const { width, height } = metadata;
 
-                            // Skip non-images and ones ending in _comp or _resized
-                            if (![".jpg", ".jpeg", ".png"].includes(ext)) continue;
-                            if (baseName.endsWith("_comp") || baseName.endsWith("_resized")) continue;
+                    console.log(`📸 Processing ${entry.name} (${width}x${height}) → ${newName}`);
 
-                            const inputImagePath = path.join(entryPath, file);
-                            const outputImagePath = path.join(entryPath, `${baseName}_resized.jpg`);
+                    await image
+                        .resize({ width: 100, height: 100, fit: "inside" })
+                        .toFile(outputPath);
 
-                            try {
-                                const metadata = await sharp(inputImagePath).metadata();
-                                const { width, height } = metadata;
-
-                                if (width > 300 || height > 300) {
-                                    console.log(`📸 Resizing large image: ${inputImagePath} (${width}x${height})`);
-
-                                    await sharp(inputImagePath)
-                                        .resize({ width: 300, height: 300, fit: "inside" })
-                                        .jpeg({ quality: 80 })
-                                        .toFile(outputImagePath);
-
-                                    console.log(`✅ Saved resized image: ${outputImagePath}`);
-                                }
-                            } catch (err) {
-                                console.error(`⚠️ Error processing image: ${inputImagePath}`, err);
-                            }
-                        }
-                    }
-
-                    // Recurse into subdirectories
-                    await processLargeImages(entryPath);
+                    console.log(`✅ Saved: ${outputPath}`);
+                } catch (err) {
+                    console.error(`⚠️ Error processing ${entryPath}:`, err.message);
                 }
             }
         }
     } catch (err) {
-        console.error("❌ Error traversing directory:", err);
+        console.error("❌ Error traversing directory:", err.message);
     }
 }
 
+
+async function deleteMatchingFiles(baseDir) {
+    try {
+        const entries = await fs.readdir(baseDir, { withFileTypes: true });
+
+        for (const entry of entries) {
+            const entryPath = path.join(baseDir, entry.name);
+
+            if (entry.isDirectory()) {
+                await deleteMatchingFiles(entryPath); // Recurse into subdirectory
+            } else if (
+                entry.isFile() &&
+                entry.name.toLowerCase().endsWith('_100.jpg')
+            ) {
+                console.log(`Deleting: ${entryPath}`);
+                await fs.unlink(entryPath);
+            }
+        }
+    } catch (err) {
+        console.error(`Error processing ${baseDir}:`, err.message);
+    }
+}
+
+async function processOgImages(baseDir) {
+    const entries = await fs.readdir(baseDir, { withFileTypes: true });
+
+    for (const entry of entries) {
+        const entryPath = path.join(baseDir, entry.name);
+
+        if (entry.isDirectory()) {
+            await processOgImages(entryPath);
+        } else if (
+            entry.isFile() &&
+            /_og\.jpe?g$/i.test(entry.name)
+        ) {
+            try {
+                const ext = path.extname(entry.name);
+                const baseName = path.basename(entry.name, ext);
+                const newName = baseName.replace(/_og$/, '') + ext;
+                const outputPath = path.join(baseDir, newName);
+
+                const image = sharp(entryPath);
+                const metadata = await image.metadata();
+
+                if (metadata.width > 800) {
+                    console.log(`Resizing ${entry.name} to 800px -> ${newName}`);
+                    await image
+                        .resize(800)
+                        .toFile(outputPath); // No compression applied
+                } else {
+                    console.log(`Copying as-is: ${entry.name} -> ${newName}`);
+                    await fs.copyFile(entryPath, outputPath);
+                }
+            } catch (err) {
+                console.error(`Error processing ${entryPath}:`, err.message);
+            }
+        }
+    }
+}
+
+
+// Change this to the directory you want to process
+const baseDirectory = "../db/";
+processOgTo100Images(baseDirectory);
 // Change this to your root directory
-const mainFolder = "../db/";
-
-// processLargeImages(mainFolder)
-//     .then(() => console.log("✅ Done checking for large images!"))
-//     .catch((err) => console.error("❌ Script failed:", err));
-
-// // Start the compression process
-// findAndCompressImages(mainFolder)
-//     .then(() => console.log("✅ Image compression complete!"))
-//     .catch((err) => console.error("❌ Error:", err));
-
-async function renameSizedImages(baseDir) {
-    try {
-        const entries = await fs.readdir(baseDir, { withFileTypes: true });
-
-        for (const entry of entries) {
-            const entryPath = path.join(baseDir, entry.name);
-
-            if (entry.isDirectory()) {
-                if (!entry.name.endsWith("_comp")) {
-                    // Check if this is an 'images' folder
-                    if (entry.name === "images") {
-                        const imageFiles = await fs.readdir(entryPath);
-
-                        for (const file of imageFiles) {
-                            const ext = path.extname(file).toLowerCase();
-                            const baseName = path.basename(file, ext);
-
-                            if (![".jpg", ".jpeg", ".png"].includes(ext)) continue;
-
-                            let newName = null;
-
-                            if (baseName.endsWith("_resized")) {
-                                newName = baseName.replace(/_resized$/, "_300") + ext;
-                            } else if (baseName.endsWith("_comp")) {
-                                newName = baseName.replace(/_comp$/, "_100") + ext;
-                            }
-
-                            if (newName) {
-                                const oldPath = path.join(entryPath, file);
-                                const newPath = path.join(entryPath, newName);
-                                await fs.rename(oldPath, newPath);
-                                console.log(`🔁 Renamed: ${file} → ${newName}`);
-                            }
-                        }
-                    }
-
-                    // Recurse into subdirectories
-                    await renameSizedImages(entryPath);
-                }
-            }
-        }
-    } catch (err) {
-        console.error("❌ Error traversing directory:", err);
-    }
-}
-
-renameSizedImages(mainFolder)
-    .then(() => console.log("✅ Done renaming images!"))
-    .catch((err) => console.error("❌ Script failed:", err));
+// const mainFolder = "../db/";

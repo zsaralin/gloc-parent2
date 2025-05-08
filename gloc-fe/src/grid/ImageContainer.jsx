@@ -3,12 +3,7 @@ import "./ImageContainer.css";
 import { videoRef } from "./videoRef";
 import { SERVER_URL } from "../config";
 import Modal from "./Modal";
-import { getLanguage } from "../config";
 import { overlaySettings } from "../OverlayGui"; // ✅ Import overlay settings
-
-function formatKeyName(key) {
-  return key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
-}
 
 function ImageContainer() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,15 +47,14 @@ function ImageContainer() {
     if (imageData?.fullImagePath) {
       setModalImages(imageData.fullImagePath.map((path) => `${SERVER_URL}${path}`));
     }
+    // let contentHtml = `<div>${getLanguage() == 'es' ? imageData.jsonData.nombre: imageData.jsonData.name}</div>`;
+    // for (const [key, value] of Object.entries(imageData.jsonData)) {
+    //   if (!["numRecords", "numeroDeRegistros", "name", "nombre"].includes(key)) {
+    //     contentHtml += `<div>${formatKeyName(key)}: ${value}</div>`;
+    //   }
+    // }
 
-    let contentHtml = `<div>${getLanguage() == 'es' ? imageData.jsonData.nombre: imageData.jsonData.name}</div>`;
-    for (const [key, value] of Object.entries(imageData.jsonData)) {
-      if (!["numRecords", "name", "nombre"].includes(key)) {
-        contentHtml += `<div>${formatKeyName(key)}: ${value}</div>`;
-      }
-    }
-
-    setModalText(contentHtml);
+    setModalText(imageData.jsonData);
     setIsModalOpen(true);
   };
 

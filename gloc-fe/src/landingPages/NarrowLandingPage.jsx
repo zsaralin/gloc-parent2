@@ -199,18 +199,18 @@ function NarrowLandingPage({
           </div>
           <button className="plus-button" onClick={() => setContextModalVisible(true)}>+</button>
         </div>
-        <div className={`modal-overlay ${isWorkModalVisible ? 'visible' : ''}`}>
-          <div className="modal-content" ref={workModalRef}>
-            <button className="modal-close" onClick={() => setWorkModalVisible(false)}>×</button>
+        <div className={`landing-modal-overlay ${isWorkModalVisible ? 'visible' : ''}`}>
+          <div className="landing-modal-content" ref={workModalRef}>
+            <button className="landing-modal-close" onClick={() => setWorkModalVisible(false)}>×</button>
             {text.technical_description.map((paragraph, index) => (
               <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
             ))}
           </div>
         </div>
-        <div className={`modal-overlay ${isContextModalVisible ? 'visible' : ''}`}>
-          <div className="modal-content" ref={contextModalRef}>
+        <div className={`landing-modal-overlay ${isContextModalVisible ? 'visible' : ''}`}>
+          <div className="landing-modal-content" ref={contextModalRef}>
 
-            <button className="modal-close" onClick={() => setContextModalVisible(false)}>×</button>
+            <button className="landing-modal-close" onClick={() => setContextModalVisible(false)}>×</button>
             {text.description.map((paragraph, index) => (
               <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
             ))}

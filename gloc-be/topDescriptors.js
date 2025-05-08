@@ -165,23 +165,14 @@ async function processNearestDescriptors(nearestDescriptors, localFolderPath, la
         const imagePairs = await Promise.all(
           Array.from({ length: numRecords }, async (_, i) => {
             const file300 = `${i}_300.jpg`;
-            const fileOriginal = `${i}.jpg`;
-  
-            const path300 = path.join(imagesPath, file300);
-            const pathOriginal = path.join(imagesPath, fileOriginal);
-  
-            if (await fileExists(path300)) {
+            const file = `${i}.jpg`;
+            const fileOriginal = `${i}_og.jpg`;
+
               return {
                 preview: `/static/images/${dbName}/${label}/images/${encodeURIComponent(file300)}`,
-                full: `/static/images/${dbName}/${label}/images/${encodeURIComponent(fileOriginal)}`
-              };
-            } else if (await fileExists(pathOriginal)) {
-              return {
-                preview: `/static/images/${dbName}/${label}/images/${encodeURIComponent(fileOriginal)}`,
+                mid: `/static/images/${dbName}/${label}/images/${encodeURIComponent(file)}`,
                 full: `/static/images/${dbName}/${label}/images/${encodeURIComponent(fileOriginal)}`,
               };
-            }
-            return null;
           })
         );
   
@@ -192,7 +183,8 @@ async function processNearestDescriptors(nearestDescriptors, localFolderPath, la
           label,
           name: jsonData.name || label,
           distance: normalizedDistance,
-          imagePath: validPairs.map(img => img.preview),
+          smallImagePath: validPairs.map(img => img.preview),
+          imagePath: validPairs.map(img => img.mid),
           fullImagePath: validPairs.map(img => img.full),
           jsonData
         };

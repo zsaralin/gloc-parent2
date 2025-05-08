@@ -2,7 +2,25 @@ import React, { useRef, useEffect, useState } from "react";
 import "./Modal.css";
 import ImageModal from "./ImageModal"; // Import the new modal component
 import { getText } from "../config";
+import { getLanguage } from "../config";
 
+// converts keys of the format dateOfAbduction to Date of Abduction 
+function formatKeyName(key) {
+  const lowercaseWords = ['of', 'and', 'in', 'on', 'at', 'for', 'with', 'a', 'an', 'the', 'to', 'by', 'from'];
+
+  return key
+    .replace(/([A-Z])/g, " $1") // Add space before capital letters
+    .trim()
+    .split(" ")
+    .map((word, index) => {
+      const lower = word.toLowerCase();
+      if (index === 0 || !lowercaseWords.includes(lower)) {
+        return lower.charAt(0).toUpperCase() + lower.slice(1);
+      }
+      return lower;
+    })
+    .join(" ");
+}
 const Modal = ({ images, text, onClose }) => {
   const containerRef = useRef(null);
   const [imageStyle, setImageStyle] = useState({});
@@ -10,105 +28,37 @@ const Modal = ({ images, text, onClose }) => {
   const [selectedImage, setSelectedImage] = useState(null); // Track clicked image
   const [button_text, setText] = useState(null);
 
-  // useEffect(() => {
-  //   async function loadText() {
-  //     const result = await getText();
-  //     setText(result);
-  //   }
-  //   loadText();
-  // }, []);
-  // if(!button_text) return null
+  const nameText = getLanguage() === 'es' ? text.nombre : text.name;
 
+  let detailsHTML = '';
+  for (const [key, value] of Object.entries(text)) {
+  if (!["numRecords", "numeroDeRegistros", "name", "nombre"].includes(key)) {
+    const displayValue = Array.isArray(value) ? value.join(', ') : value;
+    detailsHTML += `<div>${formatKeyName(key)}: ${displayValue}</div>`;
+  }
+}
   useEffect(() => {
     async function loadText() {
       const result = await getText();
       setText(result);
     }
     loadText();
-  // }, []);
     const container = containerRef.current;
     if (!container) return;
-
-    const { clientWidth, clientHeight } = container;
-    const textElem = container.querySelector(".modal-text");
-    const buttonElem = container.querySelector(".genetic-bank-button");
-
-    const textHeight = textElem ? textElem.offsetHeight : 0;
-    const buttonHeight = buttonElem ? buttonElem.offsetHeight : 0;
-    const spacing = 0;
-
-    const availableWidth = clientWidth;
-    const availableHeight = clientHeight - (textHeight + buttonHeight + spacing);
-
-    const numImages = images.length;
-
-    if (numImages === 1) {
-      setGridStyle({
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-        height: `${availableHeight}px`,
-        overflow: "hidden",
-      });
-
-      setImageStyle({
-        width: "100%",
-        height: "100%",
-        objectFit: "contain",
-        objectPosition: "center",
-        display: "block",      // removes baseline whitespace from inline images
-        flexShrink: 0,
-        flexGrow: 1,
-        cursor: "pointer",
-      });
-      return;
-    }
-
-    let bestCols = 1;
-    let bestRows = numImages;
-    let bestSize = 0;
-
-    for (let cols = 1; cols <= numImages; cols++) {
-      const rows = Math.ceil(numImages / cols);
-      const cellWidth = availableWidth / cols;
-      const cellHeight = availableHeight / rows;
-      const size = Math.min(cellWidth, cellHeight) - 15;
-      if (size > bestSize) {
-        bestSize = size;
-        bestCols = cols;
-        bestRows = rows;
-      }
-    }
-
-    setGridStyle({
-      display: "grid",
-      gridTemplateColumns: `repeat(${bestCols}, ${bestSize}px)`,
-      gridTemplateRows: `repeat(${bestRows}, ${bestSize}px)`,
-      width: "100%",
-      height: `${bestRows * bestSize}px`,
-      justifyContent: "center",
-      alignContent: "center",
-      overflow: "hidden",
-    });
-
-    setImageStyle({
-      width: "100%",
-      height: "100%",
-      objectFit: "contain",
-      cursor: "pointer",
-    });
   }, [images]);
+
   if(!button_text) return null
   return (
     <>
-      {/* Parent Modal */}
       <div className="modal-overlay" onClick={onClose}>
         <div
           className="modal-content"
           onClick={(e) => e.stopPropagation()}
           ref={containerRef}
-        >
+        > 
+    <button className="modal-close-button" onClick={onClose}>×</button>
+    <div className="modal-name">{nameText}</div>
+
           <div className="modal-images" style={gridStyle}>
             {images.map((src, index) => (
               <img
@@ -120,10 +70,8 @@ const Modal = ({ images, text, onClose }) => {
               />
             ))}
           </div>
-          <div
-            className="modal-text"
-            dangerouslySetInnerHTML={{ __html: text }}
-          ></div>
+          <div className="modal-text" dangerouslySetInnerHTML={{ __html: detailsHTML }}></div>
+
           <a 
             href="https://www.argentina.gob.ar/ciencia/bndg" 
             target="_blank" 
@@ -134,8 +82,6 @@ const Modal = ({ images, text, onClose }) => {
           </a>
         </div>
       </div>
-
-      {/* Separate Image Modal */}
       <ImageModal src={selectedImage} onClose={() => setSelectedImage(null)} />
     </>
   );
