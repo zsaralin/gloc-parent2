@@ -8,6 +8,8 @@ import { overlaySettings } from "../OverlayGui"; // ✅ Import overlay settings
 function ImageContainer() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalImages, setModalImages] = useState([]);
+  const [fullModalImages, setfullModalImages] = useState([]);
+
   const [wasVideoPaused, setWasVideoPaused] = useState(false);
   const [modalText, setModalText] = useState("");
 
@@ -44,9 +46,8 @@ function ImageContainer() {
     const infoString = event.currentTarget.getAttribute("data-info");
     const imageData = JSON.parse(infoString);
 
-    if (imageData?.fullImagePath) {
-      setModalImages(imageData.fullImagePath.map((path) => `${SERVER_URL}${path}`));
-    }
+    setModalImages(imageData.imagePath.map((path) => `${SERVER_URL}${path}`));
+    setfullModalImages(imageData.fullImagePath.map((path) => `${SERVER_URL}${path}`))
     // let contentHtml = `<div>${getLanguage() == 'es' ? imageData.jsonData.nombre: imageData.jsonData.name}</div>`;
     // for (const [key, value] of Object.entries(imageData.jsonData)) {
     //   if (!["numRecords", "numeroDeRegistros", "name", "nombre"].includes(key)) {
@@ -98,7 +99,7 @@ function ImageContainer() {
       </div>
 
       {isModalOpen && (
-        <Modal images={modalImages} text={modalText} onClose={closeModal} />
+        <Modal images={modalImages} fullImages = {fullModalImages} text={modalText} onClose={closeModal} />
       )}
     </>
   );

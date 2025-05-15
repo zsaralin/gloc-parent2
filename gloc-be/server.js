@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const http = require("http");
 const app = express();
-const PORT = process.env.PORT || 4040;
+const PORT = process.env.PORT || 5000;
 const cors = require('cors');
 const { findNearestDescriptors, loadDataIntoMemory, processNearestDescriptors, findMockNearestDescriptors } = require('./topDescriptors');
 require('dotenv').config();

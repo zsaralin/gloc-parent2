@@ -34,7 +34,7 @@ async function performRecognitionTask(willfastforward = false, fromTimeout = fal
         if (fromTimeout) {
             console.warn('Timeout fallback active — using random images.');
             const randomImages = await getMockImages();
-            images = await loadImages(randomImages, abortController.signal);
+            images = await loadImages(randomImages, false);
         } else {
             // Wait up to 15 seconds (or defined interval) for matches
             const maxChecks = Math.floor((overlaySettings.refreshTime * 1000) / CHECK_INTERVAL);
@@ -55,7 +55,7 @@ async function performRecognitionTask(willfastforward = false, fromTimeout = fal
                 return;
             }
 
-            images = await loadImages(matches, abortController.signal);
+            images = await loadImages(matches, false);
         }
 
         if (abortController.signal.aborted) {

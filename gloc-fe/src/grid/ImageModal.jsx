@@ -7,7 +7,9 @@ const ImageModal = ({ src, onClose }) => {
   return (
     <div className="image-modal-overlay" onClick={onClose}>
       <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
+
         <img src={src} alt="Full View" className="full-image" />
+
       </div>
     </div>
   );

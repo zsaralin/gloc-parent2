@@ -37,7 +37,7 @@ class ShuffleManager {
                     const elapsedTime = performance.now() - startTime; // Calculate elapsed time
                     console.log(`Await took ${elapsedTime.toFixed(2)} ms`);
                     
-                    this.#randomImageArr = await loadImages(this.#randomImageArr);
+                    this.#randomImageArr = await loadImages(this.#randomImageArr, true);
                 } catch (error) {
                     console.error('Error fetching random images:', error);
                 } finally {
