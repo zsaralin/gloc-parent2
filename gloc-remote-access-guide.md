@@ -99,6 +99,19 @@ From now on, just navigate (`cd`) to the directory containing your `.ssh` key, r
 ```bash
 ssh -p 51679 sitedev@185.165.170.107
 ```
+## ACCESS VPN 
+
+Julian set up a VPN in Iceland with several configs for us to distribute to those on the team (with signal for extra security). With VPN, it becomes impossible for anyone to intercept an ssh connection. 
+Install Wireguard, or your preferred platform to access a VPN
+Ask someone with access to the server to send you one of the unused configs. 
+Upload the .conf file to Wireguard and activate the VPN.
+Now, the command to access the server is:
+ssh -p 51679 sitedev@10.100.101.1
+
+Generate more VPNS:
+cd /etc/wireguard/clients
+ls */conf will show you how many configs there currently are
+./wg-generate.sh 21-25 will generate configs 21-25. 
 
 ---
 
